@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Descriptive Statistics — Analytix Suite</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── TOKENS ──────────────────────────────────────────────── */
+    :root {
+      --bg:          #0D1117;
+      --surface:     #161B22;
+      --surface2:    #1C2333;
+      --border:      #30363D;
+      --border-lit:  #58A6FF;
+      --amber:       #F0A500;
+      --amber-dim:   #9A6800;
+      --amber-glow:  rgba(240,165,0,0.12);
+      --green:       #3FB950;
+      --green-dim:   rgba(63,185,80,0.15);
+      --red:         #F85149;
+      --blue:        #58A6FF;
+      --blue-dim:    rgba(88,166,255,0.12);
+      --text:        #E6EDF3;
+      --text-muted:  #8B949E;
+      --text-dim:    #484F58;
+      --purple:      #BC8CFF;
+      --white:       #FFFFFF;
+      --panel-w:     calc((100vw - 48px - 32px) / 3);
+    }
+
+    /* ── RESET ───────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ───────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────────────── */
+    .app {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 0;
+    }
+
+    /* ── TOPBAR ──────────────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+      animation: slideDown 0.4s ease both;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      transition: color 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .back-btn:hover { color: var(--amber); }
+
+    .topbar-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+    }
+
+    .module-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--amber);
+      background: var(--amber-glow);
+      border: 1px solid var(--amber-dim);
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.08em;
+    }
+
+    .module-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2.5s ease infinite;
+    }
+
+    .status-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── STEP INDICATORS ─────────────────────────────────────── */
+    .steps-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 10px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      flex-shrink: 0;
+      animation: slideDown 0.4s 0.05s ease both;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      transition: all 0.3s;
+    }
+
+    .step-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.3s;
+    }
+
+    .step-connector {
+      width: 48px;
+      height: 1px;
+      background: var(--border);
+      margin: 0 8px;
+      transition: background 0.3s;
+    }
+
+    /* Active step */
+    .step-item.active .step-num {
+      border-color: var(--amber);
+      background: var(--amber-glow);
+      color: var(--amber);
+    }
+    .step-item.active .step-label { color: var(--amber); }
+
+    /* Done step */
+    .step-item.done .step-num {
+      border-color: var(--green);
+      background: var(--green-dim);
+      color: var(--green);
+    }
+    .step-item.done .step-label { color: var(--green); }
+    .step-item.done ~ .step-connector { background: var(--green); }
+
+    /* ── THREE-PANEL WORKSPACE ───────────────────────────────── */
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+      overflow: hidden;
+      animation: fadeIn 0.5s 0.1s ease both;
+    }
+
+    /* ── PANEL ───────────────────────────────────────────────── */
+    .panel {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      transition: opacity 0.3s;
+    }
+
+    .panel:last-child { border-right: none; }
+
+    .panel.locked {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .panel-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .panel-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      flex: 1;
+    }
+
+    .panel-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      padding: 2px 7px;
+      border-radius: 3px;
+      letter-spacing: 0.06em;
+    }
+
+    .badge-waiting {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+
+    .badge-active {
+      background: var(--amber-glow);
+      border: 1px solid var(--amber-dim);
+      color: var(--amber);
+    }
+
+    .badge-done {
+      background: var(--green-dim);
+      border: 1px solid rgba(63,185,80,0.3);
+      color: var(--green);
+    }
+
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 20px;
+    }
+
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-track { background: transparent; }
+    .panel-body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* ── PANEL 1: UPLOAD ─────────────────────────────────────── */
+    .upload-zone {
+      border: 1.5px dashed var(--border);
+      border-radius: 8px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--amber);
+      background: var(--amber-glow);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-icon { font-size: 32px; margin-bottom: 10px; }
+
+    .upload-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .upload-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* File loaded state */
+    .file-loaded {
+      display: none;
+      background: var(--green-dim);
+      border: 1px solid rgba(63,185,80,0.3);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .file-loaded.show { display: flex; }
+
+    .file-loaded-icon { font-size: 20px; }
+
+    .file-loaded-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--green);
+      word-break: break-all;
+      flex: 1;
+    }
+
+    .file-change-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+    .file-change-btn:hover { color: var(--red); }
+
+    /* Stat pills from load response */
+    .stat-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .stat-pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .stat-pill strong {
+      color: var(--blue);
+      font-weight: 500;
+    }
+
+    /* Upload button */
+    .btn-primary {
+      width: 100%;
+      background: var(--amber);
+      color: var(--bg);
+      border: none;
+      padding: 11px 20px;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, opacity 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #FFB800;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--amber); color: var(--amber); }
+
+    /* ── PANEL 2: CONFIGURE ──────────────────────────────────── */
+    .config-section {
+      margin-bottom: 18px;
+    }
+
+    .config-section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Variable list */
+    .var-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 180px;
+      overflow-y: auto;
+      margin-bottom: 8px;
+    }
+
+    .var-list::-webkit-scrollbar { width: 3px; }
+    .var-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .var-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .var-item:hover { background: var(--surface2); }
+    .var-item.checked { background: var(--blue-dim); }
+
+    .var-checkbox {
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .var-item.checked .var-checkbox {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .var-check-icon {
+      color: var(--bg);
+      font-size: 10px;
+      display: none;
+    }
+
+    .var-item.checked .var-check-icon { display: block; }
+
+    .var-type-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem;
+      padding: 1px 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .tag-overall  { background: rgba(240,165,0,0.15); color: var(--amber); }
+    .tag-component{ background: rgba(88,166,255,0.15); color: var(--blue); }
+    .tag-mainao   { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .tag-subao    { background: rgba(188,140,255,0.10); color: var(--purple); opacity: 0.8; }
+    .tag-topic    { background: rgba(63,185,80,0.15); color: var(--green); }
+
+    .var-name {
+      font-size: 0.78rem;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .var-quick-btns {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .quick-btn {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-family: 'Outfit', sans-serif;
+      padding: 4px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      text-align: center;
+    }
+
+    .quick-btn:hover { color: var(--amber); border-color: var(--amber-dim); }
+
+    /* Analysis options checkboxes */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+
+    .opt-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 7px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .opt-item:hover { background: var(--surface2); }
+
+    .opt-checkbox {
+      width: 13px;
+      height: 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .opt-item.checked .opt-checkbox {
+      background: var(--amber);
+      border-color: var(--amber);
+    }
+
+    .opt-check-icon {
+      color: var(--bg);
+      font-size: 9px;
+      display: none;
+    }
+
+    .opt-item.checked .opt-check-icon { display: block; }
+
+    .opt-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .opt-item.checked .opt-label { color: var(--text); }
+
+    /* Plot style toggle */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .toggle-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 34px;
+      height: 18px;
+    }
+
+    .toggle-switch input { display: none; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-switch input:checked + .toggle-track { background: var(--amber); border-color: var(--amber); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .toggle-switch input:checked + .toggle-track .toggle-thumb {
+      transform: translateX(16px);
+      background: var(--bg);
+    }
+
+    /* Interpretations toggle */
+    .interp-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    /* ── PANEL 3: RUN & RESULTS ──────────────────────────────── */
+    .run-summary {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .run-summary.show { display: block; }
+
+    .run-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .run-summary-row:last-child { margin-bottom: 0; }
+
+    .run-summary-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .run-summary-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--blue);
+    }
+
+    /* Progress log */
+    .log-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      min-height: 80px;
+      max-height: 160px;
+      overflow-y: auto;
+      margin-bottom: 16px;
+    }
+
+    .log-box::-webkit-scrollbar { width: 3px; }
+    .log-box::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .log-line { display: block; }
+    .log-ok  { color: var(--green); }
+    .log-err { color: var(--red); }
+    .log-info { color: var(--blue); }
+    .log-warn { color: var(--amber); }
+
+    /* Progress bar */
+    .progress-wrap {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      height: 6px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-wrap.show { display: block; }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--amber), #FFD700);
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    @keyframes progressPulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.6; }
+    }
+
+    .progress-bar.running { animation: progressPulse 1.2s ease infinite; }
+
+    /* Download card */
+    .download-card {
+      background: var(--green-dim);
+      border: 1px solid rgba(63,185,80,0.4);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    .download-card.show { display: block; }
+
+    .download-icon { font-size: 36px; margin-bottom: 10px; }
+
+    .download-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+
+    .download-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--green);
+      color: var(--bg);
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-bottom: 10px;
+    }
+
+    .btn-download:hover { background: #4DC860; transform: translateY(-1px); }
+
+    .btn-run-again {
+      display: block;
+      margin: 8px auto 0;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-run-again:hover { color: var(--amber); }
+
+    /* ── EMPTY STATE ─────────────────────────────────────────── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 10px;
+      color: var(--text-dim);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .empty-icon { font-size: 28px; opacity: 0.4; }
+    .empty-text { font-size: 0.8rem; line-height: 1.5; opacity: 0.6; }
+
+    /* ── BOTTOM BAR ──────────────────────────────────────────── */
+    .bottombar {
+      height: 32px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .bottom-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-dim);
+    }
+
+    .bottom-stat-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    /* ── ANIMATIONS ──────────────────────────────────────────── */
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--green); }
+      50%       { opacity: 0.6; box-shadow: 0 0 2px var(--green); }
+    }
+
+    /* ── SPINNER ─────────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--border);
+      border-top-color: var(--amber);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── LOADING OVERLAY ON PANEL 1 ──────────────────────────── */
+    .panel-loading {
+      position: absolute;
+      inset: 52px 0 0 0;  /* below header */
+      background: rgba(13,17,23,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      backdrop-filter: blur(2px);
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .panel-loading.show { display: flex; }
+
+    .loading-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--amber);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── SELECTED COUNT BADGE ────────────────────────────────── */
+    .sel-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      background: var(--blue-dim);
+      border: 1px solid rgba(88,166,255,0.3);
+      color: var(--blue);
+      padding: 1px 6px;
+      border-radius: 3px;
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── TOPBAR ─────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="index.html" class="back-btn">← Suite</a>
+      <div class="topbar-divider"></div>
+      <span class="module-id">MOD-00</span>
+      <span class="module-title">Descriptive Statistics</span>
+    </div>
+    <div class="topbar-right">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-label" id="statusLabel">API CONNECTED</span>
+    </div>
+  </header>
+
+  <!-- ── STEP INDICATORS ────────────────────────────────────── -->
+  <div class="steps-bar">
+    <div class="step-item active" id="step1item">
+      <div class="step-num">1</div>
+      <div class="step-label">Upload Data</div>
+    </div>
+    <div class="step-connector" id="conn1"></div>
+    <div class="step-item" id="step2item">
+      <div class="step-num">2</div>
+      <div class="step-label">Configure</div>
+    </div>
+    <div class="step-connector" id="conn2"></div>
+    <div class="step-item" id="step3item">
+      <div class="step-num">3</div>
+      <div class="step-label">Run & Download</div>
+    </div>
+  </div>
+
+  <!-- ── THREE-PANEL WORKSPACE ──────────────────────────────── -->
+  <div class="workspace">
+
+    <!-- ════════════════════════════════════════════════════════
+         PANEL 1 — UPLOAD
+    ═════════════════════════════════════════════════════════ -->
+    <div class="panel" id="panel1">
+
+      <div class="panel-header">
+        <span class="panel-icon">📂</span>
+        <span class="panel-label">Data Source</span>
+        <span class="panel-badge badge-active" id="badge1">READY</span>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- Upload zone -->
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept=".xlsx" />
+          <div class="upload-icon">📊</div>
+          <div class="upload-title">Drop your Excel file here</div>
+          <div class="upload-sub">.xlsx · Analytix format</div>
+        </div>
+
+        <!-- File loaded state -->
+        <div class="file-loaded" id="fileLoaded">
+          <div class="file-loaded-icon">✅</div>
+          <div class="file-loaded-name" id="fileLoadedName">—</div>
+          <button class="file-change-btn" onclick="resetFile()">✕</button>
+        </div>
+
+        <!-- Stats pills -->
+        <div class="stat-pills" id="statPills"></div>
+
+        <!-- Action button -->
+        <button class="btn-primary" id="loadBtn" onclick="loadFile()" disabled>
+          Analyse File →
+        </button>
+
+      </div>
+
+      <!-- Loading overlay -->
+      <div class="panel-loading" id="panel1Loading">
+        <div class="spinner"></div>
+        <div class="loading-text">READING FILE…</div>
+      </div>
+
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         PANEL 2 — CONFIGURE
+    ═════════════════════════════════════════════════════════ -->
+    <div class="panel locked" id="panel2">
+
+      <div class="panel-header">
+        <span class="panel-icon">⚙️</span>
+        <span class="panel-label">Configuration</span>
+        <span class="panel-badge badge-waiting" id="badge2">WAITING</span>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- Variable selection -->
+        <div class="config-section">
+          <div class="config-section-title" style="display:flex;align-items:center;">
+            Variables
+            <span class="sel-count" id="selCount">0 selected</span>
+          </div>
+
+          <div class="var-list" id="varList">
+            <div class="empty-state" style="height:100px;">
+              <div class="empty-icon">📋</div>
+              <div class="empty-text">Variables appear after upload</div>
+            </div>
+          </div>
+
+          <div class="var-quick-btns">
+            <button class="quick-btn" onclick="selectVarGroup('all')">All</button>
+            <button class="quick-btn" onclick="selectVarGroup('none')">None</button>
+            <button class="quick-btn" onclick="selectVarGroup('Overall')">Overall</button>
+            <button class="quick-btn" onclick="selectVarGroup('Component')">Components</button>
+            <button class="quick-btn" onclick="selectVarGroup('Main AO')">Main AOs</button>
+          </div>
+        </div>
+
+        <!-- Analysis options -->
+        <div class="config-section">
+          <div class="config-section-title">Analysis Options</div>
+          <div class="options-grid" id="optionsGrid">
+            <!-- Built by JS -->
+          </div>
+        </div>
+
+        <!-- Plot style -->
+        <div class="config-section">
+          <div class="config-section-title">Output Settings</div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">Enhanced plots (Seaborn)</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggleSeaborn" />
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">Generate interpretations</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggleInterp" />
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Proceed button -->
+        <button class="btn-primary" id="configBtn" onclick="proceedToRun()" disabled>
+          Confirm & Run →
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         PANEL 3 — RUN & RESULTS
+    ═════════════════════════════════════════════════════════ -->
+    <div class="panel locked" id="panel3">
+
+      <div class="panel-header">
+        <span class="panel-icon">⚡</span>
+        <span class="panel-label">Analysis Engine</span>
+        <span class="panel-badge badge-waiting" id="badge3">WAITING</span>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- Empty state (default) -->
+        <div class="empty-state" id="panel3Empty">
+          <div class="empty-icon">🔬</div>
+          <div class="empty-text">Complete steps 1 and 2<br>to run the analysis</div>
+        </div>
+
+        <!-- Run summary (shown after config) -->
+        <div class="run-summary" id="runSummary">
+          <div class="run-summary-row">
+            <span class="run-summary-label">VARIABLES</span>
+            <span class="run-summary-val" id="summVars">—</span>
+          </div>
+          <div class="run-summary-row">
+            <span class="run-summary-label">OPTIONS</span>
+            <span class="run-summary-val" id="summOpts">—</span>
+          </div>
+          <div class="run-summary-row">
+            <span class="run-summary-label">PLOT STYLE</span>
+            <span class="run-summary-val" id="summPlot">—</span>
+          </div>
+          <div class="run-summary-row">
+            <span class="run-summary-label">INTERPRETATIONS</span>
+            <span class="run-summary-val" id="summInterp">—</span>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- Log -->
+        <div class="log-box" id="logBox" style="display:none;"></div>
+
+        <!-- Download card -->
+        <div class="download-card" id="downloadCard">
+          <div class="download-icon">📦</div>
+          <div class="download-title">Analysis Complete</div>
+          <div class="download-sub">Your results are packaged and ready</div>
+          <button class="btn-download" id="downloadBtn">
+            ⬇ Download Results ZIP
+          </button>
+          <button class="btn-run-again" onclick="runAgain()">
+            ↩ Run another analysis
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /workspace -->
+
+  <!-- ── BOTTOM BAR ─────────────────────────────────────────── -->
+  <div class="bottombar">
+    <div class="bottom-stat">
+      <div class="bottom-stat-dot" style="background:var(--green);box-shadow:0 0 4px var(--green);"></div>
+      Railway API
+    </div>
+    <div class="bottom-stat">
+      <div class="bottom-stat-dot" style="background:var(--blue);"></div>
+      Analytix Suite v2.0
+    </div>
+    <div class="bottom-stat" style="margin-left:auto;">
+      <div class="bottom-stat-dot" style="background:var(--amber);"></div>
+      <span id="sessionLabel">NO SESSION</span>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ── JAVASCRIPT ─────────────────────────────────────────────── -->
+<script>
+  // ── CONFIG — replace with your Railway URL ──────────────────
+  const API_BASE = 'https://web-production-530e.up.railway.app';
+
+  // ── STATE ───────────────────────────────────────────────────
+  let state = {
+    sessionId:          null,
+    availableVariables: [],
+    selectedVariables:  [],
+    file:               null,
+    downloadUrl:        null,
+  };
+
+  // ── ANALYSIS OPTIONS ─────────────────────────────────────────
+  const ANALYSIS_OPTIONS = [
+    { key: 'central_tendency', label: 'Central Tendency' },
+    { key: 'dispersion',       label: 'Dispersion'       },
+    { key: 'distribution',     label: 'Distribution Shape'},
+    { key: 'percentiles',      label: 'Percentiles'      },
+    { key: 'frequency',        label: 'Frequency Table'  },
+    { key: 'outliers',         label: 'Outlier Detection'},
+    { key: 'normality',        label: 'Normality Tests'  },
+    { key: 'visualizations',   label: 'Visualizations'   },
+  ];
+
+  // ── BUILD OPTIONS GRID ───────────────────────────────────────
+  function buildOptionsGrid() {
+    const grid = document.getElementById('optionsGrid');
+    grid.innerHTML = ANALYSIS_OPTIONS.map(opt => `
+      <div class="opt-item checked" id="opt_${opt.key}" onclick="toggleOption('${opt.key}')">
+        <div class="opt-checkbox">
+          <span class="opt-check-icon">✓</span>
+        </div>
+        <span class="opt-label">${opt.label}</span>
+      </div>
+    `).join('');
+  }
+
+  buildOptionsGrid();
+
+  function toggleOption(key) {
+    const el = document.getElementById('opt_' + key);
+    el.classList.toggle('checked');
+    checkConfigReady();
+  }
+
+  function getSelectedOptions() {
+    const opts = {};
+    ANALYSIS_OPTIONS.forEach(opt => {
+      opts[opt.key] = document.getElementById('opt_' + opt.key).classList.contains('checked');
+    });
+    return opts;
+  }
+
+  // ── FILE HANDLING ────────────────────────────────────────────
+  const fileInput   = document.getElementById('fileInput');
+  const uploadZone  = document.getElementById('uploadZone');
+  const loadBtn     = document.getElementById('loadBtn');
+
+  fileInput.addEventListener('change', function() {
+    if (this.files[0]) {
+      state.file = this.files[0];
+      loadBtn.disabled = false;
+      loadBtn.textContent = `Analyse "${state.file.name}" →`;
+    }
+  });
+
+  // Drag and drop
+  uploadZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadZone.classList.add('drag-over');
+  });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.xlsx')) {
+      state.file = file;
+      fileInput.files = e.dataTransfer.files;
+      loadBtn.disabled = false;
+      loadBtn.textContent = `Analyse "${file.name}" →`;
+    }
+  });
+
+  function resetFile() {
+    state.file = null;
+    state.sessionId = null;
+    state.availableVariables = [];
+    state.selectedVariables  = [];
+    fileInput.value = '';
+    loadBtn.disabled = true;
+    loadBtn.textContent = 'Analyse File →';
+    document.getElementById('fileLoaded').classList.remove('show');
+    document.getElementById('uploadZone').style.display = 'block';
+    document.getElementById('statPills').innerHTML = '';
+    resetToStep1();
+  }
+
+  // ── STEP 1: LOAD FILE ─────────────────────────────────────────
+  async function loadFile() {
+    if (!state.file) return;
+
+    setPanel1Loading(true);
+    loadBtn.disabled = true;
+
+    const formData = new FormData();
+    formData.append('file', state.file);
+
+    try {
+      const res  = await fetch(`${API_BASE}/api/descriptive/load`, {
+        method: 'POST', body: formData
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+      // Success
+      state.sessionId          = data.session_id;
+      state.availableVariables = data.available_variables;
+
+      // Update UI
+      document.getElementById('uploadZone').style.display = 'none';
+      document.getElementById('fileLoaded').classList.add('show');
+      document.getElementById('fileLoadedName').textContent = state.file.name;
+      document.getElementById('sessionLabel').textContent   = 'SESSION: ' + state.sessionId.slice(0,8).toUpperCase();
+
+      // Stat pills
+      const pills = document.getElementById('statPills');
+      pills.innerHTML = `
+        <div class="stat-pill"><strong>${data.n_students}</strong> students</div>
+        <div class="stat-pill"><strong>${data.n_questions}</strong> questions</div>
+        <div class="stat-pill"><strong>${data.available_variables.length}</strong> variables</div>
+      `;
+
+      // Build variable list in panel 2
+      buildVarList(data.available_variables);
+      selectVarGroup('Overall');  // Select Overall by default
+
+      // Advance steps
+      setStepDone(1);
+      unlockPanel(2);
+      document.getElementById('badge1').textContent = 'LOADED';
+      document.getElementById('badge1').className   = 'panel-badge badge-done';
+
+      loadBtn.textContent = '✓ File Loaded';
+
+    } catch (err) {
+      loadBtn.disabled = false;
+      loadBtn.textContent = 'Analyse File →';
+      alert('Error: ' + err.message);
+    } finally {
+      setPanel1Loading(false);
+    }
+  }
+
+  function setPanel1Loading(show) {
+    document.getElementById('panel1Loading').classList.toggle('show', show);
+  }
+
+  // ── STEP 2: BUILD VARIABLE LIST ───────────────────────────────
+  function buildVarList(variables) {
+    const list = document.getElementById('varList');
+    list.innerHTML = variables.map((v, i) => {
+      const [vtype, vname] = v;
+      const tagClass = {
+        'Overall':   'tag-overall',
+        'Component': 'tag-component',
+        'Main AO':   'tag-mainao',
+        'Sub-AO':    'tag-subao',
+        'Topic':     'tag-topic',
+      }[vtype] || 'tag-overall';
+
+      return `
+        <div class="var-item" id="var_${i}" onclick="toggleVar(${i})">
+          <div class="var-checkbox">
+            <span class="var-check-icon">✓</span>
+          </div>
+          <span class="var-type-tag ${tagClass}">${vtype}</span>
+          <span class="var-name" title="${vname}">${vname}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function toggleVar(i) {
+    const el = document.getElementById('var_' + i);
+    el.classList.toggle('checked');
+    updateSelectedVars();
+    checkConfigReady();
+  }
+
+  function selectVarGroup(group) {
+    const vars = state.availableVariables;
+    vars.forEach((v, i) => {
+      const el = document.getElementById('var_' + i);
+      if (!el) return;
+      if (group === 'all')  el.classList.add('checked');
+      else if (group === 'none') el.classList.remove('checked');
+      else el.classList.toggle('checked', v[0] === group);
+    });
+    updateSelectedVars();
+    checkConfigReady();
+  }
+
+  function updateSelectedVars() {
+    state.selectedVariables = state.availableVariables.filter((_, i) => {
+      const el = document.getElementById('var_' + i);
+      return el && el.classList.contains('checked');
+    });
+    document.getElementById('selCount').textContent =
+      state.selectedVariables.length + ' selected';
+  }
+
+  function checkConfigReady() {
+    const hasVars = state.selectedVariables.length > 0;
+    const hasOpts = ANALYSIS_OPTIONS.some(o =>
+      document.getElementById('opt_' + o.key)?.classList.contains('checked')
+    );
+    document.getElementById('configBtn').disabled = !(hasVars && hasOpts);
+  }
+
+  // ── STEP 3: PROCEED TO RUN ────────────────────────────────────
+  function proceedToRun() {
+    const opts     = getSelectedOptions();
+    const seaborn  = document.getElementById('toggleSeaborn').checked;
+    const interp   = document.getElementById('toggleInterp').checked;
+
+    // Update summary panel
+    document.getElementById('summVars').textContent  = state.selectedVariables.length + ' variables';
+    document.getElementById('summOpts').textContent  = Object.values(opts).filter(Boolean).length + ' active';
+    document.getElementById('summPlot').textContent  = seaborn ? 'Seaborn (Enhanced)' : 'Matplotlib (Classic)';
+    document.getElementById('summInterp').textContent = interp ? 'Yes (Rule-based)' : 'Off';
+
+    document.getElementById('runSummary').classList.add('show');
+    document.getElementById('panel3Empty').style.display = 'none';
+    document.getElementById('logBox').style.display = 'block';
+    document.getElementById('progressWrap').classList.add('show');
+
+    setStepDone(2);
+    setStepActive(3);
+    unlockPanel(3);
+
+    document.getElementById('badge2').textContent = 'CONFIGURED';
+    document.getElementById('badge2').className   = 'panel-badge badge-done';
+    document.getElementById('badge3').textContent = 'RUNNING';
+    document.getElementById('badge3').className   = 'panel-badge badge-active';
+
+    // Run the analysis
+    runAnalysis(opts, seaborn, interp);
+  }
+
+  // ── STEP 3: RUN ANALYSIS ─────────────────────────────────────
+  async function runAnalysis(opts, useSeaborn, generateInterp) {
+    const logBox = document.getElementById('logBox');
+    const pb     = document.getElementById('progressBar');
+
+    pb.classList.add('running');
+    pb.style.width = '15%';
+
+    function log(msg, cls='') {
+      const line = document.createElement('span');
+      line.className = 'log-line ' + cls;
+      line.textContent = msg;
+      logBox.appendChild(line);
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    log('→ Initialising analysis engine…', 'log-info');
+
+    try {
+      pb.style.width = '35%';
+      log('→ Sending ' + state.selectedVariables.length + ' variables to Railway…', 'log-info');
+
+      const body = {
+        session_id:         state.sessionId,
+        selected_variables: state.selectedVariables,
+        options:            opts,
+        use_seaborn:        useSeaborn,
+        font_adjust:        0,
+        generate_interp:    generateInterp,
+        use_llm:            false
+      };
+
+      const res = await fetch(`${API_BASE}/api/descriptive/analyse`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(body)
+      });
+
+      pb.style.width = '80%';
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Analysis failed');
+      }
+
+      pb.style.width = '95%';
+      log('✓ Statistical calculations complete', 'log-ok');
+      if (opts.visualizations) log('✓ Plots generated', 'log-ok');
+      log('✓ Excel report compiled', 'log-ok');
+      if (generateInterp) log('✓ Interpretations written', 'log-ok');
+      log('✓ Results packaged into ZIP', 'log-ok');
+
+      // Create a download URL from the blob
+      const blob = await res.blob();
+      state.downloadUrl = URL.createObjectURL(blob);
+
+      pb.classList.remove('running');
+      pb.style.width = '100%';
+
+      // Show download card
+      setTimeout(() => {
+        document.getElementById('downloadCard').classList.add('show');
+        document.getElementById('badge3').textContent = 'COMPLETE';
+        document.getElementById('badge3').className   = 'panel-badge badge-done';
+        setStepDone(3);
+
+        document.getElementById('downloadBtn').onclick = function() {
+          const a = document.createElement('a');
+          a.href     = state.downloadUrl;
+          a.download = 'Analytix_Descriptive_Statistics.zip';
+          a.click();
+        };
+      }, 300);
+
+    } catch (err) {
+      pb.classList.remove('running');
+      pb.style.width = '100%';
+      pb.style.background = 'var(--red)';
+      log('✗ Error: ' + err.message, 'log-err');
+      document.getElementById('badge3').textContent = 'ERROR';
+      document.getElementById('badge3').className   = 'panel-badge';
+      document.getElementById('badge3').style.cssText =
+        'background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.4);color:var(--red);';
+    }
+  }
+
+  // ── RUN AGAIN ─────────────────────────────────────────────────
+  function runAgain() {
+    // Keep the session and variables, just reset panel 3
+    document.getElementById('downloadCard').classList.remove('show');
+    document.getElementById('logBox').innerHTML = '';
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('progressBar').style.background = '';
+    document.getElementById('runSummary').classList.remove('show');
+    document.getElementById('panel3Empty').style.display = 'flex';
+
+    setStepDone(1);
+    setStepActive(2);
+    unlockPanel(2);
+    lockPanel(3);
+
+    document.getElementById('badge3').textContent = 'WAITING';
+    document.getElementById('badge3').className   = 'panel-badge badge-waiting';
+  }
+
+  // ── STEP HELPERS ──────────────────────────────────────────────
+  function setStepDone(n) {
+    document.getElementById('step' + n + 'item').className = 'step-item done';
+  }
+  function setStepActive(n) {
+    document.getElementById('step' + n + 'item').className = 'step-item active';
+  }
+  function unlockPanel(n) {
+    document.getElementById('panel' + n).classList.remove('locked');
+  }
+  function lockPanel(n) {
+    document.getElementById('panel' + n).classList.add('locked');
+  }
+  function resetToStep1() {
+    [2, 3].forEach(n => {
+      document.getElementById('step' + n + 'item').className = 'step-item';
+      lockPanel(n);
+    });
+    document.getElementById('step1item').className = 'step-item active';
+    document.getElementById('badge2').textContent  = 'WAITING';
+    document.getElementById('badge2').className    = 'panel-badge badge-waiting';
+    document.getElementById('badge3').textContent  = 'WAITING';
+    document.getElementById('badge3').className    = 'panel-badge badge-waiting';
+    document.getElementById('varList').innerHTML   = `
+      <div class="empty-state" style="height:100px;">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">Variables appear after upload</div>
+      </div>`;
+    document.getElementById('selCount').textContent = '0 selected';
+    document.getElementById('statPills').innerHTML  = '';
+    document.getElementById('sessionLabel').textContent = 'NO SESSION';
+  }
+
+  // ── API HEALTH CHECK ──────────────────────────────────────────
+  async function checkApiHealth() {
+    try {
+      const res = await fetch(API_BASE + '/', { method: 'GET' });
+      if (res.ok) {
+        document.getElementById('statusDot').style.background   = 'var(--green)';
+        document.getElementById('statusDot').style.boxShadow    = '0 0 6px var(--green)';
+        document.getElementById('statusLabel').textContent      = 'API CONNECTED';
+      } else throw new Error();
+    } catch {
+      document.getElementById('statusDot').style.background  = 'var(--red)';
+      document.getElementById('statusDot').style.boxShadow   = '0 0 6px var(--red)';
+      document.getElementById('statusDot').style.animation   = 'none';
+      document.getElementById('statusLabel').textContent     = 'API OFFLINE';
+      document.getElementById('statusLabel').style.color     = 'var(--red)';
+    }
+  }
+
+  checkApiHealth();
+</script>
+
+</body>
+</html>
