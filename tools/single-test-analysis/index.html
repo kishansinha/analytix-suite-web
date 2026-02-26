@@ -842,7 +842,6 @@
   let aosFile     = null;
   let sessionId   = null;
   let sessionMeta = null;   // data from /load response
-  let zipBlob     = null;
 
   // ── API HEALTH CHECK ────────────────────────────────────────────────────────
   async function checkApi() {
@@ -1008,10 +1007,13 @@
   }
 
   // ── RUN ANALYSIS ─────────────────────────────────────────────────────────────
+  let currentJobId  = null;
+  let pollInterval  = null;
+  let seenLogCount  = 0;
+
   async function runAnalysis() {
     if (!sessionId) { alert('Please load files first.'); return; }
 
-    // Validate — need at least one analysis type
     const aoOn    = document.getElementById('typeAO').classList.contains('checked');
     const topicOn = document.getElementById('typeTopic').classList.contains('checked');
     if (!aoOn && !topicOn) {
@@ -1021,7 +1023,6 @@
       alert('AO analysis is enabled but no AOs file was loaded. Please load an AOs file or disable AO analysis.'); return;
     }
 
-    // Build payload
     const chartStates = {};
     document.querySelectorAll('.chart-item[data-key]').forEach(el => {
       chartStates[el.dataset.key] = el.classList.contains('checked');
@@ -1037,23 +1038,22 @@
       component_analysis: document.getElementById('togComponent').checked,
       font_adjust:      parseInt(document.getElementById('fontSpin').value) || 0,
       chart_padding:    parseFloat(document.getElementById('paddingSpin').value) || 0.3,
-      show_detailed_ao_bar:    chartStates['detailed_ao_bar']    ?? true,
-      show_detailed_ao_radar:  chartStates['detailed_ao_radar']  ?? true,
-      show_main_ao_bar:        chartStates['main_ao_bar']        ?? true,
+      show_detailed_ao_bar:      chartStates['detailed_ao_bar']      ?? true,
+      show_detailed_ao_radar:    chartStates['detailed_ao_radar']    ?? true,
+      show_main_ao_bar:          chartStates['main_ao_bar']          ?? true,
       show_detailed_topic_bar:   chartStates['detailed_topic_bar']   ?? true,
       show_detailed_topic_radar: chartStates['detailed_topic_radar'] ?? true,
     };
 
     // ── UI: start state ──
     document.getElementById('runBtn').disabled = true;
-    document.getElementById('emptyState').style.display    = 'none';
+    document.getElementById('emptyState').style.display = 'none';
     document.getElementById('downloadCard').classList.remove('show');
     document.getElementById('panel3Loading').classList.add('show');
     document.getElementById('panel3LoadingText').textContent = 'GENERATING…';
     document.getElementById('progressWrap').classList.add('show');
     document.getElementById('progressBar').style.width = '0%';
     document.getElementById('progressBar').classList.add('running');
-
     setStep(2, 'done');
     setStep(3, 'active');
     document.getElementById('badge3').textContent = 'RUNNING';
@@ -1061,89 +1061,39 @@
 
     // ── Run summary ──
     document.getElementById('runSummary').classList.add('show');
-    const grade = payload.grade_name || '—';
-    const exam  = payload.exam_name  || '—';
-    document.getElementById('summaryExam').textContent      = `${grade} · ${exam}`;
+    document.getElementById('summaryExam').textContent      = `${payload.grade_name || '—'} · ${payload.exam_name || '—'}`;
     document.getElementById('summaryStudents').textContent  = sessionMeta.n_students;
     document.getElementById('summaryQuestions').textContent = sessionMeta.n_questions;
     document.getElementById('summaryMarks').textContent     = sessionMeta.total_marks;
     document.getElementById('summaryAnalysis').textContent  =
       [aoOn && 'AO', topicOn && 'Topic'].filter(Boolean).join(' + ');
 
-    // ── Fake progress while waiting ──
     clearLog();
-    log('Analysis started…', 'info');
-    log(`Students: ${sessionMeta.n_students} · Questions: ${sessionMeta.n_questions}`, 'info');
-    if (aoOn)    log('→ AO-wise analysis enabled', 'ok');
-    if (topicOn) log('→ Topic-wise analysis enabled', 'ok');
-    if (payload.component_analysis && sessionMeta.has_component_format)
-      log('→ Component format detected — will analyse per paper', 'ok');
-
-    let progress = 5;
-    const messages = [
-      [15,  'Loading and parsing data…'],
-      [30,  'Computing AO scores…'],
-      [45,  'Generating per-student charts…'],
-      [60,  'Generating class boxplots…'],
-      [72,  'Generating heatmaps and violin plots…'],
-      [82,  'Generating class summary and blueprint…'],
-      [90,  'Running component analysis…'],
-      [96,  'Packaging outputs…'],
-    ];
-    let msgIdx = 0;
-    const ticker = setInterval(() => {
-      if (msgIdx < messages.length) {
-        const [target, msg] = messages[msgIdx];
-        if (progress < target) {
-          progress = Math.min(progress + 2, target);
-          setProgress(progress);
-        } else {
-          log(msg, 'info');
-          msgIdx++;
-        }
-      }
-    }, 600);
+    seenLogCount = 0;
+    log('Sending job to server…', 'info');
 
     try {
-      const r = await fetch(`${API_BASE}/api/module1/analyse`, {
+      // ── Step 1: POST to start the job — returns immediately with job_id ──
+      const startRes = await fetch(`${API_BASE}/api/module1/analyse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      const startData = await startRes.json();
+      if (!startRes.ok) throw new Error(startData.error || 'Failed to start job');
 
-      clearInterval(ticker);
+      currentJobId = startData.job_id;
+      log('Job started — analysing in background…', 'info');
+      log(`Students: ${sessionMeta.n_students} · Questions: ${sessionMeta.n_questions}`, 'info');
+      if (aoOn)    log('→ AO-wise analysis enabled', 'ok');
+      if (topicOn) log('→ Topic-wise analysis enabled', 'ok');
+      if (payload.component_analysis && sessionMeta.has_component_format)
+        log('→ Component format detected — will analyse per paper', 'ok');
 
-      if (!r.ok) {
-        const err = await r.json().catch(() => ({ error: r.statusText }));
-        throw new Error(err.error || 'Analysis failed');
-      }
-
-      zipBlob = await r.blob();
-
-      // ── Success ──
-      setProgress(100);
-      setTimeout(() => {
-        document.getElementById('progressBar').classList.remove('running');
-      }, 500);
-
-      log('All charts generated successfully.', 'ok');
-      log('ZIP ready for download.', 'ok');
-
-      document.getElementById('panel3Loading').classList.remove('show');
-      document.getElementById('downloadCard').classList.add('show');
-
-      // Count output files (rough estimate)
-      const n = sessionMeta.n_students;
-      const types = [aoOn && 'AO', topicOn && 'Topic'].filter(Boolean).join(' + ');
-      document.getElementById('downloadSub').textContent =
-        `${n} student charts · ${types} class charts · blueprints`;
-
-      document.getElementById('badge3').textContent = 'DONE';
-      document.getElementById('badge3').className   = 'panel-badge badge-done';
-      setStep(3, 'done');
+      // ── Step 2: Poll /status every 3 seconds ──
+      pollInterval = setInterval(() => pollJobStatus(payload), 3000);
 
     } catch (err) {
-      clearInterval(ticker);
       document.getElementById('panel3Loading').classList.remove('show');
       document.getElementById('progressBar').classList.remove('running');
       log(`Error: ${err.message}`, 'err');
@@ -1155,30 +1105,89 @@
     }
   }
 
+  // ── POLL JOB STATUS ───────────────────────────────────────────────────────────
+  async function pollJobStatus(payload) {
+    if (!currentJobId) return;
+    try {
+      const r = await fetch(`${API_BASE}/api/module1/status/${currentJobId}`);
+      if (!r.ok) throw new Error('Status check failed');
+      const data = await r.json();
+
+      // ── Append any new log lines ──
+      const newLines = data.log.slice(seenLogCount);
+      newLines.forEach(msg => log(msg, 'info'));
+      seenLogCount = data.log.length;
+
+      // ── Update progress bar ──
+      setProgress(data.progress);
+
+      if (data.status === 'done') {
+        clearInterval(pollInterval);
+        pollInterval = null;
+        setProgress(100);
+        setTimeout(() => document.getElementById('progressBar').classList.remove('running'), 500);
+        log('All charts generated successfully.', 'ok');
+        log('ZIP ready for download.', 'ok');
+        document.getElementById('panel3Loading').classList.remove('show');
+        document.getElementById('downloadCard').classList.add('show');
+        const aoOn    = payload.ao_analysis;
+        const topicOn = payload.topic_analysis;
+        const types   = [aoOn && 'AO', topicOn && 'Topic'].filter(Boolean).join(' + ');
+        document.getElementById('downloadSub').textContent =
+          `${sessionMeta.n_students} student charts · ${types} class charts · blueprints`;
+        document.getElementById('badge3').textContent = 'DONE';
+        document.getElementById('badge3').className   = 'panel-badge badge-done';
+        setStep(3, 'done');
+        document.getElementById('runBtn').disabled = false;
+
+      } else if (data.status === 'error') {
+        clearInterval(pollInterval);
+        pollInterval = null;
+        document.getElementById('panel3Loading').classList.remove('show');
+        document.getElementById('progressBar').classList.remove('running');
+        log(`Error: ${data.error}`, 'err');
+        document.getElementById('badge3').textContent = 'ERROR';
+        document.getElementById('badge3').className   = 'panel-badge badge-waiting';
+        setStep(3, '');
+        document.getElementById('runBtn').disabled = false;
+      }
+
+    } catch (err) {
+      // Network hiccup — don't stop polling, just skip this tick
+      console.warn('Poll error:', err);
+    }
+  }
+
   // ── DOWNLOAD ─────────────────────────────────────────────────────────────────
-  function triggerDownload() {
-    if (!zipBlob) return;
+  async function triggerDownload() {
+    if (!currentJobId) return;
     const grade = document.getElementById('gradeInput').value.trim() || 'Analysis';
     const exam  = document.getElementById('examInput').value.trim()  || '';
     const name  = `Analytix_${grade}_${exam}.zip`.replace(/\s+/g, '_');
-    const url = URL.createObjectURL(zipBlob);
-    const a = document.createElement('a');
+
+    const r    = await fetch(`${API_BASE}/api/module1/download/${currentJobId}`);
+    const blob = await r.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
     a.href = url; a.download = name; a.click();
     URL.revokeObjectURL(url);
+    currentJobId = null;
   }
 
   function runAgain() {
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    currentJobId = null;
+    seenLogCount = 0;
     document.getElementById('downloadCard').classList.remove('show');
     document.getElementById('emptyState').style.display = '';
     document.getElementById('progressWrap').classList.remove('show');
-    document.getElementById('progressBar').style.width  = '0%';
+    document.getElementById('progressBar').style.width = '0%';
     clearLog();
     log('— Waiting for analysis to start —', 'info');
     setStep(3, '');
     setStep(2, 'active');
     document.getElementById('badge3').textContent = 'WAITING';
     document.getElementById('badge3').className   = 'panel-badge badge-waiting';
-    zipBlob = null;
   }
 
   // ── ANALYSIS TYPE TOGGLES ────────────────────────────────────────────────────
