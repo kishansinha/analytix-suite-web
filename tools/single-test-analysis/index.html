@@ -780,6 +780,12 @@
           <div class="progress-bar running" id="progressBar"></div>
         </div>
 
+        <!-- Inline status bar — visible during analysis, above log -->
+        <div id="panel3StatusBar" style="display:none; align-items:center; gap:10px; padding:6px 10px; background:rgba(20,184,166,0.08); border:1px solid rgba(20,184,166,0.25); border-radius:6px; margin-bottom:6px;">
+          <div class="spinner"></div>
+          <div class="loading-text" id="panel3LoadingText" style="font-size:0.72rem;">GENERATING…</div>
+        </div>
+
         <!-- Log box -->
         <div class="log-box" id="logBox">
           <span class="log-line log-info">— Waiting for analysis to start —</span>
@@ -804,10 +810,8 @@
         </div>
 
       </div>
-      <div class="panel-loading" id="panel3Loading">
-        <div class="spinner"></div>
-        <div class="loading-text" id="panel3LoadingText">GENERATING…</div>
-      </div>
+      <!-- panel3Loading kept for Panel 1 pattern compatibility but not used for Panel 3 -->
+      <div id="panel3Loading" style="display:none;"></div>
     </div>
 
   </div><!-- /workspace -->
@@ -1049,7 +1053,7 @@
     document.getElementById('runBtn').disabled = true;
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('downloadCard').classList.remove('show');
-    document.getElementById('panel3Loading').classList.add('show');
+    document.getElementById('panel3StatusBar').style.display = 'flex';
     document.getElementById('panel3LoadingText').textContent = 'GENERATING…';
     document.getElementById('progressWrap').classList.add('show');
     document.getElementById('progressBar').style.width = '0%';
@@ -1094,7 +1098,7 @@
       pollInterval = setInterval(() => pollJobStatus(payload), 3000);
 
     } catch (err) {
-      document.getElementById('panel3Loading').classList.remove('show');
+      document.getElementById('panel3StatusBar').style.display = 'none';
       document.getElementById('progressBar').classList.remove('running');
       log(`Error: ${err.message}`, 'err');
       document.getElementById('badge3').textContent = 'ERROR';
@@ -1128,7 +1132,7 @@
         setTimeout(() => document.getElementById('progressBar').classList.remove('running'), 500);
         log('All charts generated successfully.', 'ok');
         log('ZIP ready for download.', 'ok');
-        document.getElementById('panel3Loading').classList.remove('show');
+        document.getElementById('panel3StatusBar').style.display = 'none';
         document.getElementById('downloadCard').classList.add('show');
         const aoOn    = payload.ao_analysis;
         const topicOn = payload.topic_analysis;
@@ -1143,7 +1147,7 @@
       } else if (data.status === 'error') {
         clearInterval(pollInterval);
         pollInterval = null;
-        document.getElementById('panel3Loading').classList.remove('show');
+        document.getElementById('panel3StatusBar').style.display = 'none';
         document.getElementById('progressBar').classList.remove('running');
         log(`Error: ${data.error}`, 'err');
         document.getElementById('badge3').textContent = 'ERROR';
