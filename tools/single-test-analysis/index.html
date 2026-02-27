@@ -683,6 +683,21 @@
             </label>
           </div>
 
+          <!-- Component selector — shown only when components detected + toggle on -->
+          <div id="componentSelector" style="display:none; margin-top:8px; padding:10px 12px;
+               background:#f8faff; border:1px solid #d0dff7; border-radius:8px;">
+            <div style="font-size:11px; font-weight:600; color:#555; margin-bottom:8px;">
+              SELECT COMPONENTS TO ANALYSE
+            </div>
+            <div id="componentCheckboxes" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+            <div style="margin-top:8px; display:flex; gap:8px;">
+              <span onclick="setAllComponents(true)"
+                    style="font-size:11px; color:#4A90E2; cursor:pointer; text-decoration:underline;">Select all</span>
+              <span onclick="setAllComponents(false)"
+                    style="font-size:11px; color:#4A90E2; cursor:pointer; text-decoration:underline;">Deselect all</span>
+            </div>
+          </div>
+
         </div>
 
         <!-- Chart types -->
@@ -982,6 +997,33 @@
         </div>
       `;
 
+      // ── Populate component selector if components detected ──
+      const compSelector   = document.getElementById('componentSelector');
+      const compCheckboxes = document.getElementById('componentCheckboxes');
+      const togComponent   = document.getElementById('togComponent');
+      compCheckboxes.innerHTML = '';
+
+      if (data.has_component_format && data.component_names && data.component_names.length > 0) {
+        data.component_names.forEach(c => {
+          const id = `comp_${c.key}`;
+          const item = document.createElement('label');
+          item.style.cssText = 'display:flex; align-items:center; gap:5px; font-size:12px; ' +
+                               'background:white; border:1px solid #c8d8f0; border-radius:6px; ' +
+                               'padding:4px 10px; cursor:pointer; user-select:none;';
+          item.innerHTML = `<input type="checkbox" id="${id}" value="${c.key}" checked
+                             style="accent-color:#4A90E2;"> ${c.label}`;
+          compCheckboxes.appendChild(item);
+        });
+        compSelector.style.display = togComponent.checked ? 'block' : 'none';
+      }
+
+      // Show/hide selector when toggle changes
+      togComponent.addEventListener('change', () => {
+        if (data.has_component_format && data.component_names && data.component_names.length > 0) {
+          compSelector.style.display = togComponent.checked ? 'block' : 'none';
+        }
+      });
+
       // ── Adjust analysis type defaults based on what's available ──
       if (!data.has_topics) disableType('topic');
       if (!data.has_aos || !data.has_aos_file) updateAoNotice();
@@ -1040,6 +1082,11 @@
       topic_analysis:   topicOn,
       show_class_avg:   document.getElementById('togClassAvg').checked,
       component_analysis: document.getElementById('togComponent').checked,
+      selected_components: (() => {
+        const boxes = document.querySelectorAll('#componentCheckboxes input[type="checkbox"]');
+        if (!boxes.length) return null;
+        return Array.from(boxes).filter(cb => cb.checked).map(cb => cb.value);
+      })(),
       font_adjust:      parseInt(document.getElementById('fontSpin').value) || 0,
       chart_padding:    parseFloat(document.getElementById('paddingSpin').value) || 0.3,
       show_detailed_ao_bar:      chartStates['detailed_ao_bar']      ?? true,
@@ -1215,6 +1262,11 @@
   }
 
   // ── CHART TOGGLE ─────────────────────────────────────────────────────────────
+  function setAllComponents(checked) {
+    document.querySelectorAll('#componentCheckboxes input[type="checkbox"]')
+      .forEach(cb => cb.checked = checked);
+  }
+
   function toggleChart(el) {
     el.classList.toggle('checked');
   }
