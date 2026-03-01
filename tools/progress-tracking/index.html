@@ -34,85 +34,34 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: 'IBM Plex Sans', sans-serif;
-    }
+    html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', sans-serif; }
 
     body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image:
-        radial-gradient(circle at 20% 80%, rgba(15,118,110,0.04) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(15,118,110,0.03) 0%, transparent 50%);
+      content: ''; position: fixed; inset: 0;
+      background-image: radial-gradient(circle at 20% 80%, rgba(15,118,110,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(15,118,110,0.03) 0%, transparent 50%);
       pointer-events: none; z-index: 0;
     }
 
-    .app {
-      position: relative; z-index: 1;
-      display: flex; flex-direction: column; height: 100vh;
-    }
+    .app { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100vh; }
 
     /* ── TOPBAR ── */
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px; height: 50px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface); flex-shrink: 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      animation: slideDown 0.4s ease both;
-    }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 50px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); animation: slideDown 0.4s ease both; }
     .topbar-left { display: flex; align-items: center; gap: 14px; }
-    .back-btn {
-      display: flex; align-items: center; gap: 5px;
-      color: var(--ink-muted); text-decoration: none;
-      font-size: 0.8rem; font-family: 'IBM Plex Mono', monospace;
-      transition: color 0.2s;
-    }
+    .back-btn { display: flex; align-items: center; gap: 5px; color: var(--ink-muted); text-decoration: none; font-size: 0.8rem; font-family: 'IBM Plex Mono', monospace; transition: color 0.2s; }
     .back-btn:hover { color: var(--teal); }
     .topbar-divider { width: 1px; height: 18px; background: var(--border); }
-    .module-id {
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
-      color: var(--teal); background: var(--teal-dim);
-      border: 1px solid var(--teal-border); padding: 2px 8px;
-      border-radius: 3px; letter-spacing: 0.08em; font-weight: 500;
-    }
-    .module-title {
-      font-family: 'Lora', serif; font-size: 0.95rem;
-      color: var(--ink); font-weight: 600;
-    }
+    .module-id { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--teal); background: var(--teal-dim); border: 1px solid var(--teal-border); padding: 2px 8px; border-radius: 3px; letter-spacing: 0.08em; font-weight: 500; }
+    .module-title { font-family: 'Lora', serif; font-size: 0.95rem; color: var(--ink); font-weight: 600; }
     .topbar-right { display: flex; align-items: center; gap: 8px; }
-    .status-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--green); box-shadow: 0 0 5px rgba(21,128,61,0.5);
-      animation: pulse 2.5s ease infinite;
-    }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 5px rgba(21,128,61,0.5); animation: pulse 2.5s ease infinite; }
     .status-dot.checking { background: var(--amber); box-shadow: 0 0 5px rgba(180,83,9,0.5); }
     .status-dot.offline  { background: var(--red);   box-shadow: 0 0 5px rgba(220,38,38,0.5); animation: none; }
-    .status-label {
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
-      color: var(--ink-muted); letter-spacing: 0.05em;
-    }
+    .status-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--ink-muted); letter-spacing: 0.05em; }
 
     /* ── STEPS ── */
-    .steps-bar {
-      display: flex; align-items: center; justify-content: center;
-      padding: 9px 24px; border-bottom: 1px solid var(--border);
-      background: var(--surface); flex-shrink: 0;
-      animation: slideDown 0.4s 0.05s ease both;
-    }
+    .steps-bar { display: flex; align-items: center; justify-content: center; padding: 9px 24px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; animation: slideDown 0.4s 0.05s ease both; }
     .step-item { display: flex; align-items: center; gap: 7px; }
-    .step-num {
-      width: 22px; height: 22px; border-radius: 50%;
-      border: 1.5px solid var(--border-dark);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
-      color: var(--ink-dim); transition: all 0.3s; font-weight: 500;
-    }
+    .step-num { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border-dark); display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-dim); transition: all 0.3s; font-weight: 500; }
     .step-label { font-size: 0.72rem; color: var(--ink-dim); font-weight: 500; transition: color 0.3s; }
     .step-connector { width: 48px; height: 1px; background: var(--border); margin: 0 10px; }
     .step-item.active .step-num   { border-color: var(--teal);  background: var(--teal-dim);    color: var(--teal); }
@@ -121,96 +70,43 @@
     .step-item.done   .step-label { color: var(--green); }
 
     /* ── WORKSPACE ── */
-    .workspace {
-      flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr;
-      overflow: hidden; animation: fadeIn 0.5s 0.1s ease both;
-    }
+    .workspace { flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; overflow: hidden; animation: fadeIn 0.5s 0.1s ease both; }
 
     /* ── PANEL ── */
-    .panel {
-      display: flex; flex-direction: column;
-      border-right: 1px solid var(--border);
-      overflow: hidden; position: relative;
-      background: var(--surface); transition: opacity 0.3s;
-    }
+    .panel { display: flex; flex-direction: column; border-right: 1px solid var(--border); overflow: hidden; position: relative; background: var(--surface); transition: opacity 0.3s; }
     .panel:last-child { border-right: none; }
     .panel.locked { opacity: 0.42; pointer-events: none; background: var(--bg); }
-
-    .panel-header {
-      display: flex; align-items: center; gap: 9px;
-      padding: 12px 18px 11px; border-bottom: 1px solid var(--border);
-      background: var(--surface2); flex-shrink: 0;
-    }
+    .panel-header { display: flex; align-items: center; gap: 9px; padding: 12px 18px 11px; border-bottom: 1px solid var(--border); background: var(--surface2); flex-shrink: 0; }
     .panel-icon  { font-size: 15px; flex-shrink: 0; }
-    .panel-label {
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
-      color: var(--ink-muted); letter-spacing: 0.08em;
-      text-transform: uppercase; flex: 1; font-weight: 500;
-    }
-    .panel-badge {
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
-      padding: 2px 7px; border-radius: 3px; letter-spacing: 0.06em; font-weight: 500;
-    }
+    .panel-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.08em; text-transform: uppercase; flex: 1; font-weight: 500; }
+    .panel-badge { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; padding: 2px 7px; border-radius: 3px; letter-spacing: 0.06em; font-weight: 500; }
     .badge-waiting { background: var(--surface2); border: 1px solid var(--border-dark); color: var(--ink-dim); }
     .badge-active  { background: var(--teal-dim);   border: 1px solid var(--teal-border); color: var(--teal); }
     .badge-done    { background: var(--green-light); border: 1px solid rgba(21,128,61,0.3); color: var(--green); }
-
-    .panel-body {
-      flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 18px;
-    }
+    .panel-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 18px; }
     .panel-body::-webkit-scrollbar { width: 4px; }
     .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
     /* ── SECTION LABELS ── */
-    .file-section-label {
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
-      color: var(--ink-muted); letter-spacing: 0.08em; text-transform: uppercase;
-      font-weight: 500; margin-bottom: 6px; margin-top: 14px;
-      display: flex; align-items: center; gap: 6px;
-    }
+    .file-section-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-muted); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; margin-bottom: 6px; margin-top: 14px; display: flex; align-items: center; gap: 6px; }
     .file-section-label:first-child { margin-top: 0; }
     .required-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
 
     /* ── TEST FILE ROWS ── */
     .test-file-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
-
-    .test-file-row {
-      background: var(--green-light);
-      border: 1px solid rgba(21,128,61,0.25);
-      border-radius: 7px; padding: 8px 10px;
-      display: flex; flex-direction: column; gap: 5px;
-      animation: fadeIn 0.2s ease both;
-    }
+    .test-file-row { background: var(--green-light); border: 1px solid rgba(21,128,61,0.25); border-radius: 7px; padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; animation: fadeIn 0.2s ease both; }
     .test-file-row-top { display: flex; align-items: center; gap: 8px; }
     .test-file-icon { font-size: 13px; flex-shrink: 0; }
-    .test-file-name {
-      font-size: 0.72rem; font-weight: 600; color: var(--green);
-      flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    .test-remove-btn {
-      background: none; border: none; color: var(--ink-dim); font-size: 0.7rem;
-      cursor: pointer; padding: 2px 5px; border-radius: 3px;
-      transition: color 0.2s; flex-shrink: 0; font-family: 'IBM Plex Sans', sans-serif;
-    }
+    .test-file-name { font-size: 0.72rem; font-weight: 600; color: var(--green); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .test-remove-btn { background: none; border: none; color: var(--ink-dim); font-size: 0.7rem; cursor: pointer; padding: 2px 5px; border-radius: 3px; transition: color 0.2s; flex-shrink: 0; font-family: 'IBM Plex Sans', sans-serif; }
     .test-remove-btn:hover { color: var(--red); }
     .test-file-row-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-    .meta-input {
-      width: 100%; padding: 5px 8px;
-      border: 1px solid var(--border); border-radius: 4px;
-      font-family: 'IBM Plex Sans', sans-serif; font-size: 0.72rem;
-      color: var(--ink); background: var(--surface);
-      transition: border-color 0.2s; outline: none;
-    }
+    .meta-input { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: 4px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.72rem; color: var(--ink); background: var(--surface); transition: border-color 0.2s; outline: none; }
     .meta-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-dim); }
     .meta-input::placeholder { color: var(--ink-dim); }
 
-    /* ── ADD FILE ZONE ── */
-    .upload-zone {
-      border: 1.5px dashed var(--border-dark); border-radius: 8px;
-      padding: 16px; text-align: center; cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      margin-bottom: 10px; position: relative; background: var(--bg);
-    }
+    /* ── UPLOAD ZONE ── */
+    .upload-zone { border: 1.5px dashed var(--border-dark); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; margin-bottom: 10px; position: relative; background: var(--bg); }
     .upload-zone:hover, .upload-zone.drag-over { border-color: var(--teal); background: var(--teal-dim); }
     .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
     .upload-zone.maxed { opacity: 0.4; pointer-events: none; }
@@ -220,135 +116,121 @@
 
     /* ── STAT PILLS ── */
     .stat-pills { display: flex; gap: 5px; flex-wrap: wrap; margin: 10px 0; }
-    .stat-pill {
-      background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2);
-      border-radius: 4px; padding: 3px 9px;
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: var(--blue);
-    }
+    .stat-pill { background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2); border-radius: 4px; padding: 3px 9px; font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: var(--blue); }
     .stat-pill strong { font-weight: 600; }
     .stat-pill.green { background: var(--green-light); border-color: rgba(21,128,61,0.2); color: var(--green); }
 
     /* ── BUTTONS ── */
-    .btn-primary {
-      width: 100%; background: var(--teal); color: var(--white); border: none;
-      padding: 10px 20px; border-radius: 6px;
-      font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; transition: background 0.2s, transform 0.15s, opacity 0.2s;
-    }
+    .btn-primary { width: 100%; background: var(--teal); color: var(--white); border: none; padding: 10px 20px; border-radius: 6px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s, opacity 0.2s; }
     .btn-primary:hover:not(:disabled) { background: #0D6B63; transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
     /* ── CONFIG SECTIONS ── */
     .config-section { margin-bottom: 16px; }
-    .config-section-title {
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
-      color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase;
-      margin-bottom: 9px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
-      font-weight: 500;
-    }
+    .config-section-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 9px; padding-bottom: 6px; border-bottom: 1px solid var(--border); font-weight: 500; }
 
     /* ── FIELD GROUPS ── */
     .field-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-    .field-label {
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
-      color: var(--ink-muted); letter-spacing: 0.07em; text-transform: uppercase; font-weight: 500;
-    }
-    .field-input {
-      width: 100%; padding: 7px 10px;
-      border: 1.5px solid var(--border); border-radius: 5px;
-      font-family: 'IBM Plex Sans', sans-serif; font-size: 0.8rem;
-      color: var(--ink); background: var(--surface);
-      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
-    }
+    .field-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--ink-muted); letter-spacing: 0.07em; text-transform: uppercase; font-weight: 500; }
+    .field-input { width: 100%; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 5px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.8rem; color: var(--ink); background: var(--surface); transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
     .field-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-dim); }
     .field-input::placeholder { color: var(--ink-dim); }
 
     /* ── TOGGLE ROW ── */
-    .toggle-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 6px 0; border-bottom: 1px solid var(--border);
-    }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
     .toggle-row:last-child { border-bottom: none; }
     .toggle-left { display: flex; flex-direction: column; gap: 2px; }
     .toggle-label { font-size: 0.78rem; color: var(--ink-mid); font-weight: 500; }
     .toggle-sub   { font-size: 0.68rem; color: var(--ink-dim); }
     .toggle-switch { position: relative; width: 32px; height: 17px; flex-shrink: 0; }
     .toggle-switch input { display: none; }
-    .toggle-track {
-      position: absolute; inset: 0; background: var(--border-dark);
-      border-radius: 9px; cursor: pointer; transition: background 0.2s;
-    }
+    .toggle-track { position: absolute; inset: 0; background: var(--border-dark); border-radius: 9px; cursor: pointer; transition: background 0.2s; }
     .toggle-switch input:checked + .toggle-track { background: var(--teal); }
-    .toggle-thumb {
-      position: absolute; top: 2px; left: 2px;
-      width: 13px; height: 13px; background: var(--white); border-radius: 50%;
-      transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
+    .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; background: var(--white); border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
     .toggle-switch input:checked + .toggle-track .toggle-thumb { transform: translateX(15px); }
 
     /* ── FOCUSED SUB-PANEL ── */
-    .focused-sub {
-      display: none; margin-top: 6px; padding: 10px 11px;
-      background: var(--teal-dim); border: 1px solid var(--teal-border);
-      border-radius: 6px;
-    }
+    .focused-sub { display: none; margin-top: 8px; padding: 11px 12px; background: var(--teal-dim); border: 1px solid var(--teal-border); border-radius: 6px; }
     .focused-sub.show { display: block; }
-    .focused-sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .focused-hint {
-      font-size: 0.6rem; color: var(--ink-dim); margin-top: 3px;
-      font-family: 'IBM Plex Mono', monospace;
+
+    /* ── MULTI-SELECT DROPDOWNS ── */
+    .multi-select-wrap { position: relative; margin-bottom: 10px; }
+    .multi-select-trigger {
+      width: 100%; padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 5px;
+      background: var(--surface); cursor: pointer; display: flex; align-items: center;
+      justify-content: space-between; gap: 6px; min-height: 33px;
+      transition: border-color 0.2s, box-shadow 0.2s; user-select: none;
     }
+    .multi-select-trigger:hover { border-color: var(--teal); }
+    .multi-select-trigger.open { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-dim); }
+    .multi-select-trigger.disabled { opacity: 0.45; pointer-events: none; background: var(--surface2); }
+    .multi-select-tags { display: flex; flex-wrap: wrap; gap: 3px; flex: 1; }
+    .multi-select-placeholder { font-size: 0.75rem; color: var(--ink-dim); }
+    .ms-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: var(--teal-dim); border: 1px solid var(--teal-border);
+      color: var(--teal); font-size: 0.65rem; font-family: 'IBM Plex Mono', monospace;
+      padding: 1px 6px; border-radius: 3px; font-weight: 500;
+    }
+    .ms-tag-x { cursor: pointer; opacity: 0.7; font-size: 0.75rem; line-height: 1; }
+    .ms-tag-x:hover { opacity: 1; }
+    .multi-select-arrow { font-size: 0.7rem; color: var(--ink-dim); flex-shrink: 0; transition: transform 0.2s; }
+    .multi-select-trigger.open .multi-select-arrow { transform: rotate(180deg); }
+
+    .multi-select-dropdown {
+      display: none; position: absolute; top: calc(100% + 3px); left: 0; right: 0;
+      background: var(--surface); border: 1.5px solid var(--teal-border);
+      border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      z-index: 100; max-height: 180px; overflow-y: auto;
+    }
+    .multi-select-dropdown.open { display: block; }
+    .multi-select-dropdown::-webkit-scrollbar { width: 4px; }
+    .multi-select-dropdown::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .ms-search {
+      padding: 7px 10px; border-bottom: 1px solid var(--border);
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 0.75rem;
+      color: var(--ink); outline: none; width: 100%; border-radius: 4px 4px 0 0;
+      background: var(--surface2);
+    }
+    .ms-option {
+      padding: 7px 10px; font-size: 0.77rem; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      transition: background 0.15s; color: var(--ink-mid);
+    }
+    .ms-option:hover { background: var(--teal-dim); color: var(--teal); }
+    .ms-option.selected { background: var(--teal-dim); color: var(--teal); font-weight: 500; }
+    .ms-checkbox {
+      width: 13px; height: 13px; border: 1.5px solid var(--border-dark);
+      border-radius: 3px; flex-shrink: 0; display: flex; align-items: center;
+      justify-content: center; font-size: 0.6rem; transition: all 0.15s;
+    }
+    .ms-option.selected .ms-checkbox { background: var(--teal); border-color: var(--teal); color: white; }
+    .ms-empty { padding: 10px; font-size: 0.72rem; color: var(--ink-dim); text-align: center; }
+
+    /* ── NOTICE ── */
+    .notice { display: flex; align-items: flex-start; gap: 8px; background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2); border-radius: 6px; padding: 9px 11px; margin-bottom: 10px; font-size: 0.72rem; color: var(--amber); line-height: 1.45; }
+    .notice-icon { flex-shrink: 0; font-size: 13px; }
 
     /* ── SPINNER CONTROLS ── */
-    .spin-row {
-      display: flex; align-items: center; justify-content: space-between; padding: 4px 0;
-    }
+    .spin-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
     .spin-label { font-size: 0.77rem; color: var(--ink-mid); }
     .spin-control { display: flex; align-items: center; }
-    .spin-btn {
-      width: 22px; height: 22px; border: 1px solid var(--border);
-      background: var(--surface2); color: var(--ink-mid); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; transition: background 0.15s; user-select: none;
-    }
+    .spin-btn { width: 22px; height: 22px; border: 1px solid var(--border); background: var(--surface2); color: var(--ink-mid); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; transition: background 0.15s; user-select: none; }
     .spin-btn:first-child { border-radius: 4px 0 0 4px; }
     .spin-btn:last-child  { border-radius: 0 4px 4px 0; }
     .spin-btn:hover { background: var(--teal-dim); color: var(--teal); }
-    .spin-val {
-      width: 36px; text-align: center; padding: 2px 0;
-      border: 1px solid var(--border); border-left: none; border-right: none;
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid);
-      background: var(--surface); outline: none;
-    }
-
-    /* ── NOTICE ── */
-    .notice {
-      display: flex; align-items: flex-start; gap: 8px;
-      background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2);
-      border-radius: 6px; padding: 9px 11px; margin-bottom: 10px;
-      font-size: 0.72rem; color: var(--amber); line-height: 1.45;
-    }
-    .notice-icon { flex-shrink: 0; font-size: 13px; }
+    .spin-val { width: 36px; text-align: center; padding: 2px 0; border: 1px solid var(--border); border-left: none; border-right: none; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid); background: var(--surface); outline: none; }
 
     /* ── PANEL 3 OUTPUT ── */
-    .run-summary {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 7px; padding: 12px 14px; margin-bottom: 14px; display: none;
-    }
+    .run-summary { background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 12px 14px; margin-bottom: 14px; display: none; }
     .run-summary.show { display: block; }
-    .run-summary-row {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;
-    }
+    .run-summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
     .run-summary-row:last-child { margin-bottom: 0; }
     .run-summary-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); }
     .run-summary-val   { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--teal); font-weight: 500; }
 
-    .log-box {
-      background: #1C1917; border: 1px solid var(--border-dark); border-radius: 6px;
-      padding: 11px 13px; font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem; color: #A8A29E; line-height: 1.9;
-      min-height: 70px; max-height: 180px; overflow-y: auto; margin-bottom: 14px;
-    }
+    .log-box { background: #1C1917; border: 1px solid var(--border-dark); border-radius: 6px; padding: 11px 13px; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #A8A29E; line-height: 1.9; min-height: 70px; max-height: 180px; overflow-y: auto; margin-bottom: 14px; }
     .log-box::-webkit-scrollbar { width: 3px; }
     .log-box::-webkit-scrollbar-thumb { background: #44403C; }
     .log-line { display: block; }
@@ -357,71 +239,33 @@
     .log-info { color: #93C5FD; }
     .log-warn { color: #FDE68A; }
 
-    .progress-wrap {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 4px; height: 5px; margin-bottom: 14px;
-      overflow: hidden; display: none;
-    }
+    .progress-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; height: 5px; margin-bottom: 14px; overflow: hidden; display: none; }
     .progress-wrap.show { display: block; }
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--teal), #14B8A6);
-      border-radius: 4px; width: 0%; transition: width 0.4s ease;
-    }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, var(--teal), #14B8A6); border-radius: 4px; width: 0%; transition: width 0.4s ease; }
     @keyframes progressPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
     .progress-bar.running { animation: progressPulse 1.2s ease infinite; }
 
-    .download-card {
-      background: var(--green-light); border: 1px solid rgba(21,128,61,0.3);
-      border-radius: 8px; padding: 20px; text-align: center;
-      display: none; animation: fadeIn 0.35s ease both;
-    }
+    .download-card { background: var(--green-light); border: 1px solid rgba(21,128,61,0.3); border-radius: 8px; padding: 20px; text-align: center; display: none; animation: fadeIn 0.35s ease both; }
     .download-card.show { display: block; }
     .download-icon  { font-size: 32px; margin-bottom: 10px; }
     .download-title { font-family: 'Lora', serif; font-size: 1rem; color: var(--green); margin-bottom: 3px; font-weight: 600; }
     .download-sub   { font-size: 0.75rem; color: var(--ink-muted); margin-bottom: 14px; }
-    .btn-download {
-      display: inline-flex; align-items: center; gap: 7px;
-      background: var(--green); color: var(--white); border: none;
-      padding: 10px 22px; border-radius: 6px;
-      font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; transition: background 0.2s, transform 0.15s; margin-bottom: 8px;
-    }
+    .btn-download { display: inline-flex; align-items: center; gap: 7px; background: var(--green); color: var(--white); border: none; padding: 10px 22px; border-radius: 6px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; margin-bottom: 8px; }
     .btn-download:hover { background: #166534; transform: translateY(-1px); }
-    .btn-run-again {
-      display: block; margin: 6px auto 0;
-      background: none; border: none; color: var(--ink-muted);
-      font-size: 0.77rem; font-family: 'IBM Plex Sans', sans-serif;
-      cursor: pointer; transition: color 0.2s;
-    }
+    .btn-run-again { display: block; margin: 6px auto 0; background: none; border: none; color: var(--ink-muted); font-size: 0.77rem; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; transition: color 0.2s; }
     .btn-run-again:hover { color: var(--teal); }
 
-    .empty-state {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100%; gap: 8px; color: var(--ink-dim); text-align: center; padding: 20px;
-    }
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 8px; color: var(--ink-dim); text-align: center; padding: 20px; }
     .empty-icon { font-size: 26px; opacity: 0.5; }
     .empty-text { font-size: 0.78rem; line-height: 1.5; opacity: 0.7; }
 
     /* ── BOTTOM BAR ── */
-    .bottombar {
-      height: 30px; border-top: 1px solid var(--border); background: var(--surface2);
-      display: flex; align-items: center; padding: 0 18px; gap: 18px; flex-shrink: 0;
-    }
-    .bottom-stat {
-      display: flex; align-items: center; gap: 5px;
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-dim);
-    }
+    .bottombar { height: 30px; border-top: 1px solid var(--border); background: var(--surface2); display: flex; align-items: center; padding: 0 18px; gap: 18px; flex-shrink: 0; }
+    .bottom-stat { display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-dim); }
     .bottom-stat-dot { width: 5px; height: 5px; border-radius: 50%; }
 
     /* ── PANEL LOADING ── */
-    .panel-loading {
-      position: absolute; inset: 46px 0 0 0;
-      background: rgba(245,244,240,0.9); display: none;
-      align-items: center; justify-content: center;
-      z-index: 10; backdrop-filter: blur(2px);
-      flex-direction: column; gap: 10px;
-    }
+    .panel-loading { position: absolute; inset: 46px 0 0 0; background: rgba(245,244,240,0.9); display: none; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(2px); flex-direction: column; gap: 10px; }
     .panel-loading.show { display: flex; }
     .loading-text { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--teal); letter-spacing: 0.05em; }
     .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; }
@@ -451,20 +295,11 @@
 
   <!-- STEPS -->
   <div class="steps-bar">
-    <div class="step-item active" id="step1item">
-      <div class="step-num">1</div>
-      <div class="step-label">Load Tests</div>
-    </div>
+    <div class="step-item active" id="step1item"><div class="step-num">1</div><div class="step-label">Load Tests</div></div>
     <div class="step-connector"></div>
-    <div class="step-item" id="step2item">
-      <div class="step-num">2</div>
-      <div class="step-label">Configure</div>
-    </div>
+    <div class="step-item" id="step2item"><div class="step-num">2</div><div class="step-label">Configure</div></div>
     <div class="step-connector"></div>
-    <div class="step-item" id="step3item">
-      <div class="step-num">3</div>
-      <div class="step-label">Run &amp; Download</div>
-    </div>
+    <div class="step-item" id="step3item"><div class="step-num">3</div><div class="step-label">Run &amp; Download</div></div>
   </div>
 
   <!-- WORKSPACE -->
@@ -478,33 +313,20 @@
         <span class="panel-badge badge-active" id="badge1">READY</span>
       </div>
       <div class="panel-body">
-
-        <div class="file-section-label">
-          <span class="required-dot"></span>
-          Test Files (2–5 required)
-        </div>
-
+        <div class="file-section-label"><span class="required-dot"></span>Test Files (2–5 required)</div>
         <div class="test-file-list" id="testFileList"></div>
-
         <div class="upload-zone" id="addZone">
           <input type="file" id="fileInput" accept=".xlsx" multiple />
           <div class="upload-icon">📊</div>
           <div class="upload-title" id="addZoneTitle">Drop test files here or click to browse</div>
           <div class="upload-sub">.xlsx · chronological order · up to 5 tests</div>
         </div>
-
         <div class="notice" id="minNotice" style="display:none;">
           <span class="notice-icon">⚠️</span>
           At least 2 test files are needed. Fill in a date and label for each before loading.
         </div>
-
         <div class="stat-pills" id="statPills" style="display:none;"></div>
-
-        <button class="btn-primary" id="loadBtn" onclick="loadTests()" disabled
-                style="margin-top:14px;">
-          Load tests →
-        </button>
-
+        <button class="btn-primary" id="loadBtn" onclick="loadTests()" disabled style="margin-top:14px;">Load tests →</button>
       </div>
       <div class="panel-loading" id="panel1Loading">
         <div class="spinner"></div>
@@ -543,35 +365,55 @@
             </label>
           </div>
 
-          <!-- Focused tracking — toggle + collapsible sub-panel -->
-          <div style="border-bottom: 1px solid var(--border); padding-bottom: 6px;">
-            <div class="toggle-row" style="border-bottom: none;">
+          <!-- Focused tracking -->
+          <div style="padding-bottom:6px; border-bottom:1px solid var(--border);">
+            <div class="toggle-row" style="border-bottom:none;">
               <div class="toggle-left">
                 <div class="toggle-label">Focused AO / Topic tracking</div>
-                <div class="toggle-sub">Deep-dive charts for a specific AO or topic</div>
+                <div class="toggle-sub">Deep-dive charts for specific AOs or topics</div>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" id="togFocused" onchange="toggleFocused()">
                 <div class="toggle-track"><div class="toggle-thumb"></div></div>
               </label>
             </div>
+
             <div class="focused-sub" id="focusedSub">
-              <div class="focused-sub-grid">
-                <div>
-                  <div class="field-label" style="margin-bottom:4px;">AO Code</div>
-                  <input type="text" class="field-input" id="focusedAO"
-                         placeholder="e.g. AO1a"
-                         style="font-size:0.75rem; padding:5px 8px;" />
-                  <div class="focused-hint">Leave blank to skip</div>
-                </div>
-                <div>
-                  <div class="field-label" style="margin-bottom:4px;">Topic Name</div>
-                  <input type="text" class="field-input" id="focusedTopic"
-                         placeholder="e.g. Mechanics"
-                         style="font-size:0.75rem; padding:5px 8px;" />
-                  <div class="focused-hint">Must match file exactly</div>
+
+              <!-- AO multi-select -->
+              <div class="field-group" style="margin-bottom:10px;">
+                <div class="field-label" style="margin-bottom:4px;">Assessment Objectives</div>
+                <div class="multi-select-wrap" id="aoWrap">
+                  <div class="multi-select-trigger disabled" id="aoTrigger" onclick="toggleDropdown('ao')">
+                    <div class="multi-select-tags" id="aoTags">
+                      <span class="multi-select-placeholder">Load tests first…</span>
+                    </div>
+                    <span class="multi-select-arrow">▾</span>
+                  </div>
+                  <div class="multi-select-dropdown" id="aoDropdown">
+                    <input class="ms-search" type="text" placeholder="Search AOs…" oninput="filterOptions('ao', this.value)" />
+                    <div id="aoOptions"></div>
+                  </div>
                 </div>
               </div>
+
+              <!-- Topic multi-select -->
+              <div class="field-group" style="margin-bottom:0;">
+                <div class="field-label" style="margin-bottom:4px;">Topics</div>
+                <div class="multi-select-wrap" id="topicWrap">
+                  <div class="multi-select-trigger disabled" id="topicTrigger" onclick="toggleDropdown('topic')">
+                    <div class="multi-select-tags" id="topicTags">
+                      <span class="multi-select-placeholder">Load tests first…</span>
+                    </div>
+                    <span class="multi-select-arrow">▾</span>
+                  </div>
+                  <div class="multi-select-dropdown" id="topicDropdown">
+                    <input class="ms-search" type="text" placeholder="Search topics…" oninput="filterOptions('topic', this.value)" />
+                    <div id="topicOptions"></div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -604,39 +446,18 @@
         <span class="panel-badge badge-waiting" id="badge3">WAITING</span>
       </div>
       <div class="panel-body">
-
         <div class="run-summary" id="runSummary">
-          <div class="run-summary-row">
-            <span class="run-summary-label">Class</span>
-            <span class="run-summary-val" id="summaryClass">—</span>
-          </div>
-          <div class="run-summary-row">
-            <span class="run-summary-label">Tests Loaded</span>
-            <span class="run-summary-val" id="summaryTests">—</span>
-          </div>
-          <div class="run-summary-row">
-            <span class="run-summary-label">Students</span>
-            <span class="run-summary-val" id="summaryStudents">—</span>
-          </div>
-          <div class="run-summary-row">
-            <span class="run-summary-label">Individual Charts</span>
-            <span class="run-summary-val" id="summaryIndividual">—</span>
-          </div>
+          <div class="run-summary-row"><span class="run-summary-label">Class</span><span class="run-summary-val" id="summaryClass">—</span></div>
+          <div class="run-summary-row"><span class="run-summary-label">Tests Loaded</span><span class="run-summary-val" id="summaryTests">—</span></div>
+          <div class="run-summary-row"><span class="run-summary-label">Students</span><span class="run-summary-val" id="summaryStudents">—</span></div>
+          <div class="run-summary-row"><span class="run-summary-label">Individual Charts</span><span class="run-summary-val" id="summaryIndividual">—</span></div>
         </div>
-
-        <div class="progress-wrap" id="progressWrap">
-          <div class="progress-bar running" id="progressBar"></div>
-        </div>
-
+        <div class="progress-wrap" id="progressWrap"><div class="progress-bar running" id="progressBar"></div></div>
         <div id="panel3StatusBar" style="display:none; align-items:center; gap:10px; padding:6px 10px; background:rgba(20,184,166,0.08); border:1px solid rgba(20,184,166,0.25); border-radius:6px; margin-bottom:6px;">
           <div class="spinner"></div>
-          <div class="loading-text" id="panel3LoadingText" style="font-size:0.72rem;">GENERATING…</div>
+          <div class="loading-text" style="font-size:0.72rem;">GENERATING…</div>
         </div>
-
-        <div class="log-box" id="logBox">
-          <span class="log-line log-info">— Waiting for analysis to start —</span>
-        </div>
-
+        <div class="log-box" id="logBox"><span class="log-line log-info">— Waiting for analysis to start —</span></div>
         <div class="download-card" id="downloadCard">
           <div class="download-icon">📦</div>
           <div class="download-title">Analysis Complete</div>
@@ -645,12 +466,10 @@
           <button class="btn-download" onclick="triggerDownload()">⬇ Download ZIP</button>
           <button class="btn-run-again" onclick="runAgain()">Run again with different settings</button>
         </div>
-
         <div class="empty-state" id="emptyState">
           <div class="empty-icon">📈</div>
           <div class="empty-text">Configure your analysis in Panel 2,<br>then click Generate Progress Report.</div>
         </div>
-
       </div>
     </div>
 
@@ -658,30 +477,18 @@
 
   <!-- BOTTOM BAR -->
   <div class="bottombar">
-    <div class="bottom-stat">
-      <div class="bottom-stat-dot" style="background:var(--teal)"></div>
-      <span id="bottomTests">— tests</span>
-    </div>
-    <div class="bottom-stat">
-      <div class="bottom-stat-dot" style="background:var(--purple)"></div>
-      <span id="bottomStudents">— students</span>
-    </div>
-    <div class="bottom-stat">
-      <div class="bottom-stat-dot" style="background:var(--amber)"></div>
-      <span id="bottomDateRange">— date range</span>
-    </div>
-    <div class="bottom-stat" style="margin-left:auto;">
-      <span style="opacity:0.5;">Analytix Suite · MOD-02</span>
-    </div>
+    <div class="bottom-stat"><div class="bottom-stat-dot" style="background:var(--teal)"></div><span id="bottomTests">— tests</span></div>
+    <div class="bottom-stat"><div class="bottom-stat-dot" style="background:var(--purple)"></div><span id="bottomStudents">— students</span></div>
+    <div class="bottom-stat"><div class="bottom-stat-dot" style="background:var(--amber)"></div><span id="bottomDateRange">— date range</span></div>
+    <div class="bottom-stat" style="margin-left:auto;"><span style="opacity:0.5;">Analytix Suite · MOD-02</span></div>
   </div>
 
 </div><!-- /app -->
 
 <script>
-  // ── CONFIG ───────────────────────────────────────────────────
   const API_BASE = 'https://analytix-api-9r8q.onrender.com';
 
-  // ── STATE ────────────────────────────────────────────────────
+  // ── State ─────────────────────────────────────────────────────────────────
   let testFiles    = [];
   let sessionId    = null;
   let sessionMeta  = null;
@@ -689,55 +496,47 @@
   let pollInterval = null;
   let seenLogCount = 0;
 
-  // ── API HEALTH CHECK ─────────────────────────────────────────
+  // Multi-select state
+  const msState = {
+    ao:    { all: [], selected: new Set() },
+    topic: { all: [], selected: new Set() }
+  };
+
+  // ── API Health ────────────────────────────────────────────────────────────
   async function checkApi() {
-    const dot   = document.getElementById('statusDot');
-    const label = document.getElementById('statusLabel');
+    const dot = document.getElementById('statusDot'), label = document.getElementById('statusLabel');
     try {
       const r = await fetch(`${API_BASE}/`, { signal: AbortSignal.timeout(8000) });
       if (r.ok) { dot.className = 'status-dot'; label.textContent = 'API ONLINE'; }
       else throw new Error();
-    } catch {
-      dot.className = 'status-dot offline'; label.textContent = 'API OFFLINE';
-    }
+    } catch { dot.className = 'status-dot offline'; label.textContent = 'API OFFLINE'; }
   }
   checkApi();
 
-  // ── FILE HANDLING ────────────────────────────────────────────
+  // ── File handling ─────────────────────────────────────────────────────────
   const fileInput = document.getElementById('fileInput');
   const addZone   = document.getElementById('addZone');
 
-  fileInput.addEventListener('change', function() {
-    addFiles(Array.from(this.files));
-    this.value = '';
-  });
-
+  fileInput.addEventListener('change', function() { addFiles(Array.from(this.files)); this.value = ''; });
   addZone.addEventListener('dragover',  e => { e.preventDefault(); addZone.classList.add('drag-over'); });
   addZone.addEventListener('dragleave', () => addZone.classList.remove('drag-over'));
-  addZone.addEventListener('drop', e => {
-    e.preventDefault(); addZone.classList.remove('drag-over');
-    addFiles(Array.from(e.dataTransfer.files));
-  });
+  addZone.addEventListener('drop', e => { e.preventDefault(); addZone.classList.remove('drag-over'); addFiles(Array.from(e.dataTransfer.files)); });
 
   function addFiles(incoming) {
     const slots = 5 - testFiles.length;
     incoming.slice(0, slots).forEach(f => {
-      if (!f.name.endsWith('.xlsx')) { log(`⚠ ${f.name} is not an .xlsx file`, 'warn'); return; }
+      if (!f.name.endsWith('.xlsx')) { log(`⚠ ${f.name} is not .xlsx`, 'warn'); return; }
       testFiles.push({ file: f, date: '', label: guessLabel(f.name) });
     });
-    renderFileList();
-    updateLoadBtn();
+    renderFileList(); updateLoadBtn();
     if (sessionId) { sessionId = null; sessionMeta = null; resetToStep1(); }
   }
 
-  function guessLabel(filename) {
-    return filename.replace(/\.xlsx$/i, '').replace(/_/g, ' ').trim();
-  }
+  function guessLabel(fn) { return fn.replace(/\.xlsx$/i, '').replace(/_/g, ' ').trim(); }
 
   function removeTest(idx) {
     testFiles.splice(idx, 1);
-    renderFileList();
-    updateLoadBtn();
+    renderFileList(); updateLoadBtn();
     if (sessionId) { sessionId = null; sessionMeta = null; resetToStep1(); }
   }
 
@@ -762,38 +561,29 @@
         </div>`;
       list.appendChild(row);
     });
-
-    const remaining = 5 - testFiles.length;
-    addZone.classList.toggle('maxed', remaining === 0);
-    document.getElementById('addZoneTitle').textContent = remaining === 0
+    const rem = 5 - testFiles.length;
+    addZone.classList.toggle('maxed', rem === 0);
+    document.getElementById('addZoneTitle').textContent = rem === 0
       ? 'Maximum 5 tests loaded'
-      : `Drop test files here or click to browse (${remaining} slot${remaining !== 1 ? 's' : ''} left)`;
+      : `Drop test files here or click to browse (${rem} slot${rem !== 1 ? 's' : ''} left)`;
   }
 
   function updateLoadBtn() {
     const enough  = testFiles.length >= 2;
     const allMeta = testFiles.every(f => f.date && f.label.trim());
-    const notice  = document.getElementById('minNotice');
-    const btn     = document.getElementById('loadBtn');
-
-    notice.style.display = (testFiles.length > 0 && !enough) ? 'flex' : 'none';
+    document.getElementById('minNotice').style.display = (testFiles.length > 0 && !enough) ? 'flex' : 'none';
+    const btn = document.getElementById('loadBtn');
     btn.disabled = !(enough && allMeta);
-    btn.textContent = (enough && allMeta)
-      ? `Load ${testFiles.length} tests →`
-      : 'Load tests →';
+    btn.textContent = (enough && allMeta) ? `Load ${testFiles.length} tests →` : 'Load tests →';
   }
 
-  // ── LOAD TESTS ───────────────────────────────────────────────
+  // ── Load Tests ────────────────────────────────────────────────────────────
   async function loadTests() {
     document.getElementById('panel1Loading').classList.add('show');
     document.getElementById('loadBtn').disabled = true;
     try {
       const form = new FormData();
-      testFiles.forEach(e => {
-        form.append('files[]',  e.file);
-        form.append('dates[]',  e.date);
-        form.append('labels[]', e.label.trim());
-      });
+      testFiles.forEach(e => { form.append('files[]', e.file); form.append('dates[]', e.date); form.append('labels[]', e.label.trim()); });
 
       const r    = await fetch(`${API_BASE}/api/module2/load`, { method: 'POST', body: form });
       const data = await r.json();
@@ -815,7 +605,11 @@
       document.getElementById('bottomTests').textContent    = `${data.n_tests} tests`;
       document.getElementById('bottomStudents').textContent = `${data.test_info[0].n_students} students`;
       document.getElementById('bottomDateRange').textContent =
-        dates.length >= 2 ? `${dates[0]} → ${dates[dates.length - 1]}` : dates[0] || '—';
+        dates.length >= 2 ? `${dates[0]} → ${dates[dates.length-1]}` : dates[0] || '—';
+
+      // ── Populate AO and Topic dropdowns from API response ──
+      populateMultiSelect('ao',    data.all_aos    || []);
+      populateMultiSelect('topic', data.all_topics || []);
 
       // Advance UI
       setStep(1, 'done'); setStep(2, 'active');
@@ -834,17 +628,110 @@
     }
   }
 
-  // ── RUN ANALYSIS ─────────────────────────────────────────────
+  // ── Multi-select logic ────────────────────────────────────────────────────
+  function populateMultiSelect(type, items) {
+    const sorted = [...items].sort();
+    msState[type].all = sorted;
+    msState[type].selected = new Set();
+
+    // Enable trigger
+    const trigger = document.getElementById(`${type}Trigger`);
+    trigger.classList.remove('disabled');
+
+    renderOptions(type, sorted);
+    renderTags(type);
+  }
+
+  function renderOptions(type, items) {
+    const container = document.getElementById(`${type}Options`);
+    if (!items.length) {
+      container.innerHTML = `<div class="ms-empty">No ${type === 'ao' ? 'AOs' : 'topics'} detected in loaded files</div>`;
+      return;
+    }
+    container.innerHTML = items.map(item => `
+      <div class="ms-option ${msState[type].selected.has(item) ? 'selected' : ''}"
+           onclick="toggleOption('${type}', ${JSON.stringify(item)})">
+        <div class="ms-checkbox">${msState[type].selected.has(item) ? '✓' : ''}</div>
+        <span>${item}</span>
+      </div>`).join('');
+  }
+
+  function renderTags(type) {
+    const tagsEl = document.getElementById(`${type}Tags`);
+    const sel    = msState[type].selected;
+    if (sel.size === 0) {
+      tagsEl.innerHTML = `<span class="multi-select-placeholder">Select ${type === 'ao' ? 'AOs' : 'topics'}…</span>`;
+    } else {
+      tagsEl.innerHTML = [...sel].sort().map(item =>
+        `<span class="ms-tag">${item}<span class="ms-tag-x" onclick="event.stopPropagation(); toggleOption('${type}', ${JSON.stringify(item)})">×</span></span>`
+      ).join('');
+    }
+  }
+
+  function toggleOption(type, item) {
+    if (msState[type].selected.has(item)) {
+      msState[type].selected.delete(item);
+    } else {
+      msState[type].selected.add(item);
+    }
+    renderTags(type);
+    // Re-render visible options (keep filter active)
+    const search = document.querySelector(`#${type}Dropdown .ms-search`);
+    const query  = search ? search.value : '';
+    filterOptions(type, query);
+  }
+
+  function toggleDropdown(type) {
+    const trigger  = document.getElementById(`${type}Trigger`);
+    const dropdown = document.getElementById(`${type}Dropdown`);
+    const isOpen   = dropdown.classList.contains('open');
+
+    // Close all dropdowns first
+    document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.multi-select-trigger').forEach(t => t.classList.remove('open'));
+
+    if (!isOpen) {
+      dropdown.classList.add('open');
+      trigger.classList.add('open');
+      // Focus search
+      const s = dropdown.querySelector('.ms-search');
+      if (s) { s.value = ''; filterOptions(type, ''); setTimeout(() => s.focus(), 50); }
+    }
+  }
+
+  function filterOptions(type, query) {
+    const q       = query.toLowerCase().trim();
+    const visible = q ? msState[type].all.filter(i => i.toLowerCase().includes(q)) : msState[type].all;
+    renderOptions(type, visible);
+  }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.multi-select-wrap')) {
+      document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.multi-select-trigger').forEach(t => t.classList.remove('open'));
+    }
+  });
+
+  // ── Focused toggle ────────────────────────────────────────────────────────
+  function toggleFocused() {
+    document.getElementById('focusedSub').classList.toggle('show', document.getElementById('togFocused').checked);
+  }
+
+  // ── Run Analysis ──────────────────────────────────────────────────────────
   async function runAnalysis() {
     if (!sessionId) { alert('Please load test files first.'); return; }
 
-    const focusedOn = document.getElementById('togFocused').checked;
-    const payload   = {
+    const focusedOn    = document.getElementById('togFocused').checked;
+    const focused_aos    = focusedOn ? [...msState.ao.selected]    : [];
+    const focused_topics = focusedOn ? [...msState.topic.selected] : [];
+
+    const payload = {
       session_id:        sessionId,
       grade_name:        document.getElementById('gradeInput').value.trim(),
       individual_growth: document.getElementById('togIndividual').checked,
-      focused_ao:        focusedOn ? document.getElementById('focusedAO').value.trim()    : '',
-      focused_topic:     focusedOn ? document.getElementById('focusedTopic').value.trim() : '',
+      focused_aos,
+      focused_topics,
       font_adjust:       parseInt(document.getElementById('fontSpin').value) || 0,
     };
 
@@ -852,7 +739,6 @@
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('downloadCard').classList.remove('show');
     document.getElementById('panel3StatusBar').style.display = 'flex';
-    document.getElementById('panel3LoadingText').textContent = 'GENERATING…';
     document.getElementById('progressWrap').classList.add('show');
     document.getElementById('progressBar').style.width = '0%';
     document.getElementById('progressBar').classList.add('running');
@@ -868,22 +754,19 @@
 
     clearLog(); seenLogCount = 0;
     log('Sending job to server…', 'info');
+    if (focused_aos.length)    log(`→ Focused AOs: ${focused_aos.join(', ')}`, 'ok');
+    if (focused_topics.length) log(`→ Focused Topics: ${focused_topics.join(', ')}`, 'ok');
 
     try {
       const startRes  = await fetch(`${API_BASE}/api/module2/analyse`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
       const startData = await startRes.json();
-      if (!startRes.ok) throw new Error(startData.error || 'Failed to start job');
+      if (!startRes.ok) throw new Error(startData.error || 'Failed to start');
 
       currentJobId = startData.job_id;
       log(`Job started — ${sessionMeta.n_tests} tests · ${sessionMeta.test_info[0].n_students} students`, 'info');
-      if (payload.individual_growth) log('→ Individual student charts enabled', 'ok');
-      if (payload.focused_ao)        log(`→ Focused AO: ${payload.focused_ao}`, 'ok');
-      if (payload.focused_topic)     log(`→ Focused Topic: ${payload.focused_topic}`, 'ok');
-
       pollInterval = setInterval(pollJobStatus, 3000);
 
     } catch (err) {
@@ -896,18 +779,16 @@
     }
   }
 
-  // ── POLL JOB STATUS ──────────────────────────────────────────
+  // ── Poll ──────────────────────────────────────────────────────────────────
   async function pollJobStatus() {
     if (!currentJobId) return;
     try {
       const r    = await fetch(`${API_BASE}/api/module2/status/${currentJobId}`);
-      if (!r.ok) throw new Error('Status check failed');
+      if (!r.ok) throw new Error();
       const data = await r.json();
 
       data.log.slice(seenLogCount).forEach(msg => {
-        const type = msg.startsWith('✓') ? 'ok'
-                   : msg.startsWith('⚠') ? 'warn'
-                   : msg.startsWith('ERROR') || msg.startsWith('✗') ? 'err' : 'info';
+        const type = msg.startsWith('✓') ? 'ok' : msg.startsWith('⚠') ? 'warn' : msg.startsWith('ERROR') || msg.startsWith('✗') ? 'err' : 'info';
         log(msg, type);
       });
       seenLogCount = data.log.length;
@@ -918,11 +799,10 @@
         setProgress(100);
         setTimeout(() => document.getElementById('progressBar').classList.remove('running'), 500);
         log('All charts generated successfully.', 'ok');
-        log('ZIP ready for download.', 'ok');
         document.getElementById('panel3StatusBar').style.display = 'none';
         document.getElementById('downloadCard').classList.add('show');
         document.getElementById('downloadSub').textContent =
-          `${sessionMeta.n_tests} tests · ${sessionMeta.test_info[0].n_students} students · class + individual charts`;
+          `${sessionMeta.n_tests} tests · ${sessionMeta.test_info[0].n_students} students`;
         document.getElementById('badge3').textContent = 'DONE';
         document.getElementById('badge3').className   = 'panel-badge badge-done';
         setStep(3, 'done'); document.getElementById('runBtn').disabled = false;
@@ -936,19 +816,18 @@
         document.getElementById('badge3').className   = 'panel-badge badge-waiting';
         setStep(3, ''); document.getElementById('runBtn').disabled = false;
       }
-    } catch (err) { console.warn('Poll error:', err); }
+    } catch { /* skip tick */ }
   }
 
-  // ── DOWNLOAD ─────────────────────────────────────────────────
+  // ── Download ──────────────────────────────────────────────────────────────
   async function triggerDownload() {
     if (!currentJobId) return;
     const grade = document.getElementById('gradeInput').value.trim() || 'Progress';
-    const name  = `Analytix_${grade}_ProgressTracking.zip`.replace(/\s+/g, '_');
     const r    = await fetch(`${API_BASE}/api/module2/download/${currentJobId}`);
     const blob = await r.blob();
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
-    a.href = url; a.download = name; a.click();
+    a.href = url; a.download = `Analytix_${grade.replace(/\s+/g,'_')}_ProgressTracking.zip`; a.click();
     URL.revokeObjectURL(url);
     currentJobId = null;
   }
@@ -966,40 +845,38 @@
     document.getElementById('badge3').className   = 'panel-badge badge-waiting';
   }
 
-  // ── FOCUSED TOGGLE ───────────────────────────────────────────
-  function toggleFocused() {
-    document.getElementById('focusedSub').classList.toggle(
-      'show', document.getElementById('togFocused').checked
-    );
-  }
-
-  // ── SPINNER ──────────────────────────────────────────────────
+  // ── Spinner ───────────────────────────────────────────────────────────────
   function adjustSpin(delta) {
-    const el  = document.getElementById('fontSpin');
-    el.value  = Math.max(-3, Math.min(5, parseInt(el.value) + delta));
+    const el = document.getElementById('fontSpin');
+    el.value = Math.max(-3, Math.min(5, parseInt(el.value) + delta));
   }
 
-  // ── UI HELPERS ───────────────────────────────────────────────
+  // ── UI helpers ────────────────────────────────────────────────────────────
   function setStep(n, state) {
     const el = document.getElementById(`step${n}item`);
     el.classList.remove('active', 'done');
     if (state) el.classList.add(state);
   }
 
-  function unlock(panelId) { document.getElementById(panelId).classList.remove('locked'); }
+  function unlock(id) { document.getElementById(id).classList.remove('locked'); }
 
   function resetToStep1() {
     document.getElementById('panel2').classList.add('locked');
     document.getElementById('panel3').classList.add('locked');
-    document.getElementById('badge1').textContent = 'READY';
-    document.getElementById('badge1').className   = 'panel-badge badge-active';
-    document.getElementById('badge2').textContent = 'WAITING';
-    document.getElementById('badge2').className   = 'panel-badge badge-waiting';
-    document.getElementById('badge3').textContent = 'WAITING';
-    document.getElementById('badge3').className   = 'panel-badge badge-waiting';
-    document.getElementById('runBtn').disabled    = true;
+    ['badge1','badge2','badge3'].forEach((id, i) => {
+      document.getElementById(id).textContent = ['READY','WAITING','WAITING'][i];
+      document.getElementById(id).className   = `panel-badge ${i===0?'badge-active':'badge-waiting'}`;
+    });
+    document.getElementById('runBtn').disabled = true;
     document.getElementById('statPills').style.display = 'none';
     setStep(1, 'active'); setStep(2, ''); setStep(3, '');
+    // Reset dropdowns
+    ['ao','topic'].forEach(type => {
+      msState[type].all = []; msState[type].selected = new Set();
+      document.getElementById(`${type}Trigger`).classList.add('disabled');
+      document.getElementById(`${type}Tags`).innerHTML = `<span class="multi-select-placeholder">Load tests first…</span>`;
+      document.getElementById(`${type}Options`).innerHTML = '';
+    });
   }
 
   function setProgress(pct) { document.getElementById('progressBar').style.width = `${pct}%`; }
@@ -1013,7 +890,7 @@
     box.scrollTop = box.scrollHeight;
   }
 
-  // ── INIT ─────────────────────────────────────────────────────
+  // ── Init ──────────────────────────────────────────────────────────────────
   renderFileList();
 </script>
 </body>
