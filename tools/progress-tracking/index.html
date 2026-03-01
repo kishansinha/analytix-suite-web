@@ -208,6 +208,12 @@
     .ms-option.selected .ms-checkbox { background: var(--teal); border-color: var(--teal); color: white; }
     .ms-empty { padding: 10px; font-size: 0.72rem; color: var(--ink-dim); text-align: center; }
 
+    /* ── SELECTION SUMMARY ── */
+    .summary-group-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--teal); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; margin-bottom: 3px; }
+    .summary-items { font-size: 0.72rem; color: var(--ink-mid); line-height: 1.5; word-break: break-word; }
+    .summary-clear-btn { margin-top: 8px; background: none; border: 1px solid var(--border-dark); border-radius: 4px; padding: 3px 10px; font-size: 0.68rem; font-family: 'IBM Plex Sans', sans-serif; color: var(--ink-muted); cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+    .summary-clear-btn:hover { color: var(--red); border-color: var(--red); }
+
     /* ── NOTICE ── */
     .notice { display: flex; align-items: flex-start; gap: 8px; background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2); border-radius: 6px; padding: 9px 11px; margin-bottom: 10px; font-size: 0.72rem; color: var(--amber); line-height: 1.45; }
     .notice-icon { flex-shrink: 0; font-size: 13px; }
@@ -413,6 +419,9 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Selection summary -->
+              <div id="selectionSummary" style="display:none; margin-top:10px; padding:10px 12px; background:var(--surface); border:1px solid var(--teal-border); border-radius:6px;"></div>
 
             </div>
           </div>
@@ -648,12 +657,22 @@
       container.innerHTML = `<div class="ms-empty">No ${type === 'ao' ? 'AOs' : 'topics'} detected in loaded files</div>`;
       return;
     }
+    // Use event delegation on the container instead of inline onclick
+    // to avoid the document click listener closing the dropdown first
     container.innerHTML = items.map(item => `
       <div class="ms-option ${msState[type].selected.has(item) ? 'selected' : ''}"
-           onclick="toggleOption('${type}', ${JSON.stringify(item)})">
+           data-item="${item.replace(/"/g, '&quot;')}">
         <div class="ms-checkbox">${msState[type].selected.has(item) ? '✓' : ''}</div>
         <span>${item}</span>
       </div>`).join('');
+
+    // Attach click via addEventListener so stopPropagation works correctly
+    container.querySelectorAll('.ms-option').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        toggleOption(type, el.dataset.item);
+      });
+    });
   }
 
   function renderTags(type) {
@@ -663,9 +682,48 @@
       tagsEl.innerHTML = `<span class="multi-select-placeholder">Select ${type === 'ao' ? 'AOs' : 'topics'}…</span>`;
     } else {
       tagsEl.innerHTML = [...sel].sort().map(item =>
-        `<span class="ms-tag">${item}<span class="ms-tag-x" onclick="event.stopPropagation(); toggleOption('${type}', ${JSON.stringify(item)})">×</span></span>`
+        `<span class="ms-tag">${item}<span class="ms-tag-x" data-type="${type}" data-item="${item.replace(/"/g,'&quot;')}">×</span></span>`
       ).join('');
+      // Attach remove handlers
+      tagsEl.querySelectorAll('.ms-tag-x').forEach(x => {
+        x.addEventListener('click', e => {
+          e.stopPropagation();
+          toggleOption(x.dataset.type, x.dataset.item);
+        });
+      });
     }
+    // Update the summary box
+    renderSelectionSummary();
+  }
+
+  function renderSelectionSummary() {
+    const aoSel    = [...msState.ao.selected].sort();
+    const topicSel = [...msState.topic.selected].sort();
+    const box      = document.getElementById('selectionSummary');
+    if (aoSel.length === 0 && topicSel.length === 0) {
+      box.style.display = 'none';
+      return;
+    }
+    box.style.display = 'block';
+    let html = '';
+    if (aoSel.length) {
+      html += `<div class="summary-group-label">AOs selected (${aoSel.length})</div>`;
+      html += `<div class="summary-items">${aoSel.join(' · ')}</div>`;
+    }
+    if (topicSel.length) {
+      if (aoSel.length) html += '<div style="height:6px;"></div>';
+      html += `<div class="summary-group-label">Topics selected (${topicSel.length})</div>`;
+      html += `<div class="summary-items">${topicSel.join(' · ')}</div>`;
+    }
+    box.innerHTML = html + `<button class="summary-clear-btn" onclick="clearAllSelections()">Clear all</button>`;
+  }
+
+  function clearAllSelections() {
+    msState.ao.selected.clear();
+    msState.topic.selected.clear();
+    renderTags('ao'); renderTags('topic');
+    filterOptions('ao',    document.querySelector('#aoDropdown .ms-search')?.value    || '');
+    filterOptions('topic', document.querySelector('#topicDropdown .ms-search')?.value || '');
   }
 
   function toggleOption(type, item) {
@@ -675,10 +733,9 @@
       msState[type].selected.add(item);
     }
     renderTags(type);
-    // Re-render visible options (keep filter active)
+    // Re-render visible options keeping the search filter active
     const search = document.querySelector(`#${type}Dropdown .ms-search`);
-    const query  = search ? search.value : '';
-    filterOptions(type, query);
+    filterOptions(type, search ? search.value : '');
   }
 
   function toggleDropdown(type) {
@@ -693,19 +750,18 @@
     if (!isOpen) {
       dropdown.classList.add('open');
       trigger.classList.add('open');
-      // Focus search
       const s = dropdown.querySelector('.ms-search');
       if (s) { s.value = ''; filterOptions(type, ''); setTimeout(() => s.focus(), 50); }
     }
   }
 
   function filterOptions(type, query) {
-    const q       = query.toLowerCase().trim();
+    const q       = (query || '').toLowerCase().trim();
     const visible = q ? msState[type].all.filter(i => i.toLowerCase().includes(q)) : msState[type].all;
     renderOptions(type, visible);
   }
 
-  // Close dropdowns when clicking outside
+  // Close dropdowns when clicking outside — stopPropagation on options prevents premature close
   document.addEventListener('click', e => {
     if (!e.target.closest('.multi-select-wrap')) {
       document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
