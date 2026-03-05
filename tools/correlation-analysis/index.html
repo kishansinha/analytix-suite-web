@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Correlation Analysis — Analytix Suite</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #F5F4F0;
+      --surface:      #FFFFFF;
+      --surface2:     #F0EEE9;
+      --border:       #DDD9D0;
+      --border-dark:  #C4BFB5;
+      --teal:         #0F766E;
+      --teal-light:   #CCFBF1;
+      --teal-dim:     rgba(15,118,110,0.08);
+      --teal-border:  rgba(15,118,110,0.25);
+      --green:        #15803D;
+      --green-light:  #DCFCE7;
+      --red:          #DC2626;
+      --red-light:    #FEE2E2;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --blue:         #1D4ED8;
+      --blue-light:   #DBEAFE;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+      --ink:          #1C1917;
+      --ink-mid:      #44403C;
+      --ink-muted:    #78716C;
+      --ink-dim:      #A8A29E;
+      --white:        #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 80%, rgba(15,118,110,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(15,118,110,0.03) 0%, transparent 50%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .app {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 50px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface); flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      animation: slideDown 0.4s ease both;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .back-btn {
+      display: flex; align-items: center; gap: 5px;
+      color: var(--ink-muted); text-decoration: none;
+      font-size: 0.8rem; font-family: 'IBM Plex Mono', monospace;
+      transition: color 0.2s;
+    }
+    .back-btn:hover { color: var(--teal); }
+    .topbar-divider { width: 1px; height: 18px; background: var(--border); }
+    .module-id {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+      color: var(--teal); background: var(--teal-dim);
+      border: 1px solid var(--teal-border); padding: 2px 8px;
+      border-radius: 3px; letter-spacing: 0.08em; font-weight: 500;
+    }
+    .module-title {
+      font-family: 'Lora', serif; font-size: 0.95rem;
+      color: var(--ink); font-weight: 600;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 5px rgba(21,128,61,0.5);
+      animation: pulse 2.5s ease infinite;
+    }
+    .status-dot.checking { background: var(--amber); box-shadow: 0 0 5px rgba(180,83,9,0.5); }
+    .status-dot.offline  { background: var(--red);   box-shadow: 0 0 5px rgba(220,38,38,0.5); animation: none; }
+    .status-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+      color: var(--ink-muted); letter-spacing: 0.05em;
+    }
+
+    /* ── STEPS ── */
+    .steps-bar {
+      display: flex; align-items: center; justify-content: center;
+      padding: 9px 24px; border-bottom: 1px solid var(--border);
+      background: var(--surface); flex-shrink: 0;
+      animation: slideDown 0.4s 0.05s ease both;
+    }
+    .step-item { display: flex; align-items: center; gap: 7px; }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid var(--border-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
+      color: var(--ink-dim); transition: all 0.3s; font-weight: 500;
+    }
+    .step-label { font-size: 0.72rem; color: var(--ink-dim); font-weight: 500; transition: color 0.3s; }
+    .step-connector { width: 48px; height: 1px; background: var(--border); margin: 0 10px; }
+    .step-item.active .step-num  { border-color: var(--teal);  background: var(--teal-dim);    color: var(--teal); }
+    .step-item.active .step-label { color: var(--teal); font-weight: 600; }
+    .step-item.done   .step-num  { border-color: var(--green); background: var(--green-light); color: var(--green); }
+    .step-item.done   .step-label { color: var(--green); }
+
+    /* ── WORKSPACE — 3 panels ── */
+    .workspace {
+      flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr;
+      overflow: hidden; animation: fadeIn 0.5s 0.1s ease both;
+    }
+
+    .panel {
+      display: flex; flex-direction: column;
+      border-right: 1px solid var(--border);
+      overflow: hidden; position: relative;
+      background: var(--surface); transition: opacity 0.3s;
+    }
+    .panel:last-child { border-right: none; }
+    .panel.locked { opacity: 0.42; pointer-events: none; background: var(--bg); }
+
+    .panel-header {
+      display: flex; align-items: center; gap: 9px;
+      padding: 12px 18px 11px; border-bottom: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+    }
+    .panel-icon  { font-size: 15px; flex-shrink: 0; }
+    .panel-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem;
+      color: var(--ink-muted); letter-spacing: 0.08em;
+      text-transform: uppercase; flex: 1; font-weight: 500;
+    }
+    .panel-badge {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      padding: 2px 7px; border-radius: 3px; letter-spacing: 0.06em; font-weight: 500;
+    }
+    .badge-waiting { background: var(--surface2); border: 1px solid var(--border-dark); color: var(--ink-dim); }
+    .badge-active  { background: var(--teal-dim);   border: 1px solid var(--teal-border); color: var(--teal); }
+    .badge-done    { background: var(--green-light); border: 1px solid rgba(21,128,61,0.3); color: var(--green); }
+
+    .panel-body {
+      flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 18px;
+    }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 1.5px dashed var(--border-dark); border-radius: 8px;
+      padding: 18px 14px; text-align: center; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 8px; position: relative; background: var(--bg);
+    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--teal); background: var(--teal-dim); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-icon  { font-size: 22px; margin-bottom: 4px; }
+    .upload-title { font-size: 0.8rem; font-weight: 600; color: var(--ink-mid); margin-bottom: 2px; }
+    .upload-sub   { font-size: 0.68rem; color: var(--ink-muted); font-family: 'IBM Plex Mono', monospace; }
+
+    /* ── FILE LIST ── */
+    .file-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+    .file-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--green-light); border: 1px solid rgba(21,128,61,0.25);
+      border-radius: 6px; padding: 7px 10px;
+    }
+    .file-chip-icon  { font-size: 14px; }
+    .file-chip-name  { font-size: 0.72rem; font-weight: 600; color: var(--green); flex: 1; word-break: break-all; }
+    .file-chip-remove {
+      background: none; border: none; color: var(--ink-dim); cursor: pointer;
+      font-size: 0.75rem; padding: 2px 5px; border-radius: 3px;
+      transition: color 0.2s; font-family: 'IBM Plex Sans', sans-serif;
+    }
+    .file-chip-remove:hover { color: var(--red); }
+
+    /* ── STAT PILLS ── */
+    .stat-pills { display: flex; gap: 5px; flex-wrap: wrap; margin: 10px 0; }
+    .stat-pill {
+      background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2);
+      border-radius: 4px; padding: 3px 9px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: var(--blue);
+    }
+    .stat-pill strong { font-weight: 600; }
+    .stat-pill.green { background: var(--green-light); border-color: rgba(21,128,61,0.2); color: var(--green); }
+    .stat-pill.purple { background: var(--purple-light); border-color: rgba(109,40,217,0.2); color: var(--purple); }
+
+    /* ── CONFIG SECTIONS ── */
+    .config-section { margin-bottom: 16px; }
+    .config-section-title {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 9px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    /* ── FIELD ── */
+    .field-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .field-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+      color: var(--ink-muted); letter-spacing: 0.07em; text-transform: uppercase; font-weight: 500;
+    }
+    .field-select, .field-input {
+      width: 100%; padding: 7px 10px;
+      border: 1.5px solid var(--border); border-radius: 5px;
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 0.8rem;
+      color: var(--ink); background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+      appearance: none;
+    }
+    .field-select:focus, .field-input:focus {
+      border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-dim);
+    }
+
+    /* ── TOGGLE ROWS ── */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 0; border-bottom: 1px solid var(--border);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-left { display: flex; flex-direction: column; gap: 2px; }
+    .toggle-label { font-size: 0.78rem; color: var(--ink-mid); font-weight: 500; }
+    .toggle-sub   { font-size: 0.67rem; color: var(--ink-dim); }
+    .toggle-switch { position: relative; width: 32px; height: 17px; flex-shrink: 0; }
+    .toggle-switch input { display: none; }
+    .toggle-track {
+      position: absolute; inset: 0; background: var(--border-dark);
+      border-radius: 9px; cursor: pointer; transition: background 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-track { background: var(--teal); }
+    .toggle-thumb {
+      position: absolute; top: 2px; left: 2px;
+      width: 13px; height: 13px; background: var(--white); border-radius: 50%;
+      transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-track .toggle-thumb { transform: translateX(15px); }
+
+    /* ── CHART CHECKBOXES ── */
+    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .chart-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 7px; border-radius: 5px; cursor: pointer;
+      transition: background 0.15s; border: 1px solid transparent;
+    }
+    .chart-item:hover { background: var(--bg); }
+    .chart-item.checked { background: var(--teal-dim); border-color: var(--teal-border); }
+    .chart-checkbox {
+      width: 13px; height: 13px; border: 1.5px solid var(--border-dark);
+      border-radius: 3px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 0.15s; background: var(--white);
+    }
+    .chart-item.checked .chart-checkbox { background: var(--teal); border-color: var(--teal); }
+    .chart-check-icon { color: var(--white); font-size: 8px; display: none; }
+    .chart-item.checked .chart-check-icon { display: block; }
+    .chart-label { font-size: 0.72rem; color: var(--ink-muted); }
+    .chart-item.checked .chart-label { color: var(--ink-mid); font-weight: 500; }
+
+    /* ── RADIO ITEMS (for mode) ── */
+    .type-items { display: flex; flex-direction: column; gap: 5px; }
+    .type-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 12px; border-radius: 7px; cursor: pointer;
+      transition: background 0.15s; border: 1.5px solid var(--border);
+      background: var(--bg);
+    }
+    .type-item:hover { border-color: var(--teal-border); background: var(--teal-dim); }
+    .type-item.checked { background: var(--teal-dim); border-color: var(--teal); }
+    .type-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 1.5px solid var(--border-dark);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px; transition: all 0.15s; background: var(--white);
+    }
+    .type-item.checked .type-dot { border-color: var(--teal); background: var(--teal); }
+    .type-dot-inner { width: 5px; height: 5px; border-radius: 50%; background: var(--white); display: none; }
+    .type-item.checked .type-dot-inner { display: block; }
+    .type-text { flex: 1; }
+    .type-name { font-size: 0.78rem; font-weight: 600; color: var(--ink-mid); margin-bottom: 1px; }
+    .type-item.checked .type-name { color: var(--teal); }
+    .type-desc { font-size: 0.67rem; color: var(--ink-dim); line-height: 1.4; }
+
+    /* ── SPIN CONTROL ── */
+    .spin-row {
+      display: flex; align-items: center; justify-content: space-between; padding: 4px 0;
+    }
+    .spin-label { font-size: 0.77rem; color: var(--ink-mid); }
+    .spin-control { display: flex; align-items: center; }
+    .spin-btn {
+      width: 22px; height: 22px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--ink-mid); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; transition: background 0.15s; user-select: none;
+    }
+    .spin-btn:first-child { border-radius: 4px 0 0 4px; }
+    .spin-btn:last-child  { border-radius: 0 4px 4px 0; }
+    .spin-btn:hover { background: var(--teal-dim); color: var(--teal); }
+    .spin-val {
+      width: 36px; text-align: center; padding: 2px 0;
+      border: 1px solid var(--border); border-left: none; border-right: none;
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--ink-mid);
+      background: var(--surface); outline: none;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      width: 100%; background: var(--teal); color: var(--white); border: none;
+      padding: 10px 20px; border-radius: 6px;
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: background 0.2s, transform 0.15s, opacity 0.2s;
+    }
+    .btn-primary:hover:not(:disabled) { background: #0D6B63; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+    /* ── OUTPUT PANEL ── */
+    .run-summary {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 7px; padding: 12px 14px; margin-bottom: 14px; display: none;
+    }
+    .run-summary.show { display: block; }
+    .run-summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .run-summary-row:last-child { margin-bottom: 0; }
+    .run-summary-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); }
+    .run-summary-val   { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--teal); font-weight: 500; }
+
+    .log-box {
+      background: #1C1917; border: 1px solid var(--border-dark); border-radius: 6px;
+      padding: 11px 13px; font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem; color: #A8A29E; line-height: 1.9;
+      min-height: 70px; max-height: 200px; overflow-y: auto; margin-bottom: 14px;
+    }
+    .log-box::-webkit-scrollbar { width: 3px; }
+    .log-box::-webkit-scrollbar-thumb { background: #44403C; }
+    .log-line { display: block; }
+    .log-ok   { color: #86EFAC; }
+    .log-err  { color: #FCA5A5; }
+    .log-info { color: #93C5FD; }
+    .log-warn { color: #FDE68A; }
+
+    .progress-wrap {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; height: 5px; margin-bottom: 14px;
+      overflow: hidden; display: none;
+    }
+    .progress-wrap.show { display: block; }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), #14B8A6);
+      border-radius: 4px; width: 0%; transition: width 0.4s ease;
+    }
+    .progress-bar.indeterminate {
+      width: 40%; animation: indeterminate 1.4s ease infinite;
+    }
+
+    .panel-status-bar {
+      display: none; align-items: center; gap: 10px;
+      padding: 6px 10px; background: rgba(20,184,166,0.08);
+      border: 1px solid rgba(20,184,166,0.25); border-radius: 6px; margin-bottom: 6px;
+    }
+    .panel-status-bar.show { display: flex; }
+
+    .download-card {
+      background: var(--green-light); border: 1px solid rgba(21,128,61,0.3);
+      border-radius: 8px; padding: 20px; text-align: center;
+      display: none; animation: fadeIn 0.35s ease both;
+    }
+    .download-card.show { display: block; }
+    .download-icon  { font-size: 32px; margin-bottom: 10px; }
+    .download-title { font-family: 'Lora', serif; font-size: 1rem; color: var(--green); margin-bottom: 3px; font-weight: 600; }
+    .download-sub   { font-size: 0.74rem; color: var(--ink-muted); margin-bottom: 14px; }
+    .btn-download {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--green); color: var(--white); border: none;
+      padding: 10px 22px; border-radius: 6px;
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: background 0.2s, transform 0.15s; margin-bottom: 8px;
+    }
+    .btn-download:hover { background: #166534; transform: translateY(-1px); }
+    .btn-run-again {
+      display: block; margin: 6px auto 0; background: none; border: none;
+      color: var(--ink-muted); font-size: 0.77rem;
+      font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; transition: color 0.2s;
+    }
+    .btn-run-again:hover { color: var(--teal); }
+
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; gap: 8px; color: var(--ink-dim); text-align: center; padding: 20px;
+    }
+    .empty-icon { font-size: 26px; opacity: 0.5; }
+    .empty-text { font-size: 0.78rem; line-height: 1.5; opacity: 0.7; }
+
+    /* ── PANEL LOADING OVERLAY ── */
+    .panel-loading {
+      position: absolute; inset: 46px 0 0 0;
+      background: rgba(245,244,240,0.9); display: none;
+      align-items: center; justify-content: center;
+      z-index: 10; backdrop-filter: blur(2px);
+      flex-direction: column; gap: 10px;
+    }
+    .panel-loading.show { display: flex; }
+    .loading-text { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--teal); letter-spacing: 0.05em; }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+    /* ── BOTTOM BAR ── */
+    .bottombar {
+      height: 30px; border-top: 1px solid var(--border); background: var(--surface2);
+      display: flex; align-items: center; padding: 0 18px; gap: 18px; flex-shrink: 0;
+    }
+    .bottom-stat {
+      display: flex; align-items: center; gap: 5px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-dim);
+    }
+    .bottom-stat-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+    /* ── NOTICE ── */
+    .notice {
+      display: flex; align-items: flex-start; gap: 8px;
+      background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2);
+      border-radius: 6px; padding: 9px 11px; margin-bottom: 10px;
+      font-size: 0.72rem; color: var(--amber); line-height: 1.45;
+    }
+
+    @keyframes spin         { to { transform: rotate(360deg); } }
+    @keyframes slideDown    { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn       { from{opacity:0} to{opacity:1} }
+    @keyframes pulse        { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    @keyframes indeterminate { 0%{transform:translateX(-100%)} 100%{transform:translateX(300%)} }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="/" class="back-btn">← Suite</a>
+      <div class="topbar-divider"></div>
+      <span class="module-id">MOD-04</span>
+      <span class="module-title">Correlation Analysis</span>
+    </div>
+    <div class="topbar-right">
+      <div class="status-dot checking" id="statusDot"></div>
+      <span class="status-label" id="statusLabel">CHECKING…</span>
+    </div>
+  </header>
+
+  <!-- STEPS -->
+  <div class="steps-bar">
+    <div class="step-item active" id="step1item">
+      <div class="step-num">1</div>
+      <div class="step-label">Load Files</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" id="step2item">
+      <div class="step-num">2</div>
+      <div class="step-label">Configure</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" id="step3item">
+      <div class="step-num">3</div>
+      <div class="step-label">Run &amp; Download</div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div class="workspace">
+
+    <!-- ═══ PANEL 1: LOAD FILES ═══ -->
+    <div class="panel" id="panel1">
+      <div class="panel-header">
+        <span class="panel-icon">📂</span>
+        <span class="panel-label">Data Sources</span>
+        <span class="panel-badge badge-active" id="badge1">READY</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept=".xlsx" multiple />
+          <div class="upload-icon">📊</div>
+          <div class="upload-title">Drop test files here</div>
+          <div class="upload-sub">.xlsx · one or more test files</div>
+        </div>
+
+        <div class="file-list" id="fileList"></div>
+
+        <div class="stat-pills" id="statPills" style="display:none;"></div>
+
+        <div class="notice" id="multiNotice" style="display:none;">
+          <span>⚠️</span>
+          <span>Multiple files loaded. Use <strong>Multiple Tests</strong> or <strong>Pooled</strong> mode in Panel 2 to compare across tests.</span>
+        </div>
+
+        <button class="btn-primary" id="loadBtn" onclick="loadFiles()" disabled style="margin-top:12px;">
+          Load files →
+        </button>
+
+      </div>
+      <div class="panel-loading" id="panel1Loading">
+        <div class="spinner"></div>
+        <div class="loading-text">READING FILES…</div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL 2: CONFIGURE ═══ -->
+    <div class="panel locked" id="panel2">
+      <div class="panel-header">
+        <span class="panel-icon">⚙️</span>
+        <span class="panel-label">Configuration</span>
+        <span class="panel-badge badge-waiting" id="badge2">WAITING</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- Analysis Mode -->
+        <div class="config-section">
+          <div class="config-section-title">Analysis Mode</div>
+          <div class="type-items">
+            <div class="type-item checked" id="modeSingle" onclick="setMode('single')">
+              <div class="type-dot"><div class="type-dot-inner"></div></div>
+              <div class="type-text">
+                <div class="type-name">Single Test</div>
+                <div class="type-desc">Correlations within one test — AOs vs AOs, Overall vs AOs, etc.</div>
+              </div>
+            </div>
+            <div class="type-item" id="modeMultiple" onclick="setMode('multiple')">
+              <div class="type-dot"><div class="type-dot-inner"></div></div>
+              <div class="type-text">
+                <div class="type-name">Multiple Tests (Between)</div>
+                <div class="type-desc">Compare same variables across different tests</div>
+              </div>
+            </div>
+            <div class="type-item" id="modePooledAvg" onclick="setMode('pooled_averaged')">
+              <div class="type-dot"><div class="type-dot-inner"></div></div>
+              <div class="type-text">
+                <div class="type-name">Pooled — Averaged</div>
+                <div class="type-desc">Average student scores across tests (n = unique students)</div>
+              </div>
+            </div>
+            <div class="type-item" id="modePooledInd" onclick="setMode('pooled_independent')">
+              <div class="type-dot"><div class="type-dot-inner"></div></div>
+              <div class="type-text">
+                <div class="type-name">Pooled — Independent</div>
+                <div class="type-desc">Each test observation is independent (n = total rows)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Variables -->
+        <div class="config-section">
+          <div class="config-section-title">Variables to Include</div>
+          <div class="toggle-row">
+            <div class="toggle-left">
+              <div class="toggle-label">Overall Score</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togOverall" checked>
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-left">
+              <div class="toggle-label">Assessment Objectives (AOs)</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togAOs" checked>
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-left">
+              <div class="toggle-label">Topics</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togTopics">
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="config-section">
+          <div class="config-section-title">Statistics</div>
+          <div class="toggle-row">
+            <div class="toggle-left">
+              <div class="toggle-label">Pearson r</div>
+              <div class="toggle-sub">Always computed</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked disabled>
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-left">
+              <div class="toggle-label">Spearman ρ</div>
+              <div class="toggle-sub">Rank-based, robust to non-normality</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togSpearman" checked>
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-left">
+              <div class="toggle-label">Kendall τ</div>
+              <div class="toggle-sub">More robust for small samples</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togKendall">
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-left">
+              <div class="toggle-label">Confidence Intervals</div>
+              <div class="toggle-sub">Fisher's z-transformation</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togCI" onchange="updateCILevel()">
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div id="ciLevelRow" style="display:none; padding: 5px 0 0 0;">
+            <div class="field-group">
+              <div class="field-label">CI Level</div>
+              <select class="field-select" id="ciLevel">
+                <option value="0.90">90%</option>
+                <option value="0.95" selected>95%</option>
+                <option value="0.99">99%</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="config-section">
+          <div class="config-section-title">Filters</div>
+          <div class="toggle-row">
+            <div class="toggle-left">
+              <div class="toggle-label">Only significant (p &lt; 0.05)</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togOnlySig" checked>
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div class="field-group" style="margin-top:8px;">
+            <div class="field-label">Minimum effect size</div>
+            <select class="field-select" id="minR">
+              <option value="0.0">All correlations</option>
+              <option value="0.1">Small+ (|r| ≥ 0.10)</option>
+              <option value="0.3">Medium+ (|r| ≥ 0.30)</option>
+              <option value="0.5">Large only (|r| ≥ 0.50)</option>
+            </select>
+          </div>
+          <div class="toggle-row" style="margin-top:4px;">
+            <div class="toggle-left">
+              <div class="toggle-label">Multiple comparison correction</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togMC" onchange="updateMCMethod()">
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div id="mcMethodRow" style="display:none;">
+            <div class="field-group" style="margin-top:6px;">
+              <div class="field-label">Correction Method</div>
+              <select class="field-select" id="corrMethod">
+                <option value="bonferroni">Bonferroni</option>
+                <option value="fdr_bh">FDR (Benjamini-Hochberg)</option>
+              </select>
+            </div>
+          </div>
+          <div class="toggle-row" style="margin-top:4px;">
+            <div class="toggle-left">
+              <div class="toggle-label">Outlier detection</div>
+              <div class="toggle-sub">Flag data points with z-score above threshold</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="togOutlier" onchange="updateOutlierThr()">
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </label>
+          </div>
+          <div id="outlierThrRow" style="display:none;">
+            <div class="field-group" style="margin-top:6px;">
+              <div class="field-label">z-score threshold</div>
+              <select class="field-select" id="outlierThr">
+                <option value="2.0">2.0</option>
+                <option value="2.5">2.5</option>
+                <option value="3.0" selected>3.0</option>
+                <option value="3.5">3.5</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="config-section">
+          <div class="config-section-title">Charts to Generate</div>
+          <div class="chart-grid">
+            <div class="chart-item checked" onclick="toggleChart(this)" data-key="heatmap">
+              <div class="chart-checkbox"><span class="chart-check-icon">✓</span></div>
+              <span class="chart-label">Heatmap</span>
+            </div>
+            <div class="chart-item checked" onclick="toggleChart(this)" data-key="scatter">
+              <div class="chart-checkbox"><span class="chart-check-icon">✓</span></div>
+              <span class="chart-label">Scatter plots</span>
+            </div>
+            <div class="chart-item checked" onclick="toggleChart(this)" data-key="network">
+              <div class="chart-checkbox"><span class="chart-check-icon">✓</span></div>
+              <span class="chart-label">Network diagram</span>
+            </div>
+            <div class="chart-item checked" onclick="toggleChart(this)" data-key="effect">
+              <div class="chart-checkbox"><span class="chart-check-icon">✓</span></div>
+              <span class="chart-label">Effect sizes</span>
+            </div>
+            <div class="chart-item" onclick="toggleChart(this)" data-key="reliability">
+              <div class="chart-checkbox"><span class="chart-check-icon">✓</span></div>
+              <span class="chart-label">Reliability (α)</span>
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <div class="spin-row">
+              <span class="spin-label">Scatter plots (top N)</span>
+              <div class="spin-control">
+                <button class="spin-btn" onclick="adjustSpin('scatterSpin', -1, 1, 20)">−</button>
+                <input class="spin-val" id="scatterSpin" value="5" readonly />
+                <button class="spin-btn" onclick="adjustSpin('scatterSpin', +1, 1, 20)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="runBtn" onclick="runAnalysis()" disabled>
+          Run Analysis →
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ═══ PANEL 3: OUTPUT ═══ -->
+    <div class="panel locked" id="panel3">
+      <div class="panel-header">
+        <span class="panel-icon">📤</span>
+        <span class="panel-label">Output</span>
+        <span class="panel-badge badge-waiting" id="badge3">WAITING</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="run-summary" id="runSummary">
+          <div class="run-summary-row">
+            <span class="run-summary-label">Tests</span>
+            <span class="run-summary-val" id="summaryTests">—</span>
+          </div>
+          <div class="run-summary-row">
+            <span class="run-summary-label">Mode</span>
+            <span class="run-summary-val" id="summaryMode">—</span>
+          </div>
+          <div class="run-summary-row">
+            <span class="run-summary-label">Variables</span>
+            <span class="run-summary-val" id="summaryVars">—</span>
+          </div>
+        </div>
+
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-bar indeterminate" id="progressBar"></div>
+        </div>
+
+        <div class="panel-status-bar" id="panel3StatusBar">
+          <div class="spinner"></div>
+          <div class="loading-text" id="panel3LoadingText">ANALYSING…</div>
+        </div>
+
+        <div class="log-box" id="logBox">
+          <span class="log-line log-info">— Waiting for analysis to start —</span>
+        </div>
+
+        <div class="download-card" id="downloadCard">
+          <div class="download-icon">📦</div>
+          <div class="download-title">Analysis Complete</div>
+          <div class="download-sub" id="downloadSub">Charts and Excel summary are ready.</div>
+          <br>
+          <button class="btn-download" id="downloadBtn">
+            ⬇ Download ZIP
+          </button>
+          <button class="btn-run-again" onclick="runAgain()">Run again with different settings</button>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">🔗</div>
+          <div class="empty-text">Configure your analysis in Panel 2,<br>then click Run Analysis.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /workspace -->
+
+  <!-- BOTTOM BAR -->
+  <div class="bottombar">
+    <div class="bottom-stat">
+      <div class="bottom-stat-dot" style="background:var(--teal)"></div>
+      <span id="bottomFiles">— files</span>
+    </div>
+    <div class="bottom-stat">
+      <div class="bottom-stat-dot" style="background:var(--blue)"></div>
+      <span id="bottomAOs">— AOs</span>
+    </div>
+    <div class="bottom-stat">
+      <div class="bottom-stat-dot" style="background:var(--purple)"></div>
+      <span id="bottomTopics">— topics</span>
+    </div>
+    <div class="bottom-stat" style="margin-left:auto;">
+      <span style="opacity:0.5;">Analytix Suite · MOD-04</span>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+  const API_BASE = 'https://analytix-api.onrender.com';
+
+  // ── STATE ────────────────────────────────────────────────────────────────────
+  let loadedFiles  = [];
+  let sessionMeta  = null;   // data from /load
+  let downloadBlob = null;
+  let currentMode  = 'single';
+
+  // ── API HEALTH CHECK ─────────────────────────────────────────────────────────
+  async function checkApi() {
+    const dot = document.getElementById('statusDot');
+    const lbl = document.getElementById('statusLabel');
+    try {
+      const r = await fetch(`${API_BASE}/`, { signal: AbortSignal.timeout(8000) });
+      if (r.ok) { dot.className = 'status-dot'; lbl.textContent = 'API ONLINE'; }
+      else throw new Error();
+    } catch {
+      dot.className = 'status-dot offline'; lbl.textContent = 'API OFFLINE';
+    }
+  }
+  checkApi();
+
+  // ── FILE HANDLING ─────────────────────────────────────────────────────────────
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput  = document.getElementById('fileInput');
+
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault(); uploadZone.classList.remove('drag-over');
+    addFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', () => addFiles(fileInput.files));
+
+  function addFiles(fileListObj) {
+    const newFiles = Array.from(fileListObj).filter(f => f.name.endsWith('.xlsx'));
+    if (!newFiles.length) return;
+
+    // Deduplicate by name
+    const existing = new Set(loadedFiles.map(f => f.name));
+    newFiles.forEach(f => { if (!existing.has(f.name)) loadedFiles.push(f); });
+
+    renderFileList();
+    resetSession();
+    document.getElementById('fileInput').value = '';
+  }
+
+  function removeFile(name) {
+    loadedFiles = loadedFiles.filter(f => f.name !== name);
+    renderFileList();
+    resetSession();
+  }
+
+  function renderFileList() {
+    const list = document.getElementById('fileList');
+    list.innerHTML = '';
+    loadedFiles.forEach(f => {
+      const chip = document.createElement('div');
+      chip.className = 'file-chip';
+      chip.innerHTML = `
+        <span class="file-chip-icon">✅</span>
+        <span class="file-chip-name">${f.name}</span>
+        <button class="file-chip-remove" onclick="removeFile('${f.name}')">✕</button>
+      `;
+      list.appendChild(chip);
+    });
+    document.getElementById('loadBtn').disabled = loadedFiles.length === 0;
+    document.getElementById('multiNotice').style.display = loadedFiles.length > 1 ? 'flex' : 'none';
+  }
+
+  function resetSession() {
+    sessionMeta = null;
+    document.getElementById('statPills').style.display = 'none';
+    document.getElementById('panel2').classList.add('locked');
+    document.getElementById('panel3').classList.add('locked');
+    document.getElementById('badge1').textContent = 'READY';
+    document.getElementById('badge1').className   = 'panel-badge badge-active';
+    document.getElementById('badge2').textContent = 'WAITING';
+    document.getElementById('badge2').className   = 'panel-badge badge-waiting';
+    document.getElementById('badge3').textContent = 'WAITING';
+    document.getElementById('badge3').className   = 'panel-badge badge-waiting';
+    document.getElementById('runBtn').disabled    = true;
+    setStep(1, 'active'); setStep(2, ''); setStep(3, '');
+  }
+
+  // ── LOAD FILES ───────────────────────────────────────────────────────────────
+  async function loadFiles() {
+    if (!loadedFiles.length) return;
+    document.getElementById('panel1Loading').classList.add('show');
+    document.getElementById('loadBtn').disabled = true;
+
+    const fd = new FormData();
+    loadedFiles.forEach(f => fd.append('files', f));
+
+    try {
+      const r    = await fetch(`${API_BASE}/api/module4/load`, { method: 'POST', body: fd });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Load failed');
+
+      sessionMeta = data;
+
+      // Stat pills
+      const pills = document.getElementById('statPills');
+      pills.style.display = 'flex';
+      pills.innerHTML = `
+        <div class="stat-pill"><strong>${data.test_names.length}</strong> test${data.test_names.length > 1 ? 's' : ''}</div>
+        <div class="stat-pill green"><strong>${data.available_aos.length}</strong> AOs</div>
+        <div class="stat-pill purple"><strong>${data.available_topics.length}</strong> topics</div>
+      `;
+
+      // Bottom bar
+      document.getElementById('bottomFiles').textContent  = `${data.test_names.length} file${data.test_names.length > 1 ? 's' : ''}`;
+      document.getElementById('bottomAOs').textContent    = `${data.available_aos.length} AOs`;
+      document.getElementById('bottomTopics').textContent = `${data.available_topics.length} topics`;
+
+      // Unlock panels
+      setStep(1, 'done');
+      setStep(2, 'active');
+      document.getElementById('panel2').classList.remove('locked');
+      document.getElementById('panel3').classList.remove('locked');
+      document.getElementById('badge1').textContent = 'LOADED';
+      document.getElementById('badge1').className   = 'panel-badge badge-done';
+      document.getElementById('badge2').textContent = 'CONFIGURE';
+      document.getElementById('badge2').className   = 'panel-badge badge-active';
+      document.getElementById('runBtn').disabled    = false;
+
+    } catch (e) {
+      alert(`Load error: ${e.message}`);
+    } finally {
+      document.getElementById('panel1Loading').classList.remove('show');
+      document.getElementById('loadBtn').disabled = false;
+    }
+  }
+
+  // ── MODE SELECT ───────────────────────────────────────────────────────────────
+  const modeIds = ['modeSingle', 'modeMultiple', 'modePooledAvg', 'modePooledInd'];
+  const modeMap = {
+    modeSingle: 'single', modeMultiple: 'multiple',
+    modePooledAvg: 'pooled_averaged', modePooledInd: 'pooled_independent',
+  };
+
+  function setMode(mode) {
+    currentMode = mode;
+    modeIds.forEach(id => {
+      const el = document.getElementById(id);
+      const isMatch = modeMap[id] === mode;
+      el.classList.toggle('checked', isMatch);
+    });
+  }
+
+  // ── RUN ANALYSIS ─────────────────────────────────────────────────────────────
+  async function runAnalysis() {
+    if (!sessionMeta) { alert('Please load files first.'); return; }
+
+    const charts = {};
+    document.querySelectorAll('.chart-item[data-key]').forEach(el => {
+      charts[el.dataset.key] = el.classList.contains('checked');
+    });
+
+    const opts = {
+      mode:              currentMode,
+      include_overall:   document.getElementById('togOverall').checked,
+      include_aos:       document.getElementById('togAOs').checked,
+      include_topics:    document.getElementById('togTopics').checked,
+      only_significant:  document.getElementById('togOnlySig').checked,
+      min_r:             parseFloat(document.getElementById('minR').value) || 0,
+      spearman:          document.getElementById('togSpearman').checked,
+      kendall:           document.getElementById('togKendall').checked,
+      ci:                document.getElementById('togCI').checked,
+      ci_level:          parseFloat(document.getElementById('ciLevel').value) || 0.95,
+      mc_correction:     document.getElementById('togMC').checked,
+      correction_method: document.getElementById('corrMethod').value,
+      outlier_detection: document.getElementById('togOutlier').checked,
+      outlier_threshold: parseFloat(document.getElementById('outlierThr').value) || 3.0,
+      scatter_count:     parseInt(document.getElementById('scatterSpin').value) || 5,
+      heatmap:           charts['heatmap']     ?? true,
+      network_diagram:   charts['network']     ?? true,
+      effect_sizes:      charts['effect']      ?? true,
+      reliability:       charts['reliability'] ?? false,
+      scatter_plots:     charts['scatter']     ?? true,
+    };
+
+    // UI: start
+    document.getElementById('runBtn').disabled = true;
+    document.getElementById('emptyState').style.display  = 'none';
+    document.getElementById('downloadCard').classList.remove('show');
+    document.getElementById('panel3StatusBar').classList.add('show');
+    document.getElementById('progressWrap').classList.add('show');
+    setStep(2, 'done'); setStep(3, 'active');
+    document.getElementById('badge3').textContent = 'RUNNING';
+    document.getElementById('badge3').className   = 'panel-badge badge-active';
+
+    const modeLabels = {
+      single: 'Single Test', multiple: 'Multiple Tests',
+      pooled_averaged: 'Pooled (Averaged)', pooled_independent: 'Pooled (Independent)',
+    };
+    const varList = [
+      opts.include_overall && 'Overall',
+      opts.include_aos     && 'AOs',
+      opts.include_topics  && 'Topics',
+    ].filter(Boolean).join(' + ');
+
+    document.getElementById('runSummary').classList.add('show');
+    document.getElementById('summaryTests').textContent = sessionMeta.test_names.join(', ');
+    document.getElementById('summaryMode').textContent  = modeLabels[currentMode] || currentMode;
+    document.getElementById('summaryVars').textContent  = varList;
+
+    clearLog();
+    log('Sending files to server…', 'info');
+    log(`Mode: ${modeLabels[currentMode]}  ·  Variables: ${varList}`, 'info');
+    if (opts.spearman)          log('→ Spearman ρ enabled', 'ok');
+    if (opts.kendall)           log('→ Kendall τ enabled', 'ok');
+    if (opts.ci)                log(`→ ${opts.ci_level * 100}% CI (Fisher's z) enabled`, 'ok');
+    if (opts.mc_correction)     log(`→ Multiple comparison correction: ${opts.correction_method}`, 'ok');
+    if (opts.outlier_detection) log(`→ Outlier detection: z > ${opts.outlier_threshold}`, 'ok');
+    if (opts.reliability)       log("→ Reliability analysis enabled (Cronbach's α)", 'ok');
+    log('Computing correlations…', 'info');
+
+    const fd = new FormData();
+    loadedFiles.forEach(f => fd.append('files', f));
+    fd.append('options', JSON.stringify(opts));
+
+    try {
+      const res = await fetch(`${API_BASE}/api/module4/run`, { method: 'POST', body: fd });
+
+      if (!res.ok) {
+        let msg = 'Analysis failed';
+        try { const e = await res.json(); msg = e.error || msg; } catch {}
+        throw new Error(msg);
+      }
+
+      const blob = await res.blob();
+      downloadBlob = blob;
+
+      log('✓ All charts generated.', 'ok');
+      log('✓ Excel summary written.', 'ok');
+      log('ZIP ready for download.', 'ok');
+
+      document.getElementById('panel3StatusBar').classList.remove('show');
+      document.getElementById('downloadCard').classList.add('show');
+      document.getElementById('downloadSub').textContent =
+        `Heatmap · Scatter plots · Network · Effect sizes${opts.reliability ? ' · Reliability' : ''} · Excel report`;
+
+      document.getElementById('badge3').textContent = 'DONE';
+      document.getElementById('badge3').className   = 'panel-badge badge-done';
+      setStep(3, 'done');
+
+      document.getElementById('downloadBtn').onclick = triggerDownload;
+
+    } catch (e) {
+      log(`Error: ${e.message}`, 'err');
+      document.getElementById('panel3StatusBar').classList.remove('show');
+      document.getElementById('badge3').textContent = 'ERROR';
+      document.getElementById('badge3').className   = 'panel-badge badge-waiting';
+      setStep(3, '');
+    } finally {
+      document.getElementById('runBtn').disabled = false;
+    }
+  }
+
+  // ── DOWNLOAD ──────────────────────────────────────────────────────────────────
+  function triggerDownload() {
+    if (!downloadBlob) return;
+    const url = URL.createObjectURL(downloadBlob);
+    const a   = document.createElement('a');
+    a.href = url;
+    a.download = `Analytix_Module4_Correlation.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function runAgain() {
+    downloadBlob = null;
+    document.getElementById('downloadCard').classList.remove('show');
+    document.getElementById('emptyState').style.display   = '';
+    document.getElementById('progressWrap').classList.remove('show');
+    document.getElementById('runSummary').classList.remove('show');
+    clearLog(); log('— Waiting for analysis to start —', 'info');
+    setStep(3, ''); setStep(2, 'active');
+    document.getElementById('badge3').textContent = 'WAITING';
+    document.getElementById('badge3').className   = 'panel-badge badge-waiting';
+  }
+
+  // ── CONDITIONAL SHOWS ────────────────────────────────────────────────────────
+  function updateCILevel() {
+    document.getElementById('ciLevelRow').style.display =
+      document.getElementById('togCI').checked ? 'block' : 'none';
+  }
+  function updateMCMethod() {
+    document.getElementById('mcMethodRow').style.display =
+      document.getElementById('togMC').checked ? 'block' : 'none';
+  }
+  function updateOutlierThr() {
+    document.getElementById('outlierThrRow').style.display =
+      document.getElementById('togOutlier').checked ? 'block' : 'none';
+  }
+
+  // ── HELPERS ───────────────────────────────────────────────────────────────────
+  function toggleChart(el) { el.classList.toggle('checked'); }
+
+  function adjustSpin(id, delta, min, max) {
+    const el  = document.getElementById(id);
+    let val   = parseInt(el.value) + delta;
+    val       = Math.max(min, Math.min(max, val));
+    el.value  = val;
+  }
+
+  function setStep(n, state) {
+    const el = document.getElementById(`step${n}item`);
+    el.classList.remove('active', 'done');
+    if (state) el.classList.add(state);
+  }
+
+  function clearLog() {
+    document.getElementById('logBox').innerHTML = '';
+  }
+
+  function log(msg, type = '') {
+    const box  = document.getElementById('logBox');
+    const span = document.createElement('span');
+    span.className   = `log-line${type ? ' log-' + type : ''}`;
+    span.textContent = msg;
+    box.appendChild(span);
+    box.scrollTop = box.scrollHeight;
+  }
+</script>
+</body>
+</html>
