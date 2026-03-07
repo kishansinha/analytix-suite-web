@@ -399,7 +399,7 @@
             <label class="toggle-switch"><input type="checkbox" id="togKendall"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
           </div>
           <div class="toggle-row">
-            <div class="toggle-left"><div class="toggle-label">Confidence Intervals</div><div class="toggle-sub">Fisher's z-transformation</div></div>
+            <div class="toggle-left"><div class="toggle-label">Confidence Intervals</div><div class="toggle-sub">Fisher's z or Bootstrap</div></div>
             <label class="toggle-switch"><input type="checkbox" id="togCI" onchange="updateCILevel()"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
           </div>
           <div id="ciLevelRow" style="display:none; padding:4px 0;">
@@ -407,6 +407,18 @@
               <div class="field-label">CI Level</div>
               <select class="field-select" id="ciLevel"><option value="0.90">90%</option><option value="0.95" selected>95%</option><option value="0.99">99%</option></select>
             </div>
+            <div class="toggle-row" style="margin-top:6px;">
+              <div class="toggle-left"><div class="toggle-label">Bootstrap CI</div><div class="toggle-sub">More accurate for non-normal data (slower)</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="togBootstrap"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+            </div>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-left"><div class="toggle-label">Percentage Bend Correlation</div><div class="toggle-sub">Robust alternative to Pearson (Wilcox 1994)</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="togPB"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-left"><div class="toggle-label">Assumption Checks</div><div class="toggle-sub">Shapiro-Wilk normality + linearity + Q-Q plots</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="togAssumptions"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
           </div>
         </div>
 
@@ -436,6 +448,21 @@
               <select class="field-select" id="corrMethod"><option value="bonferroni">Bonferroni</option><option value="fdr_bh">FDR (Benjamini-Hochberg)</option></select>
             </div>
           </div>
+          <div class="toggle-row" style="margin-top:6px;">
+            <div class="toggle-left"><div class="toggle-label">Outlier Detection</div><div class="toggle-sub">Z-score method — flags and compares with/without</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="togOutlier" onchange="updateOutlierRow()"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+          </div>
+          <div id="outlierRow" style="display:none; padding:4px 0;">
+            <div class="field-group">
+              <div class="field-label">Z-score threshold</div>
+              <select class="field-select" id="outlierThreshold">
+                <option value="2.0">2.0 (stricter)</option>
+                <option value="2.5">2.5</option>
+                <option value="3.0" selected>3.0 (standard)</option>
+                <option value="3.5">3.5 (lenient)</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <!-- Charts -->
@@ -447,6 +474,8 @@
             <div class="chart-item checked" onclick="toggleChart(this)" data-key="network"><div class="chart-checkbox"><span class="chart-check-icon">✓</span></div><span class="chart-label">Network diagram</span></div>
             <div class="chart-item checked" onclick="toggleChart(this)" data-key="effect"><div class="chart-checkbox"><span class="chart-check-icon">✓</span></div><span class="chart-label">Effect sizes</span></div>
             <div class="chart-item" onclick="toggleChart(this)" data-key="reliability"><div class="chart-checkbox"><span class="chart-check-icon">✓</span></div><span class="chart-label">Reliability (α)</span></div>
+            <div class="chart-item" onclick="toggleChart(this)" data-key="predictive_validity"><div class="chart-checkbox"><span class="chart-check-icon">✓</span></div><span class="chart-label">Predictive Validity</span></div>
+            <div class="chart-item" onclick="toggleChart(this)" data-key="time_series"><div class="chart-checkbox"><span class="chart-check-icon">✓</span></div><span class="chart-label">Time Series</span></div>
           </div>
           <div style="margin-top:8px;">
             <div class="spin-row">
@@ -754,7 +783,7 @@
 
     const opts = {
       mode:              document.getElementById('modeSelect').value,
-      custom_pairs:      selectedPairs,          // ← pass pairs explicitly
+      custom_pairs:      selectedPairs,
       include_overall:   true,
       include_aos:       true,
       include_topics:    true,
@@ -762,16 +791,23 @@
       min_r:             parseFloat(document.getElementById('minR').value) || 0,
       spearman:          document.getElementById('togSpearman').checked,
       kendall:           document.getElementById('togKendall').checked,
+      percentage_bend:   document.getElementById('togPB').checked,
       ci:                document.getElementById('togCI').checked,
       ci_level:          parseFloat(document.getElementById('ciLevel').value) || 0.95,
+      bootstrap_ci:      document.getElementById('togBootstrap').checked,
+      check_assumptions: document.getElementById('togAssumptions').checked,
       mc_correction:     document.getElementById('togMC').checked,
       correction_method: document.getElementById('corrMethod').value,
+      outlier_detection: document.getElementById('togOutlier').checked,
+      outlier_threshold: parseFloat(document.getElementById('outlierThreshold').value) || 3.0,
       scatter_count:     parseInt(document.getElementById('scatterSpin').value) || 5,
-      heatmap:           charts['heatmap']     ?? true,
-      network_diagram:   charts['network']     ?? true,
-      effect_sizes:      charts['effect']      ?? true,
-      reliability:       charts['reliability'] ?? false,
-      scatter_plots:     charts['scatter']     ?? true,
+      heatmap:           charts['heatmap']             ?? true,
+      network_diagram:   charts['network']             ?? true,
+      effect_sizes:      charts['effect']              ?? true,
+      reliability:       charts['reliability']         ?? false,
+      scatter_plots:     charts['scatter']             ?? true,
+      predictive_validity: charts['predictive_validity'] ?? false,
+      time_series:       charts['time_series']         ?? false,
     };
 
     document.getElementById('runBtn').disabled = true;
@@ -840,8 +876,9 @@
   }
 
   // ── HELPERS ───────────────────────────────────────────────────────────────
-  function updateCILevel()  { document.getElementById('ciLevelRow').style.display  = document.getElementById('togCI').checked ? 'block' : 'none'; }
-  function updateMCMethod() { document.getElementById('mcMethodRow').style.display = document.getElementById('togMC').checked ? 'block' : 'none'; }
+  function updateCILevel()   { document.getElementById('ciLevelRow').style.display   = document.getElementById('togCI').checked      ? 'block' : 'none'; }
+  function updateMCMethod()  { document.getElementById('mcMethodRow').style.display  = document.getElementById('togMC').checked      ? 'block' : 'none'; }
+  function updateOutlierRow(){ document.getElementById('outlierRow').style.display   = document.getElementById('togOutlier').checked ? 'block' : 'none'; }
   function toggleChart(el) { el.classList.toggle('checked'); }
   function adjustSpin(id, delta, min, max) { const el = document.getElementById(id); el.value = Math.max(min, Math.min(max, parseInt(el.value)+delta)); }
   function setStep(n, state) { const el = document.getElementById(`step${n}item`); el.classList.remove('active','done'); if (state) el.classList.add(state); }
