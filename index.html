@@ -128,27 +128,26 @@
     .donate-strip p strong { font-weight: 600; }
 
     .btn-donate {
-      display: inline-flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
       background: var(--gold); color: var(--white);
       font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600;
       text-decoration: none; padding: 9px 18px; border-radius: 6px;
-      white-space: nowrap; flex-shrink: 0;
+      width: 100%;
       transition: background 0.2s, transform 0.15s;
     }
     .btn-donate:hover { background: #D97706; transform: translateY(-1px); }
 
-    .btn-chai {
-      background: #0D9488;
-    }
+    .btn-chai { background: #0D9488; }
     .btn-chai:hover { background: #0F766E; transform: translateY(-1px); }
 
     .donate-btns {
       display: flex; flex-direction: column;
-      align-items: flex-start; gap: 8px; flex-shrink: 0;
+      gap: 8px; flex-shrink: 0;
+      width: 180px;
     }
 
     .india-note {
-      font-size: 0.72rem; color: #92400E;
+      font-size: 0.71rem; color: #92400E;
       text-align: center; line-height: 1.4;
       opacity: 0.8;
     }
@@ -589,9 +588,11 @@
         <div class="section-label">☕ Support This Work</div>
         <p>Building and maintaining these tools takes considerable time, effort, and personal resources. If you've found them useful in your teaching practice, please consider supporting this project. Even a small contribution helps keep Analytix Suite free and growing.</p>
         <p>Thank you — your support means more than you know. ☕</p>
-        <a class="btn-donate" href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener" style="margin-top:8px; display:inline-flex;">☕ Buy Me a Coffee</a>
-        <a class="btn-donate btn-chai" href="https://buymeachai.ezee.li/kishansinha" target="_blank" rel="noopener noreferrer" style="margin-top:8px; display:inline-flex;">🍵 Buy Me a Chai</a>
-        <p style="margin-top:8px; font-size:0.78rem; color:var(--muted);">🇮🇳 Chai is UPI-friendly — recommended for users in India</p>
+        <div style="display:flex; flex-direction:column; gap:8px; width:180px; margin-top:12px;">
+          <a class="btn-donate" href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener">☕ Buy Me a Coffee</a>
+          <a class="btn-donate btn-chai" href="https://buymeachai.ezee.li/kishansinha" target="_blank" rel="noopener noreferrer">🍵 Buy Me a Chai</a>
+          <span class="india-note">🇮🇳 Chai is UPI-friendly — for users in India</span>
+        </div>
       </div>
     </div>
   </div><!-- /page-about -->
