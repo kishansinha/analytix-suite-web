@@ -6,7 +6,6 @@
   <title>Analytix Suite — Data-Driven Insights for Effective Teaching</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    /* ─── DESIGN TOKENS ─────────────────────────────────────── */
     :root {
       --blue:       #2563EB;
       --blue-dark:  #1E40AF;
@@ -26,9 +25,7 @@
       --coming-bg:  #F1F5F9;
     }
 
-    /* ─── RESET & BASE ───────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -39,359 +36,337 @@
       overflow-x: hidden;
     }
 
-    /* ─── ANIMATED GRID BACKGROUND ───────────────────────────── */
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background-image:
         linear-gradient(var(--border) 1px, transparent 1px),
         linear-gradient(90deg, var(--border) 1px, transparent 1px);
       background-size: 48px 48px;
-      opacity: 0.5;
-      z-index: 0;
-      pointer-events: none;
+      opacity: 0.5; z-index: 0; pointer-events: none;
     }
 
-    /* ─── LAYOUT WRAPPER ─────────────────────────────────────── */
     .site-wrapper {
-      position: relative;
-      z-index: 1;
-      max-width: 960px;
-      margin: 0 auto;
+      position: relative; z-index: 1;
+      max-width: 960px; margin: 0 auto;
       padding: 0 24px 64px;
     }
 
-    /* ─── HEADER ─────────────────────────────────────────────── */
+    /* ── HEADER ── */
     header {
       text-align: center;
-      padding: 64px 0 48px;
+      padding: 48px 0 28px;
       animation: fadeUp 0.7s ease both;
     }
 
     .badge {
       display: inline-block;
-      background: var(--blue-light);
-      color: var(--blue-dark);
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 4px 12px;
-      border-radius: 4px;
-      margin-bottom: 20px;
+      background: var(--blue-light); color: var(--blue-dark);
+      font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 4px; margin-bottom: 16px;
     }
 
     header h1 {
       font-family: 'DM Serif Display', serif;
       font-size: clamp(2.4rem, 5vw, 3.6rem);
-      line-height: 1.1;
-      color: var(--ink);
-      margin-bottom: 14px;
+      line-height: 1.1; color: var(--ink); margin-bottom: 12px;
     }
 
-    header h1 span {
-      color: var(--blue);
-      font-style: italic;
-    }
+    header h1 span { color: var(--blue); font-style: italic; }
 
     header p.tagline {
-      font-size: 1.05rem;
-      color: var(--muted);
-      font-weight: 300;
-      max-width: 480px;
-      margin: 0 auto 32px;
-      line-height: 1.6;
+      font-size: 1.05rem; color: var(--muted); font-weight: 300;
+      max-width: 480px; margin: 0 auto; line-height: 1.6;
     }
 
-    /* ─── DONATE STRIP ───────────────────────────────────────── */
+    /* ── NAV TABS ── */
+    .nav-tabs {
+      display: flex; justify-content: center; gap: 4px;
+      margin: 24px 0 0;
+      animation: fadeUp 0.7s 0.1s ease both;
+      flex-wrap: wrap;
+    }
+
+    .nav-tab {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 18px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--muted); cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+
+    .nav-tab:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+
+    .nav-tab.active {
+      background: var(--blue); border-color: var(--blue);
+      color: var(--white);
+      box-shadow: 0 3px 12px rgba(37,99,235,0.25);
+    }
+
+    .nav-tab .tab-icon { font-size: 14px; }
+
+    /* ── TAB PAGES ── */
+    .tab-page { display: none; animation: fadeUp 0.35s ease both; }
+    .tab-page.active { display: block; }
+
+    /* ── DONATE STRIP ── */
     .donate-strip {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: var(--gold-light);
-      border: 1px solid #FDE68A;
-      border-radius: 10px;
-      padding: 12px 24px;
-      max-width: 520px;
-      margin: 0 auto 52px;
+      display: flex; align-items: flex-start;
+      justify-content: center; gap: 16px;
+      background: var(--gold-light); border: 1px solid #FDE68A;
+      border-radius: 10px; padding: 16px 24px;
+      margin: 28px 0 36px;
       animation: fadeUp 0.7s 0.15s ease both;
     }
 
-    .donate-strip p {
-      font-size: 0.875rem;
-      color: #92400E;
-      line-height: 1.4;
-    }
-
+    .donate-strip p { font-size: 0.875rem; color: #92400E; line-height: 1.55; }
     .donate-strip p strong { font-weight: 600; }
 
     .btn-donate {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--gold);
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--gold); color: var(--white);
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600;
+      text-decoration: none; padding: 9px 18px; border-radius: 6px;
+      white-space: nowrap; flex-shrink: 0;
       transition: background 0.2s, transform 0.15s;
-      flex-shrink: 0;
     }
+    .btn-donate:hover { background: #D97706; transform: translateY(-1px); }
 
-    .btn-donate:hover {
-      background: #D97706;
-      transform: translateY(-1px);
-    }
-
-    /* ─── MODULE GRID ─────────────────────────────────────────── */
+    /* ── MODULE GRID ── */
     .modules-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
       animation: fadeUp 0.7s 0.25s ease both;
     }
 
-    @media (max-width: 640px) {
-      .modules-section { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 640px) { .modules-section { grid-template-columns: 1fr; } }
 
-    /* ─── COLUMN CARD ─────────────────────────────────────────── */
     .column-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .column-header {
-      padding: 18px 22px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      padding: 18px 22px 16px; display: flex; align-items: center; gap: 12px;
     }
-
-    .column-header.basic  { background: var(--green); }
+    .column-header.basic   { background: var(--green); }
     .column-header.advanced { background: var(--purple); }
 
     .col-icon {
-      width: 36px;
-      height: 36px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
+      width: 36px; height: 36px; background: rgba(255,255,255,0.2);
+      border-radius: 8px; display: flex; align-items: center;
+      justify-content: center; font-size: 18px; flex-shrink: 0;
     }
 
-    .col-title-wrap {}
     .col-title-wrap h2 {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.1rem;
-      color: var(--white);
-      line-height: 1.2;
+      font-size: 1.1rem; color: var(--white); line-height: 1.2;
     }
     .col-title-wrap span {
-      font-size: 0.72rem;
-      color: rgba(255,255,255,0.75);
-      font-style: italic;
-      letter-spacing: 0.03em;
+      font-size: 0.72rem; color: rgba(255,255,255,0.75);
+      font-style: italic; letter-spacing: 0.03em;
     }
 
-    .module-list {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .module-list { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
 
-    /* ─── MODULE BUTTON ──────────────────────────────────────── */
     .module-btn {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      text-decoration: none;
-      color: var(--ink);
-      cursor: pointer;
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: 10px;
+      text-decoration: none; color: var(--ink); cursor: pointer;
       transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s, background 0.2s;
-      position: relative;
-      text-align: left;
+      position: relative; text-align: left;
     }
 
     .module-btn:hover:not(.disabled) {
       border-color: var(--blue);
       box-shadow: 0 4px 16px rgba(37,99,235,0.12);
-      transform: translateY(-2px);
-      background: var(--white);
+      transform: translateY(-2px); background: var(--white);
     }
 
-    .module-btn.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      background: var(--coming-bg);
-    }
+    .module-btn.disabled { opacity: 0.5; cursor: not-allowed; background: var(--coming-bg); }
 
-    .module-btn .mod-icon {
-      font-size: 22px;
-      flex-shrink: 0;
-      width: 36px;
-      text-align: center;
-    }
+    .module-btn .mod-icon { font-size: 22px; flex-shrink: 0; width: 36px; text-align: center; }
 
-    .module-btn .mod-text {}
     .module-btn .mod-text strong {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 2px;
-      color: var(--ink);
+      display: block; font-size: 0.875rem; font-weight: 600;
+      margin-bottom: 2px; color: var(--ink);
     }
-    .module-btn .mod-text span {
-      font-size: 0.78rem;
-      color: var(--muted);
-      line-height: 1.4;
-    }
+    .module-btn .mod-text span { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
 
     .module-btn .mod-arrow {
-      margin-left: auto;
-      color: var(--blue);
-      font-size: 18px;
-      flex-shrink: 0;
-      opacity: 0;
-      transform: translateX(-4px);
+      margin-left: auto; color: var(--blue); font-size: 18px; flex-shrink: 0;
+      opacity: 0; transform: translateX(-4px);
       transition: opacity 0.2s, transform 0.2s;
     }
-
-    .module-btn:hover:not(.disabled) .mod-arrow {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    .module-btn:hover:not(.disabled) .mod-arrow { opacity: 1; transform: translateX(0); }
 
     .coming-tag {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--coming);
-      background: var(--coming-bg);
-      border: 1px solid var(--border);
-      padding: 2px 7px;
-      border-radius: 4px;
+      position: absolute; top: 8px; right: 10px;
+      font-family: 'DM Mono', monospace; font-size: 9px;
+      font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--coming); background: var(--coming-bg);
+      border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px;
     }
 
-    /* Column accent colours on hover */
-    .column-card:first-child .module-btn:hover:not(.disabled) {
-      border-color: var(--green);
-      box-shadow: 0 4px 16px rgba(22,163,74,0.12);
-    }
-    .column-card:last-child .module-btn:hover:not(.disabled) {
-      border-color: var(--purple);
-      box-shadow: 0 4px 16px rgba(124,58,237,0.12);
-    }
+    .column-card:first-child .module-btn:hover:not(.disabled) { border-color: var(--green); box-shadow: 0 4px 16px rgba(22,163,74,0.12); }
+    .column-card:last-child  .module-btn:hover:not(.disabled) { border-color: var(--purple); box-shadow: 0 4px 16px rgba(124,58,237,0.12); }
     .column-card:first-child .module-btn:hover:not(.disabled) .mod-arrow { color: var(--green); }
-    .column-card:last-child .module-btn:hover:not(.disabled) .mod-arrow { color: var(--purple); }
+    .column-card:last-child  .module-btn:hover:not(.disabled) .mod-arrow { color: var(--purple); }
 
-    /* ─── INFO STRIP ─────────────────────────────────────────── */
+    /* ── INFO STRIP ── */
     .info-strip {
       margin-top: 28px;
-      background: var(--blue-light);
-      border: 1px solid #BFDBFE;
-      border-radius: 10px;
-      padding: 16px 22px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      animation: fadeUp 0.7s 0.35s ease both;
+      background: var(--blue-light); border: 1px solid #BFDBFE;
+      border-radius: 10px; padding: 16px 22px;
+      display: flex; align-items: flex-start; gap: 12px;
     }
-
     .info-strip .info-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .info-strip p { font-size: 0.85rem; color: var(--blue-dark); line-height: 1.5; }
 
-    .info-strip p {
-      font-size: 0.85rem;
-      color: var(--blue-dark);
-      line-height: 1.5;
+    /* ── INNER PAGES (shared) ── */
+    .inner-page {
+      max-width: 680px; margin: 36px auto 0;
     }
 
-    /* ─── FOOTER ─────────────────────────────────────────────── */
+    .inner-page h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem; color: var(--ink); margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem; color: var(--muted);
+      margin-bottom: 32px; font-style: italic;
+    }
+
+    /* ── ABOUT PAGE ── */
+    .content-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px 32px; margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .content-card p {
+      font-size: 0.95rem; color: #334155;
+      line-height: 1.78; margin-bottom: 14px;
+    }
+    .content-card p:last-of-type { margin-bottom: 0; }
+
+    .section-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--blue-dark); background: var(--blue-light);
+      padding: 3px 10px; border-radius: 4px; margin-bottom: 16px;
+    }
+
+    /* ── DOWNLOADS PAGE ── */
+    .download-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px 28px; margin-bottom: 16px;
+      display: flex; align-items: flex-start; gap: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .download-card .dl-icon { font-size: 36px; flex-shrink: 0; margin-top: 2px; }
+
+    .download-card .dl-info h3 {
+      font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 6px;
+    }
+    .download-card .dl-info p {
+      font-size: 0.85rem; color: var(--muted); line-height: 1.55; margin-bottom: 14px;
+    }
+
+    .dl-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--green); background: var(--green-light);
+      border: 1px solid #86EFAC; padding: 2px 7px;
+      border-radius: 4px; margin-left: 8px; vertical-align: middle;
+    }
+
+    .btn-download {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--blue); color: var(--white);
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600;
+      text-decoration: none; padding: 9px 18px; border-radius: 7px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-download:hover { background: var(--blue-dark); transform: translateY(-1px); }
+    .btn-download.soon {
+      background: var(--coming-bg); color: var(--coming);
+      border: 1px solid var(--border); cursor: not-allowed; pointer-events: none;
+    }
+
+    /* ── HOW TO USE PAGE ── */
+    .steps-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .step-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 24px;
+      display: flex; gap: 18px; align-items: flex-start;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .step-num {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: var(--blue); color: var(--white);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500;
+    }
+
+    .step-body h3 {
+      font-size: 0.95rem; font-weight: 600; color: var(--ink); margin-bottom: 4px;
+    }
+    .step-body p { font-size: 0.85rem; color: var(--muted); line-height: 1.55; }
+
+    .howto-note {
+      margin-top: 22px;
+      background: var(--blue-light); border: 1px solid #BFDBFE;
+      border-radius: 10px; padding: 16px 20px;
+      font-size: 0.85rem; color: var(--blue-dark); line-height: 1.55;
+    }
+
+    /* ── FOOTER ── */
     footer {
       margin-top: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      padding-top: 24px; border-top: 1px solid var(--border);
       animation: fadeUp 0.7s 0.45s ease both;
     }
 
-    footer p {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.04em;
-    }
-
-    footer .footer-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    footer .footer-links a {
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
+    footer p { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+    footer .footer-links { display: flex; gap: 20px; }
+    footer .footer-links a { font-size: 0.8rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
     footer .footer-links a:hover { color: var(--blue); }
 
-    /* ─── ANIMATIONS ─────────────────────────────────────────── */
+    /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ─── MODAL OVERLAY ──────────────────────────────────────── */
+    /* ── MODAL ── */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,0.55);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(15,23,42,0.55); backdrop-filter: blur(4px);
+      z-index: 100; align-items: center; justify-content: center;
     }
-
     .modal-overlay.open { display: flex; }
 
     .modal {
-      background: var(--white);
-      border-radius: 16px;
-      padding: 36px 32px 28px;
-      max-width: 420px;
-      width: calc(100% - 48px);
+      background: var(--white); border-radius: 16px; padding: 36px 32px 28px;
+      max-width: 420px; width: calc(100% - 48px);
       box-shadow: 0 24px 64px rgba(0,0,0,0.18);
-      text-align: center;
-      animation: modalIn 0.25s ease both;
+      text-align: center; animation: modalIn 0.25s ease both;
     }
 
     @keyframes modalIn {
@@ -400,186 +375,246 @@
     }
 
     .modal .mod-big-icon { font-size: 48px; margin-bottom: 16px; }
-
-    .modal h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.4rem;
-      margin-bottom: 10px;
-    }
-
-    .modal p {
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-    }
+    .modal h3 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 10px; }
+    .modal p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: center; }
 
     .btn-primary {
-      background: var(--blue);
-      color: var(--white);
-      border: none;
-      padding: 10px 22px;
-      border-radius: 7px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
+      background: var(--blue); color: var(--white); border: none;
+      padding: 10px 22px; border-radius: 7px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; transition: background 0.2s, transform 0.15s;
     }
-
     .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
 
     .btn-ghost {
-      background: transparent;
-      color: var(--muted);
+      background: transparent; color: var(--muted);
       border: 1.5px solid var(--border);
-      padding: 10px 22px;
-      border-radius: 7px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
+      padding: 10px 22px; border-radius: 7px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 500;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s;
     }
-
     .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
   </style>
 </head>
 <body>
-
 <div class="site-wrapper">
 
-  <!-- ── HEADER ───────────────────────────────── -->
+  <!-- HEADER -->
   <header>
     <div class="badge">v2.0 · January 2026</div>
     <h1>📊 <span>Analytix</span> Suite</h1>
-    <p class="tagline">Data-driven insights for teacher action research. Choose a module below to get started.</p>
+    <p class="tagline">Data-driven insights for teacher action research.</p>
   </header>
 
-  <!-- ── DONATE STRIP ─────────────────────────── -->
-  <div class="donate-strip">
-    <p><strong>Find these tools useful?</strong> Support continued development and help keep Analytix Suite free for teachers.</p>
-    <a class="btn-donate" href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener">
-      ☕ Buy Me a Coffee
-    </a>
-  </div>
+  <!-- NAV TABS -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('home')"      id="tab-home">      <span class="tab-icon">🏠</span> Home        </button>
+    <button class="nav-tab"        onclick="showTab('about')"     id="tab-about">     <span class="tab-icon">👤</span> About       </button>
+    <button class="nav-tab"        onclick="showTab('howto')"     id="tab-howto">     <span class="tab-icon">📖</span> How to Use  </button>
+    <button class="nav-tab"        onclick="showTab('downloads')" id="tab-downloads"> <span class="tab-icon">⬇️</span> Downloads   </button>
+  </nav>
 
-  <!-- ── MODULE GRID ───────────────────────────── -->
-  <div class="modules-section">
 
-    <!-- LEFT: BASIC MODULES -->
-    <div class="column-card">
-      <div class="column-header basic">
-        <div class="col-icon">📗</div>
-        <div class="col-title-wrap">
-          <h2>Basic Modules</h2>
-          <span>Teaching Focus</span>
-        </div>
-      </div>
+  <!-- ════════════════════════════════ TAB: HOME ════════════════════════════════ -->
+  <div class="tab-page active" id="page-home">
 
-      <div class="module-list">
-
-        <a class="module-btn" href="#" onclick="openModal('mod1'); return false;">
-          <div class="mod-icon">📊</div>
-          <div class="mod-text">
-            <strong>Single Test Analysis</strong>
-            <span>Analyse individual test performance</span>
-          </div>
-          <div class="mod-arrow">→</div>
-        </a>
-
-        <a class="module-btn" href="#" onclick="openModal('mod2'); return false;">
-          <div class="mod-icon">📈</div>
-          <div class="mod-text">
-            <strong>Progress Tracking</strong>
-            <span>Track student growth over time</span>
-          </div>
-          <div class="mod-arrow">→</div>
-        </a>
-
-      </div>
+    <div class="donate-strip">
+      <p>Building and maintaining these tools takes considerable time, effort, and personal resources. If you've found them useful in your teaching practice, please consider supporting this project. <strong>Even a small contribution helps keep Analytix Suite free and growing. Thank you — your support means more than you know. ☕</strong></p>
+      <a class="btn-donate" href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener">☕ Buy Me a Coffee</a>
     </div>
 
-    <!-- RIGHT: ADVANCED MODULES -->
-    <div class="column-card">
-      <div class="column-header advanced">
-        <div class="col-icon">📘</div>
-        <div class="col-title-wrap">
-          <h2>Advanced Modules</h2>
-          <span>Research Focus</span>
+    <div class="modules-section">
+
+      <!-- BASIC -->
+      <div class="column-card">
+        <div class="column-header basic">
+          <div class="col-icon">📗</div>
+          <div class="col-title-wrap"><h2>Basic Modules</h2><span>Teaching Focus</span></div>
+        </div>
+        <div class="module-list">
+          <a class="module-btn" href="#" onclick="openModal('mod1'); return false;">
+            <div class="mod-icon">📊</div>
+            <div class="mod-text"><strong>Single Test Analysis</strong><span>Analyse individual test performance</span></div>
+            <div class="mod-arrow">→</div>
+          </a>
+          <a class="module-btn" href="#" onclick="openModal('mod2'); return false;">
+            <div class="mod-icon">📈</div>
+            <div class="mod-text"><strong>Progress Tracking</strong><span>Track student growth over time</span></div>
+            <div class="mod-arrow">→</div>
+          </a>
         </div>
       </div>
 
-      <div class="module-list">
-
-        <a class="module-btn" href="#" onclick="openModal('mod0'); return false;">
-          <div class="mod-icon">📋</div>
-          <div class="mod-text">
-            <strong>Descriptive Statistics</strong>
-            <span>Summarise and explore your data — start here!</span>
-          </div>
-          <div class="mod-arrow">→</div>
-        </a>
-
-        <a class="module-btn" href="#" onclick="openModal('mod3'); return false;">
-          <div class="mod-icon">📊</div>
-          <div class="mod-text">
-            <strong>Comparative Analysis</strong>
-            <span>t-tests, ANOVA, and group comparisons</span>
-          </div>
-          <div class="mod-arrow">→</div>
-        </a>
-
-        <a class="module-btn" href="#" onclick="openModal('mod4'); return false;">
-          <div class="mod-icon">🔗</div>
-          <div class="mod-text">
-            <strong>Correlation Analysis</strong>
-            <span>Examine relationships between variables</span>
-          </div>
-          <div class="mod-arrow">→</div>
-        </a>
-
-        <a class="module-btn" href="#" onclick="openModal('mod5'); return false;">
-          <div class="mod-icon">📉</div>
-          <div class="mod-text">
-            <strong>Regression Analysis</strong>
-            <span>Predictive modelling and outlier detection</span>
-          </div>
-          <div class="mod-arrow">→</div>
-        </a>
-
-        <div class="module-btn disabled">
-          <div class="mod-icon">🔍</div>
-          <div class="mod-text">
-            <strong>Factor Analysis</strong>
-            <span>Scale development and data reduction</span>
-          </div>
-          <div class="coming-tag">Coming Soon</div>
+      <!-- ADVANCED -->
+      <div class="column-card">
+        <div class="column-header advanced">
+          <div class="col-icon">📘</div>
+          <div class="col-title-wrap"><h2>Advanced Modules</h2><span>Research Focus</span></div>
         </div>
-
+        <div class="module-list">
+          <a class="module-btn" href="#" onclick="openModal('mod0'); return false;">
+            <div class="mod-icon">📋</div>
+            <div class="mod-text"><strong>Descriptive Statistics</strong><span>Summarise and explore your data — start here!</span></div>
+            <div class="mod-arrow">→</div>
+          </a>
+          <a class="module-btn" href="#" onclick="openModal('mod3'); return false;">
+            <div class="mod-icon">📊</div>
+            <div class="mod-text"><strong>Comparative Analysis</strong><span>t-tests, ANOVA, and group comparisons</span></div>
+            <div class="mod-arrow">→</div>
+          </a>
+          <a class="module-btn" href="#" onclick="openModal('mod4'); return false;">
+            <div class="mod-icon">🔗</div>
+            <div class="mod-text"><strong>Correlation Analysis</strong><span>Examine relationships between variables</span></div>
+            <div class="mod-arrow">→</div>
+          </a>
+          <a class="module-btn" href="#" onclick="openModal('mod5'); return false;">
+            <div class="mod-icon">📉</div>
+            <div class="mod-text"><strong>Regression Analysis</strong><span>Predictive modelling and outlier detection</span></div>
+            <div class="mod-arrow">→</div>
+          </a>
+          <div class="module-btn disabled">
+            <div class="mod-icon">🔍</div>
+            <div class="mod-text"><strong>Factor Analysis</strong><span>Scale development and data reduction</span></div>
+            <div class="coming-tag">Coming Soon</div>
+          </div>
+        </div>
       </div>
+
     </div>
 
-  </div><!-- /modules-section -->
+    <div class="info-strip">
+      <div class="info-icon">🔒</div>
+      <p>All analysis runs securely on our servers — your data is processed and returned to you without being stored. Analytix Suite is designed for teacher action research and professional development.</p>
+    </div>
 
-  <!-- ── INFO STRIP ───────────────────────────── -->
-  <div class="info-strip">
-    <div class="info-icon">🔒</div>
-    <p>All analysis runs securely on our servers — your data is processed and returned to you without being stored. Analytix Suite is designed for teacher action research and professional development.</p>
-  </div>
+  </div><!-- /page-home -->
 
-  <!-- ── FOOTER ────────────────────────────────── -->
+
+  <!-- ════════════════════════════════ TAB: ABOUT ═══════════════════════════════ -->
+  <div class="tab-page" id="page-about">
+    <div class="inner-page">
+      <h2>About This Project</h2>
+      <p class="page-subtitle">Why Analytix Suite exists, and who built it.</p>
+
+      <div class="content-card">
+        <div class="section-label">👤 About Me</div>
+        <p>I'm a teacher with a background in science research, and I find the teaching and learning process endlessly fascinating. I believe the way teachers support their students — in and outside the classroom — has a formative, far-reaching impact on their adult lives and, through them, on society at large. Empowering teachers, I think, is one of the most meaningful contributions anyone can make to human progress.</p>
+        <p>That conviction led me to build Analytix Suite — a set of free, data-driven tools designed to give teachers the kind of analytical insight usually reserved for researchers. My aim is to help teachers make better-informed decisions for the students who need it most.</p>
+      </div>
+
+      <div class="content-card">
+        <div class="section-label">🛠️ The Project</div>
+        <p>Analytix Suite is a growing collection of statistical analysis tools tailored specifically for teachers and school-based action researchers. Each module addresses a different analytical need — from basic test performance summaries to advanced correlation and regression analysis — all without requiring any knowledge of statistics software or coding.</p>
+        <p>Every module is free to use. Your data is never stored. The tools are designed to be practical, interpretable, and immediately actionable in a classroom context.</p>
+      </div>
+
+      <div class="content-card">
+        <div class="section-label">☕ Support This Work</div>
+        <p>Building and maintaining these tools takes considerable time, effort, and personal resources. If you've found them useful in your teaching practice, please consider supporting this project. Even a small contribution helps keep Analytix Suite free and growing.</p>
+        <p>Thank you — your support means more than you know. ☕</p>
+        <a class="btn-donate" href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener" style="margin-top:8px; display:inline-flex;">☕ Buy Me a Coffee</a>
+      </div>
+    </div>
+  </div><!-- /page-about -->
+
+
+  <!-- ════════════════════════════════ TAB: HOW TO USE ══════════════════════════ -->
+  <div class="tab-page" id="page-howto">
+    <div class="inner-page">
+      <h2>How to Use</h2>
+      <p class="page-subtitle">Get up and running with Analytix Suite in a few simple steps.</p>
+
+      <div class="steps-list">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Download the Excel Template</h3>
+            <p>Go to the <strong>Downloads</strong> tab and download the Analytix data template. This is the standard format all modules expect. Enter your student data — question numbers, AO codes, topic labels, marks allocated, and student scores — into the template.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Choose a Module</h3>
+            <p>Return to <strong>Home</strong> and select the module that fits your analytical goal. If you're unsure, start with <em>Single Test Analysis</em> (Basic) or <em>Descriptive Statistics</em> (Advanced) for a broad overview of your data.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Upload Your File</h3>
+            <p>Each module has a file upload area. Upload your completed Excel template. Modules that support cross-test analysis allow you to upload multiple files at once.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>Configure &amp; Run</h3>
+            <p>Select the variables, statistical options, and chart types you want. Then click <strong>Run Analysis</strong>. The server processes your data and prepares your results — typically within a few seconds.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h3>Download Your Results</h3>
+            <p>Results are packaged as a ZIP file containing charts (PNG) and a formatted Excel summary report. Download, open, and explore — no specialist software required.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="howto-note">
+        💡 <strong>New to action research?</strong> Start with the <em>Single Test Analysis</em> module and a single test file. Once you're comfortable with the output format, move to multi-test modules like Progress Tracking or Correlation Analysis.
+      </div>
+    </div>
+  </div><!-- /page-howto -->
+
+
+  <!-- ════════════════════════════════ TAB: DOWNLOADS ══════════════════════════ -->
+  <div class="tab-page" id="page-downloads">
+    <div class="inner-page">
+      <h2>Downloads</h2>
+      <p class="page-subtitle">Templates and resources to get you started.</p>
+
+      <div class="download-card">
+        <div class="dl-icon">📋</div>
+        <div class="dl-info">
+          <h3>Analytix Data Template <span class="dl-tag">Required</span></h3>
+          <p>The standard Excel template used by all Analytix modules. Enter student names, question numbers, AO codes, topic labels, marks allocated, and student scores. Compatible with every module in the suite.</p>
+          <!--
+            HOW TO ADD YOUR FILE:
+            Option A (recommended) — upload the .xlsx to your GitHub repo alongside
+            this index.html and set href to the raw file path, e.g.:
+              href="./Analytix_Template.xlsx"
+            Option B — upload to Google Drive, set sharing to "Anyone with the link",
+            and use the direct download URL:
+              href="https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"
+          -->
+          <a class="btn-download" href="YOUR_TEMPLATE_LINK_HERE" target="_blank" rel="noopener">
+            ⬇ Download Template (.xlsx)
+          </a>
+        </div>
+      </div>
+
+      <div class="download-card">
+        <div class="dl-icon">📖</div>
+        <div class="dl-info">
+          <h3>Template Guide</h3>
+          <p>A step-by-step guide explaining how to fill in the data template — including how to format AO codes, handle absent students, and structure files for multi-test analysis.</p>
+          <a class="btn-download soon" href="#" onclick="return false;">⬇ Coming Soon</a>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /page-downloads -->
+
+
+  <!-- FOOTER -->
   <footer>
     <p>ANALYTIX SUITE · VERSION 2.0 · © 2026</p>
     <div class="footer-links">
-      <a href="#">About</a>
-      <a href="#">How to Use</a>
+      <a href="#" onclick="showTab('about');     return false;">About</a>
+      <a href="#" onclick="showTab('howto');     return false;">How to Use</a>
       <a href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener">Support</a>
       <a href="#">Terms</a>
     </div>
@@ -587,12 +622,9 @@
 
 </div><!-- /site-wrapper -->
 
-<!-- ── MODALS (one per module) ───────────────────────────────── -->
 
-<!-- Each modal below is a placeholder. Replace href in btn-primary
-     with the actual URL of your deployed module page/tool. -->
-
-<div class="modal-overlay" id="modal-mod0" onclick="closeModal(event, 'mod0')">
+<!-- MODULE MODALS -->
+<div class="modal-overlay" id="modal-mod0" onclick="closeModal(event,'mod0')">
   <div class="modal">
     <div class="mod-big-icon">📋</div>
     <h3>Descriptive Statistics</h3>
@@ -604,7 +636,7 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-mod1" onclick="closeModal(event, 'mod1')">
+<div class="modal-overlay" id="modal-mod1" onclick="closeModal(event,'mod1')">
   <div class="modal">
     <div class="mod-big-icon">📊</div>
     <h3>Single Test Analysis</h3>
@@ -616,11 +648,11 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-mod2" onclick="closeModal(event, 'mod2')">
+<div class="modal-overlay" id="modal-mod2" onclick="closeModal(event,'mod2')">
   <div class="modal">
     <div class="mod-big-icon">📈</div>
     <h3>Progress Tracking</h3>
-    <p>Compare results across two or more time points to identify growth patterns, identify students who need support, and visualise class-wide progress.</p>
+    <p>Compare results across two or more time points to identify growth patterns, find students who need support, and visualise class-wide progress.</p>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeModalDirect('mod2')">Cancel</button>
       <button class="btn-primary" onclick="launchModule('module2')">Launch Module →</button>
@@ -628,7 +660,7 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-mod3" onclick="closeModal(event, 'mod3')">
+<div class="modal-overlay" id="modal-mod3" onclick="closeModal(event,'mod3')">
   <div class="modal">
     <div class="mod-big-icon">📊</div>
     <h3>Comparative Analysis</h3>
@@ -640,7 +672,7 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-mod4" onclick="closeModal(event, 'mod4')">
+<div class="modal-overlay" id="modal-mod4" onclick="closeModal(event,'mod4')">
   <div class="modal">
     <div class="mod-big-icon">🔗</div>
     <h3>Correlation Analysis</h3>
@@ -652,7 +684,7 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-mod5" onclick="closeModal(event, 'mod5')">
+<div class="modal-overlay" id="modal-mod5" onclick="closeModal(event,'mod5')">
   <div class="modal">
     <div class="mod-big-icon">📉</div>
     <h3>Regression Analysis</h3>
@@ -664,33 +696,26 @@
   </div>
 </div>
 
-<!-- ── JAVASCRIPT ─────────────────────────────────────────────── -->
+
 <script>
-  // ── MODAL LOGIC ──────────────────────────────
-  function openModal(id) {
-    document.getElementById('modal-' + id).classList.add('open');
+  // ── TAB NAVIGATION
+  function showTab(name) {
+    document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.getElementById('tab-'  + name).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function closeModalDirect(id) {
-    document.getElementById('modal-' + id).classList.remove('open');
-  }
-
-  function closeModal(event, id) {
-    // Only close if clicking the overlay itself, not the modal box
-    if (event.target === event.currentTarget) {
-      closeModalDirect(id);
-    }
-  }
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
-    }
+  // ── MODAL LOGIC
+  function openModal(id) { document.getElementById('modal-' + id).classList.add('open'); }
+  function closeModalDirect(id) { document.getElementById('modal-' + id).classList.remove('open'); }
+  function closeModal(event, id) { if (event.target === event.currentTarget) closeModalDirect(id); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
   });
 
-  // ── MODULE ROUTING ────────────────────────────
-  // Replace these URLs with your actual deployed module endpoints.
-  // Each module will be a separate page/route on your backend.
+  // ── MODULE ROUTING
   const MODULE_URLS = {
     module0: '/tools/descriptive-statistics',
     module1: '/tools/single-test-analysis',
@@ -700,13 +725,10 @@
     module5: '/tools/regression-analysis',
   };
 
-  function launchModule(moduleKey) {
-    const url = MODULE_URLS[moduleKey];
-    if (url) {
-      window.location.href = url;
-    } else {
-      alert('Module URL not configured yet. Add it to MODULE_URLS in the script.');
-    }
+  function launchModule(key) {
+    const url = MODULE_URLS[key];
+    if (url) window.location.href = url;
+    else alert('Module URL not configured yet.');
   }
 </script>
 
