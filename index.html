@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Analytix Suite — Data-Driven Insights for Effective Teaching</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -137,6 +136,22 @@
       transition: background 0.2s, transform 0.15s;
     }
     .btn-donate:hover { background: #D97706; transform: translateY(-1px); }
+
+    .btn-chai {
+      background: #0D9488;
+    }
+    .btn-chai:hover { background: #0F766E; transform: translateY(-1px); }
+
+    .donate-btns {
+      display: flex; flex-direction: column;
+      align-items: stretch; gap: 8px; flex-shrink: 0;
+    }
+
+    .india-note {
+      font-size: 0.72rem; color: #92400E;
+      text-align: center; line-height: 1.4;
+      opacity: 0.8;
+    }
 
     /* ── MODULE GRID ── */
     .modules-section {
@@ -422,7 +437,11 @@
 
     <div class="donate-strip">
       <p>Building and maintaining these tools takes considerable time, effort, and personal resources. If you've found them useful in your teaching practice, please consider supporting this project. <strong>Even a small contribution helps keep Analytix Suite free and growing. Thank you — your support means more than you know. ☕</strong></p>
-      <a class="btn-donate" href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener">☕ Buy Me a Coffee</a>
+      <div class="donate-btns">
+        <a class="btn-donate" href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener">☕ Buy Me a Coffee</a>
+        <a class="btn-donate btn-chai" href="https://buymeachai.ezee.li/kishansinha" target="_blank" rel="noopener noreferrer">🍵 Buy Me a Chai</a>
+        <span class="india-note">🇮🇳 Chai is UPI-friendly — recommended for users in India</span>
+      </div>
     </div>
 
     <div class="modules-section">
@@ -515,6 +534,8 @@
         <p>Building and maintaining these tools takes considerable time, effort, and personal resources. If you've found them useful in your teaching practice, please consider supporting this project. Even a small contribution helps keep Analytix Suite free and growing.</p>
         <p>Thank you — your support means more than you know. ☕</p>
         <a class="btn-donate" href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener" style="margin-top:8px; display:inline-flex;">☕ Buy Me a Coffee</a>
+        <a class="btn-donate btn-chai" href="https://buymeachai.ezee.li/kishansinha" target="_blank" rel="noopener noreferrer" style="margin-top:8px; display:inline-flex;">🍵 Buy Me a Chai</a>
+        <p style="margin-top:8px; font-size:0.78rem; color:var(--muted);">🇮🇳 Chai is UPI-friendly — recommended for users in India</p>
       </div>
     </div>
   </div><!-- /page-about -->
@@ -591,7 +612,7 @@
             and use the direct download URL:
               href="https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"
           -->
-          <a class="btn-download" href="./Analytix_Data_Template_File.xlsx" target="_blank" rel="noopener">
+          <a class="btn-download" href="YOUR_TEMPLATE_LINK_HERE" target="_blank" rel="noopener">
             ⬇ Download Template (.xlsx)
           </a>
         </div>
