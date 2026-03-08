@@ -144,7 +144,7 @@
 
     .donate-btns {
       display: flex; flex-direction: column;
-      align-items: stretch; gap: 8px; flex-shrink: 0;
+      align-items: flex-start; gap: 8px; flex-shrink: 0;
     }
 
     .india-note {
@@ -272,6 +272,45 @@
       line-height: 1.78; margin-bottom: 14px;
     }
     .content-card p:last-of-type { margin-bottom: 0; }
+
+    .profile-header {
+      display: flex; align-items: flex-start; gap: 22px; margin-bottom: 20px;
+    }
+
+    .profile-photo {
+      width: 90px; height: 90px; border-radius: 50%; flex-shrink: 0;
+      object-fit: cover;
+      border: 3px solid var(--blue-light);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    }
+
+    .profile-photo-placeholder {
+      width: 90px; height: 90px; border-radius: 50%; flex-shrink: 0;
+      background: var(--blue-light);
+      border: 3px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; color: var(--blue);
+    }
+
+    .profile-info { flex: 1; }
+
+    .profile-info h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem; color: var(--ink); margin-bottom: 4px;
+    }
+
+    .profile-info .profile-role {
+      font-size: 0.85rem; color: var(--muted); margin-bottom: 10px;
+    }
+
+    .btn-linkedin {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #0A66C2; color: var(--white);
+      font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600;
+      text-decoration: none; padding: 6px 14px; border-radius: 6px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-linkedin:hover { background: #004182; transform: translateY(-1px); }
 
     .section-label {
       display: inline-flex; align-items: center; gap: 6px;
@@ -519,6 +558,23 @@
 
       <div class="content-card">
         <div class="section-label">👤 About Me</div>
+        <div class="profile-header">
+          <!--
+            PHOTO: Replace the placeholder below with your actual photo.
+            Upload your photo to your GitHub repo and set src="./your-photo.jpg"
+            Then delete the placeholder div and uncomment the <img> tag.
+          -->
+            <img class="profile-photo" src="./KKS_pic.png" alt="Kishan Sinha" />
+         
+          <div class="profile-info">
+            <h3>Kishan Sinha</h3>
+            <p class="profile-role">Teacher &amp; Science Researcher</p>
+            <a class="btn-linkedin" href="https://www.linkedin.com/in/kishan-sinha-58265a28" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              View LinkedIn Profile
+            </a>
+          </div>
+        </div>
         <p>I'm a teacher with a background in science research, and I find the teaching and learning process endlessly fascinating. I believe the way teachers support their students — in and outside the classroom — has a formative, far-reaching impact on their adult lives and, through them, on society at large. Empowering teachers, I think, is one of the most meaningful contributions anyone can make to human progress.</p>
         <p>That conviction led me to build Analytix Suite — a set of free, data-driven tools designed to give teachers the kind of analytical insight usually reserved for researchers. My aim is to help teachers make better-informed decisions for the students who need it most.</p>
       </div>
@@ -614,6 +670,9 @@
           -->
           <a class="btn-download" href="Analytix_Data_Template_File.xlsx" target="_blank" rel="noopener">
             ⬇ Download Template (.xlsx)
+          </a>
+          <a class="btn-download" href="./IBDP_Physics_AOs_File.xlsx" target="_blank" rel="noopener" style="margin-top:10px; background:#16A34A;">
+            ⬇ Download AO Template (.xlsx)
           </a>
         </div>
       </div>
