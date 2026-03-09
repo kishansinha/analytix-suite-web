@@ -450,6 +450,90 @@
       cursor: pointer; transition: border-color 0.2s, color 0.2s;
     }
     .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* ── CONTACT FORM ── */
+    .contact-page { max-width: 580px; margin: 36px auto 0; }
+
+    .contact-page h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem; color: var(--ink); margin-bottom: 6px;
+    }
+
+    .contact-form-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-top: 8px;
+    }
+
+    .form-row { margin-bottom: 20px; }
+
+    .form-row label {
+      display: block;
+      font-size: 0.82rem; font-weight: 600; color: var(--ink);
+      margin-bottom: 6px; letter-spacing: 0.01em;
+    }
+
+    .form-row label .optional {
+      font-weight: 400; color: var(--muted); font-size: 0.78rem;
+    }
+
+    .form-row input,
+    .form-row select,
+    .form-row textarea {
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem; color: var(--ink);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 10px 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      -webkit-appearance: none; appearance: none;
+    }
+
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+      background: var(--white);
+    }
+
+    .form-row textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+
+    .form-row select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-color: var(--surface);
+      padding-right: 36px; cursor: pointer;
+    }
+
+    .btn-submit {
+      width: 100%; padding: 12px;
+      background: var(--blue); color: var(--white);
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600;
+      border: none; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { background: var(--blue-dark); transform: translateY(-1px); }
+    .btn-submit:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+
+    .form-status {
+      display: none; margin-top: 16px;
+      padding: 14px 18px; border-radius: 8px;
+      font-size: 0.875rem; line-height: 1.5; text-align: center;
+    }
+    .form-status.success {
+      display: block;
+      background: var(--green-light); border: 1px solid #86EFAC; color: #166534;
+    }
+    .form-status.error {
+      display: block;
+      background: #FEE2E2; border: 1px solid #FCA5A5; color: #991B1B;
+    }
   </style>
 </head>
 <body>
@@ -468,6 +552,7 @@
     <button class="nav-tab"        onclick="showTab('about')"     id="tab-about">     <span class="tab-icon">👤</span> About       </button>
     <button class="nav-tab"        onclick="showTab('howto')"     id="tab-howto">     <span class="tab-icon">📖</span> How to Use  </button>
     <button class="nav-tab"        onclick="showTab('downloads')" id="tab-downloads"> <span class="tab-icon">⬇️</span> Downloads   </button>
+    <button class="nav-tab"        onclick="showTab('contact')"   id="tab-contact">   <span class="tab-icon">✉️</span> Contact     </button>
   </nav>
 
 
@@ -692,12 +777,54 @@
   </div><!-- /page-downloads -->
 
 
+  <!-- ════════════════════════════════ TAB: CONTACT ════════════════════════════ -->
+  <div class="tab-page" id="page-contact">
+    <div class="contact-page">
+      <h2>Contact</h2>
+      <p class="page-subtitle">Feedback, suggestions, questions — all welcome.</p>
+
+      <div class="contact-form-card">
+        <div class="form-row">
+          <label for="cf-name">Name <span class="optional">(optional)</span></label>
+          <input type="text" id="cf-name" placeholder="Your name" autocomplete="name" />
+        </div>
+        <div class="form-row">
+          <label for="cf-email">Email <span style="color:#dc2626;font-size:0.78rem;">*</span></label>
+          <input type="email" id="cf-email" placeholder="your@email.com" autocomplete="email" required />
+        </div>
+        <div class="form-row">
+          <label for="cf-category">Nature of Message <span style="color:#dc2626;font-size:0.78rem;">*</span></label>
+          <select id="cf-category" required>
+            <option value="" disabled selected>Select a category…</option>
+            <option value="Feedback">Feedback</option>
+            <option value="Suggestion">Suggestion</option>
+            <option value="Query">Query / Question</option>
+            <option value="Appreciation">Appreciation</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="cf-message">Message <span style="color:#dc2626;font-size:0.78rem;">*</span></label>
+          <textarea id="cf-message" placeholder="Write your message here…" required></textarea>
+        </div>
+
+        <button class="btn-submit" id="cf-submit" onclick="sendEmail()">
+          <span id="cf-btn-text">✉ Send Message</span>
+        </button>
+
+        <div class="form-status" id="cf-status"></div>
+      </div>
+    </div>
+  </div><!-- /page-contact -->
+
+
   <!-- FOOTER -->
   <footer>
     <p>ANALYTIX SUITE · VERSION 5.0 · © 2026</p>
     <div class="footer-links">
       <a href="#" onclick="showTab('about');     return false;">About</a>
       <a href="#" onclick="showTab('howto');     return false;">How to Use</a>
+      <a href="#" onclick="showTab('contact');   return false;">Contact</a>
       <a href="https://buymeacoffee.com/kishansinha" target="_blank" rel="noopener">Support</a>
       <a href="#">Terms</a>
     </div>
@@ -815,5 +942,71 @@
   }
 </script>
 
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // ── EMAILJS CONFIG ────────────────────────────────────────────────────────
+  // Replace these three values with your own from emailjs.com
+  const EMAILJS_PUBLIC_KEY  = 'U8xzwCGCLkydSZxyk';   // Account → API Keys
+  const EMAILJS_SERVICE_ID  = 'service_furiosu';   // Email Services → Service ID
+  const EMAILJS_TEMPLATE_ID = 'template_gdtmq7j';  // Email Templates → Template ID
+
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+  function sendEmail() {
+    const name     = document.getElementById('cf-name').value.trim();
+    const email    = document.getElementById('cf-email').value.trim();
+    const category = document.getElementById('cf-category').value;
+    const message  = document.getElementById('cf-message').value.trim();
+    const status   = document.getElementById('cf-status');
+    const btn      = document.getElementById('cf-submit');
+    const btnText  = document.getElementById('cf-btn-text');
+
+    // Clear previous status
+    status.className = 'form-status';
+    status.textContent = '';
+
+    // Basic validation
+    if (!email) { showStatus('error', 'Please enter your email address.'); return; }
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { showStatus('error', 'Please enter a valid email address.'); return; }
+    if (!category) { showStatus('error', 'Please select a category.'); return; }
+    if (!message)  { showStatus('error', 'Please write a message before sending.'); return; }
+
+    // Sending state
+    btn.disabled = true;
+    btnText.textContent = 'Sending…';
+
+    const templateParams = {
+      from_name:  name || 'Anonymous',
+      from_email: email,
+      category:   category,
+      message:    message,
+    };
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+      .then(() => {
+        showStatus('success', '✅ Message sent! Thank you for reaching out — I'll get back to you soon.');
+        document.getElementById('cf-name').value     = '';
+        document.getElementById('cf-email').value    = '';
+        document.getElementById('cf-category').value = '';
+        document.getElementById('cf-message').value  = '';
+        btn.disabled = false;
+        btnText.textContent = '✉ Send Message';
+      })
+      .catch(err => {
+        console.error('EmailJS error:', err);
+        showStatus('error', '❌ Something went wrong. Please try again or email me directly.');
+        btn.disabled = false;
+        btnText.textContent = '✉ Send Message';
+      });
+  }
+
+  function showStatus(type, msg) {
+    const status = document.getElementById('cf-status');
+    status.className = 'form-status ' + type;
+    status.textContent = msg;
+  }
+</script>
 </body>
 </html>
