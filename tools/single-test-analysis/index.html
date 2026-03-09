@@ -499,6 +499,146 @@
     @keyframes slideDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn    { from{opacity:0} to{opacity:1} }
     @keyframes pulse     { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    /* ── HOW TO USE BUTTON ── */
+    .how-to-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      background: var(--teal);
+      border: 1px solid var(--teal);
+      border-radius: 5px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem; font-weight: 500;
+      color: var(--white); letter-spacing: 0.05em;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .how-to-btn:hover { background: var(--teal-dim); color: var(--teal); border-color: var(--teal-border); }
+    .how-to-btn span {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 1.5px solid currentColor;
+      font-size: 0.6rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── HOW TO USE DRAWER ── */
+    .howto-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(28,25,23,0.4); backdrop-filter: blur(2px);
+      z-index: 200;
+    }
+    .howto-overlay.open { display: block; }
+
+    .howto-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 420px; max-width: 92vw;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      z-index: 201;
+    }
+    .howto-overlay.open .howto-drawer { transform: translateX(0); }
+
+    .howto-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+    }
+
+    .howto-header-left { display: flex; align-items: center; gap: 10px; }
+
+    .howto-header-left .module-id { font-size: 0.6rem; }
+
+    .howto-title {
+      font-family: 'Lora', serif; font-size: 0.95rem;
+      font-weight: 600; color: var(--ink);
+    }
+
+    .howto-close {
+      width: 28px; height: 28px; border-radius: 5px;
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--ink-muted); cursor: pointer;
+      transition: all 0.2s; line-height: 1;
+    }
+    .howto-close:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+
+    .howto-body {
+      flex: 1; overflow-y: auto; padding: 20px;
+    }
+    .howto-body::-webkit-scrollbar { width: 4px; }
+    .howto-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .howto-section { margin-bottom: 24px; }
+
+    .howto-section-title {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 10px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--teal-border);
+    }
+
+    .howto-step {
+      display: flex; gap: 12px; margin-bottom: 12px;
+    }
+
+    .howto-step-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: var(--teal-dim); border: 1px solid var(--teal-border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; font-weight: 500; color: var(--teal);
+    }
+
+    .howto-step-body { flex: 1; }
+
+    .howto-step-body strong {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      color: var(--ink); margin-bottom: 3px;
+    }
+
+    .howto-step-body p {
+      font-size: 0.78rem; color: var(--ink-mid); line-height: 1.6;
+    }
+
+    .howto-tip {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .howto-tip-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-tip p { font-size: 0.78rem; color: var(--amber); line-height: 1.55; }
+
+    .howto-note {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .howto-note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-note p { font-size: 0.78rem; color: var(--blue); line-height: 1.55; }
+
+    .howto-output-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .howto-output-item:last-child { border-bottom: none; }
+    .howto-output-icon { font-size: 16px; flex-shrink: 0; }
+    .howto-output-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); }
+    .howto-output-body p { font-size: 0.76rem; color: var(--ink-mid); line-height: 1.55; margin-top: 2px; }
+
+    .howto-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem; color: var(--ink-dim);
+      text-align: center; letter-spacing: 0.04em;
+    }
   </style>
 </head>
 <body>
@@ -513,6 +653,10 @@
       <span class="module-title">Single Test Analysis</span>
     </div>
     <div class="topbar-right">
+      <button class="how-to-btn" onclick="openHowTo()">
+        <span>?</span> How to Use
+      </button>
+      <div class="topbar-divider"></div>
       <div class="status-dot checking" id="statusDot"></div>
       <span class="status-label" id="statusLabel">CHECKING…</span>
     </div>
@@ -849,6 +993,223 @@
       <span style="opacity:0.5;">Analytix Suite · MOD-01</span>
     </div>
   </div>
+
+
+  <!-- HOW TO USE DRAWER -->
+  <div class="howto-overlay" id="howtoOverlay" onclick="closeHowToOverlay(event)">
+    <div class="howto-drawer" id="howtoDrawer">
+
+      <div class="howto-header">
+        <div class="howto-header-left">
+          <span class="module-id">MOD-01</span>
+          <span class="howto-title">How to Use</span>
+        </div>
+        <button class="howto-close" onclick="closeHowTo()">✕</button>
+      </div>
+
+      <div class="howto-body">
+
+        <!-- OVERVIEW -->
+        <div class="howto-section">
+          <div class="howto-section-title">📋 What This Module Does</div>
+          <p style="font-size:0.82rem; color:var(--ink-mid); line-height:1.7;">
+            Single Test Analysis takes results from one assessment and generates two sets of output charts:
+            <strong>individual student reports</strong> and <strong>class-wide performance charts</strong>.
+            Individual reports break down each student's performance by AO category, specific AO, and topic —
+            ideal for sharing directly with students as personalised, actionable feedback. Class charts reveal
+            patterns, strengths, and areas for improvement across the whole cohort.
+          </p>
+        </div>
+
+        <!-- FILES NEEDED -->
+        <div class="howto-section">
+          <div class="howto-section-title">📁 Files You Need</div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">1</div>
+            <div class="howto-step-body">
+              <strong>Data File — Analytix_Data_Template_File.xlsx</strong>
+              <p>Download the <strong>Analytix Data Template</strong> from the Analytix Suite home page (Downloads tab). Each row represents one question. Each student occupies one column — replace "Student 1", "Student 2", etc. with actual student names in Row 2.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">2</div>
+            <div class="howto-step-body">
+              <strong>AOs File — AOs_Template_File.xlsx</strong>
+              <p>Download the <strong>AOs File</strong> from the Downloads tab. It contains a list of AO codes and their descriptors. You can use the provided AOs as-is, modify them, or replace them with your own set of Assessment Objectives.</p>
+            </div>
+          </div>
+
+          <div class="howto-note">
+            <span class="howto-note-icon">ℹ️</span>
+            <p>Both files are available in the <strong>Downloads</strong> tab on the Analytix Suite home page.</p>
+          </div>
+        </div>
+
+        <!-- DATA TEMPLATE GUIDE -->
+        <div class="howto-section">
+          <div class="howto-section-title">📝 Filling In the Data Template</div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">A</div>
+            <div class="howto-step-body">
+              <strong>Question column (Col A)</strong>
+              <p>Enter one question per row. Use the format <em>Paper_Question</em> — for example, <code>1A_7</code> means Question 7 in Paper 1A, and <code>2_3(a)(iii)</code> means Question 3(a)(iii) in Paper 2. If you are using a single paper or prefer simple numbering, you can use plain numbers like <code>7</code> or <code>3(a)(iii)</code>.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">B</div>
+            <div class="howto-step-body">
+              <strong>Topic column (Col B)</strong>
+              <p>Enter the topic name for each question. This is used to group questions in the topic-level charts.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">C</div>
+            <div class="howto-step-body">
+              <strong>AO columns (Col C &amp; D)</strong>
+              <p>Enter the AO code for each question in Column C (e.g. <code>AO2j</code>). Column D is reserved for future analysis — leave it blank. Entering a code in Column D will not affect results.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">D</div>
+            <div class="howto-step-body">
+              <strong>Marks Allocated column (Col E)</strong>
+              <p>Enter the marks available for each question. This is the only marks column used in analysis.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">E</div>
+            <div class="howto-step-body">
+              <strong>Marks per Question column (Col F)</strong>
+              <p>Optional. You may use this to record total marks for main questions (e.g. the total for a multi-part question). It is not used in analysis.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">F</div>
+            <div class="howto-step-body">
+              <strong>Student score columns (Col G onwards)</strong>
+              <p>Replace "Student 1", "Student 2", etc. in Row 2 with actual student names. Enter each student's score for each question in the corresponding cell. Use whole numbers or decimals as appropriate.</p>
+            </div>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">⚠️</span>
+            <p><strong>Absent students:</strong> Insert <code>AB</code> in the first data row below the student's name. Do not enter scores for absent students.</p>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">⚠️</span>
+            <p><strong>Unattempted questions:</strong> Enter <code>NA</code> — not <code>0</code>. An unattempted question (lack of time, unfamiliar context) carries different meaning from an incorrectly attempted one.</p>
+          </div>
+        </div>
+
+        <!-- STEP BY STEP -->
+        <div class="howto-section">
+          <div class="howto-section-title">🔢 Step-by-Step</div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">1</div>
+            <div class="howto-step-body">
+              <strong>Upload your files (Panel 1)</strong>
+              <p>Drag and drop or click to upload your Data File and AOs File. The module will validate both files and show a summary of detected students, questions, and total marks. Fix any errors flagged before proceeding.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">2</div>
+            <div class="howto-step-body">
+              <strong>Configure your analysis (Panel 2)</strong>
+              <p>Enter the exam or grade label used in charts. Choose whether to run Individual Reports, Class Analysis, or both, and select your preferred chart options.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">3</div>
+            <div class="howto-step-body">
+              <strong>Generate Analysis</strong>
+              <p>Click <em>Generate Analysis</em>. Panel 3 shows a live progress log as the server processes your data. Typical run time is 15–45 seconds depending on class size.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">4</div>
+            <div class="howto-step-body">
+              <strong>Download your results (Panel 3)</strong>
+              <p>When complete, click <em>Download ZIP</em>. The ZIP contains all charts as PNG files. Individual student charts are in a separate subfolder — ready to share directly with students as feedback.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- OUTPUTS -->
+        <div class="howto-section">
+          <div class="howto-section-title">📊 What You Get</div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">👤</span>
+            <div class="howto-output-body">
+              <strong>Individual Student Reports</strong>
+              <p>Bar charts showing each student's percentage score broken down by AO category, specific AO, and topic. One chart set per student — shareable directly as personalised feedback.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🌡️</span>
+            <div class="howto-output-body">
+              <strong>Class Heatmap</strong>
+              <p>A grid showing every student's performance across every AO and topic. Instantly reveals which skills the class struggled with and which individuals are outliers.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🎻</span>
+            <div class="howto-output-body">
+              <strong>Violin / Distribution Plots</strong>
+              <p>Show the spread and shape of scores across AO categories and topics. Reveals whether performance was consistent or polarised within each skill area and topic.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🕸️</span>
+            <div class="howto-output-body">
+              <strong>Radar Chart</strong>
+              <p>Class average performance across all AO categories and topics on a single chart — useful for identifying overall strengths and gaps at a glance.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPS -->
+        <div class="howto-section">
+          <div class="howto-section-title">💡 Tips</div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Sharing with students:</strong> Individual report charts are named using the student's column header. Use consistent, full names so files are easy to identify and distribute.</p>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Multiple papers:</strong> You can combine all papers into one Data File using the <em>Paper_Question</em> format, or maintain a separate file per paper — both approaches work.</p>
+          </div>
+
+          <div class="howto-note">
+            <span class="howto-note-icon">ℹ️</span>
+            <p>Your data is never stored. Files are processed on the server and deleted immediately after your ZIP is generated.</p>
+          </div>
+        </div>
+
+      </div><!-- /howto-body -->
+
+      <div class="howto-footer">MOD-01 · SINGLE TEST ANALYSIS · ANALYTIX SUITE</div>
+
+    </div><!-- /howto-drawer -->
+  </div><!-- /howto-overlay -->
 
 </div><!-- /app -->
 
@@ -1327,6 +1688,22 @@
   // ── INIT ─────────────────────────────────────────────────────────────────────
   setupUploadZone('scoresZone', 'scoresInput', 'scores');
   setupUploadZone('aosZone',    'aosInput',    'aos');
+
+  // ── HOW TO USE DRAWER ────────────────────────────────────────────────────────
+  function openHowTo() {
+    document.getElementById('howtoOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeHowTo() {
+    document.getElementById('howtoOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeHowToOverlay(e) {
+    if (e.target === document.getElementById('howtoOverlay')) closeHowTo();
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeHowTo();
+  });
 </script>
 </body>
 </html>
