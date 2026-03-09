@@ -534,6 +534,87 @@
       display: block;
       background: #FEE2E2; border: 1px solid #FCA5A5; color: #991B1B;
     }
+
+    /* ── GUIDE ACCORDION ── */
+    .guide-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden;
+    }
+
+    .guide-toggle {
+      width: 100%; display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px; background: none; border: none;
+      cursor: pointer; text-align: left;
+      transition: background 0.2s;
+    }
+    .guide-toggle:hover { background: var(--surface); }
+
+    .guide-toggle-icon { font-size: 28px; flex-shrink: 0; }
+
+    .guide-toggle-text { flex: 1; }
+    .guide-toggle-text h3 {
+      font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 4px;
+    }
+    .guide-toggle-text p {
+      font-size: 0.82rem; color: var(--muted); line-height: 1.45; margin: 0;
+    }
+
+    .guide-chevron {
+      font-size: 12px; color: var(--muted);
+      transition: transform 0.25s; flex-shrink: 0;
+    }
+    .guide-card.open .guide-chevron { transform: rotate(180deg); }
+
+    .guide-body {
+      display: none; padding: 0 24px 22px;
+      border-top: 1px solid var(--border);
+    }
+    .guide-card.open .guide-body { display: block; }
+
+    .guide-section { margin-top: 18px; }
+
+    .guide-section-label {
+      font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--blue-dark); margin-bottom: 10px; display: block;
+    }
+
+    .guide-row {
+      display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start;
+    }
+
+    .guide-col-tag {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500;
+      background: var(--blue-light); color: var(--blue-dark);
+      border: 1px solid #BFDBFE; border-radius: 4px;
+      padding: 2px 7px; white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    }
+
+    .guide-col-tag.green { background: var(--green-light); color: var(--green); border-color: #86EFAC; }
+    .guide-col-tag.purple { background: var(--purple-light); color: var(--purple); border-color: #C4B5FD; }
+    .guide-col-tag.gold { background: var(--gold-light); color: #92400E; border-color: #FDE68A; }
+
+    .guide-row-body strong {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: var(--ink); margin-bottom: 2px;
+    }
+    .guide-row-body p { font-size: 0.79rem; color: var(--muted); line-height: 1.55; margin: 0; }
+
+    .guide-alert {
+      display: flex; gap: 10px; align-items: flex-start;
+      border-radius: 7px; padding: 10px 12px; margin-top: 10px;
+      font-size: 0.79rem; line-height: 1.55;
+    }
+    .guide-alert.warn { background: var(--gold-light); border: 1px solid #FDE68A; color: #92400E; }
+    .guide-alert.info { background: var(--blue-light); border: 1px solid #BFDBFE; color: var(--blue-dark); }
+    .guide-alert-icon { flex-shrink: 0; }
+
+    code {
+      font-family: 'DM Mono', monospace; font-size: 0.78rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 3px; padding: 1px 5px; color: var(--ink);
+    }
   </style>
 </head>
 <body>
@@ -764,12 +845,172 @@
         </div>
       </div>
 
-      <div class="download-card">
-        <div class="dl-icon">📖</div>
-        <div class="dl-info">
-          <h3>Template Guide</h3>
-          <p>A step-by-step guide explaining how to fill in the data template — including how to format AO codes, handle absent students, and structure files for multi-test analysis.</p>
-          <a class="btn-download soon" href="#" onclick="return false;">⬇ Coming Soon</a>
+      <!-- GUIDE: DATA TEMPLATE -->
+      <div class="guide-card" id="guide-data">
+        <button class="guide-toggle" onclick="toggleGuide('guide-data')">
+          <span class="guide-toggle-icon">📋</span>
+          <div class="guide-toggle-text">
+            <h3>Guide — Analytix Data Template</h3>
+            <p>How to structure your test scores file for use with any Analytix module.</p>
+          </div>
+          <span class="guide-chevron">▼</span>
+        </button>
+        <div class="guide-body">
+
+          <div class="guide-section">
+            <span class="guide-section-label">📐 File Structure</span>
+            <p style="font-size:0.82rem; color:var(--muted); line-height:1.6; margin-bottom:12px;">
+              The template uses one <strong>row per question</strong> and one <strong>column per student</strong>.
+              Row 2 contains column headers — replace "Student 1", "Student 2", etc. with actual student names.
+              Questions are listed from Row 3 downwards.
+            </p>
+          </div>
+
+          <div class="guide-section">
+            <span class="guide-section-label">🗂️ Columns</span>
+
+            <div class="guide-row">
+              <span class="guide-col-tag">Col A</span>
+              <div class="guide-row-body">
+                <strong>Question</strong>
+                <p>One question per row. Use the format <code>Paper_Question</code> — e.g. <code>1A_7</code> (Question 7, Paper 1A) or <code>2_3(a)(iii)</code> (Question 3(a)(iii), Paper 2). For a single paper, plain numbering like <code>7</code> or <code>3(a)(iii)</code> also works.</p>
+              </div>
+            </div>
+
+            <div class="guide-row">
+              <span class="guide-col-tag">Col B</span>
+              <div class="guide-row-body">
+                <strong>Topic</strong>
+                <p>Topic name for each question. Used to group questions in topic-level charts.</p>
+              </div>
+            </div>
+
+            <div class="guide-row">
+              <span class="guide-col-tag">Col C</span>
+              <div class="guide-row-body">
+                <strong>AO (primary)</strong>
+                <p>AO code for each question, e.g. <code>AO2j</code>. Use codes from the AOs File.</p>
+              </div>
+            </div>
+
+            <div class="guide-row">
+              <span class="guide-col-tag purple">Col D</span>
+              <div class="guide-row-body">
+                <strong>AO (secondary) — reserved</strong>
+                <p>Leave blank. Reserved for future analysis. Entries here will not affect results.</p>
+              </div>
+            </div>
+
+            <div class="guide-row">
+              <span class="guide-col-tag green">Col E</span>
+              <div class="guide-row-body">
+                <strong>Marks Allocated</strong>
+                <p>Marks available for each question. <strong>This is the only marks column used in analysis.</strong></p>
+              </div>
+            </div>
+
+            <div class="guide-row">
+              <span class="guide-col-tag gold">Col F</span>
+              <div class="guide-row-body">
+                <strong>Marks per Question — optional</strong>
+                <p>You may use this to record total marks for a main question (e.g. the sum across sub-parts). Not used in analysis.</p>
+              </div>
+            </div>
+
+            <div class="guide-row">
+              <span class="guide-col-tag green">Col G+</span>
+              <div class="guide-row-body">
+                <strong>Student score columns</strong>
+                <p>One column per student. Replace "Student 1", "Student 2", etc. in Row 2 with real names. Enter each student's score for each question.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <span class="guide-section-label">⚠️ Special Values</span>
+
+            <div class="guide-alert warn">
+              <span class="guide-alert-icon">🔴</span>
+              <div><strong>Absent students:</strong> Insert <code>AB</code> in the first data cell (Row 3) below the student's name. Leave all other cells for that student blank.</div>
+            </div>
+
+            <div class="guide-alert warn">
+              <span class="guide-alert-icon">🟡</span>
+              <div><strong>Unattempted questions:</strong> Enter <code>NA</code> — not <code>0</code>. An unattempted question (lack of time, unfamiliar context) has different meaning from an incorrectly attempted one.</div>
+            </div>
+
+            <div class="guide-alert info">
+              <span class="guide-alert-icon">💡</span>
+              <div><strong>Multiple papers:</strong> Combine all papers into one file using the <code>Paper_Question</code> format, or maintain a separate file per paper — both are supported.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GUIDE: AOs FILE -->
+      <div class="guide-card" id="guide-aos">
+        <button class="guide-toggle" onclick="toggleGuide('guide-aos')">
+          <span class="guide-toggle-icon">🎯</span>
+          <div class="guide-toggle-text">
+            <h3>Guide — AOs File</h3>
+            <p>How to use and customise the Assessment Objectives reference file.</p>
+          </div>
+          <span class="guide-chevron">▼</span>
+        </button>
+        <div class="guide-body">
+
+          <div class="guide-section">
+            <span class="guide-section-label">📐 File Structure</span>
+            <p style="font-size:0.82rem; color:var(--muted); line-height:1.6; margin-bottom:12px;">
+              The AOs File is a simple two-column reference list — it contains no question mapping.
+              Column A holds the <strong>AO code</strong> (e.g. <code>AO2j</code>) and Column B holds the
+              <strong>descriptor</strong> (the full description of what that AO assesses).
+            </p>
+          </div>
+
+          <div class="guide-section">
+            <span class="guide-section-label">🗂️ Columns</span>
+
+            <div class="guide-row">
+              <span class="guide-col-tag">Col A</span>
+              <div class="guide-row-body">
+                <strong>Code</strong>
+                <p>The AO code used in the Data Template (Col C). These must match exactly — the module uses these codes to link questions to their objectives.</p>
+              </div>
+            </div>
+
+            <div class="guide-row">
+              <span class="guide-col-tag green">Col B</span>
+              <div class="guide-row-body">
+                <strong>Assessment Objective</strong>
+                <p>A plain-language description of the skill or objective. Used as labels in charts and reports.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <span class="guide-section-label">✏️ Customising Your AOs</span>
+            <p style="font-size:0.82rem; color:var(--muted); line-height:1.6; margin-bottom:10px;">
+              The provided AOs File is based on a standard set of assessment objectives. You have three options:
+            </p>
+
+            <div class="guide-alert info">
+              <span class="guide-alert-icon">✅</span>
+              <div><strong>Use as-is:</strong> If the provided AO codes match your curriculum, simply use the file without changes.</div>
+            </div>
+
+            <div class="guide-alert info">
+              <span class="guide-alert-icon">✏️</span>
+              <div><strong>Modify:</strong> Edit the codes and descriptors to match your school's or curriculum's AO framework. Ensure the codes in Col A match what you enter in Col C of the Data Template.</div>
+            </div>
+
+            <div class="guide-alert info">
+              <span class="guide-alert-icon">🆕</span>
+              <div><strong>Create your own:</strong> Replace all rows with your own AO codes and descriptors. Any consistent coding system works — e.g. <code>K1</code>, <code>K2</code> for knowledge objectives, <code>A1</code>, <code>A2</code> for application, etc.</div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -999,6 +1240,11 @@
       btn.disabled = false;
       btnText.textContent = 'Send Message';
     });
+  }
+
+  // ── GUIDE ACCORDION ──────────────────────────────────────────────────────────
+  function toggleGuide(id) {
+    document.getElementById(id).classList.toggle('open');
   }
 </script>
 </body>
