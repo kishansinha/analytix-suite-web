@@ -280,6 +280,123 @@
     @keyframes slideDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn    { from{opacity:0} to{opacity:1} }
     @keyframes pulse     { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    /* ── HOW TO USE BUTTON ── */
+    .how-to-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      background: var(--teal);
+      border: 1px solid var(--teal);
+      border-radius: 5px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem; font-weight: 500;
+      color: var(--white); letter-spacing: 0.05em;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .how-to-btn:hover { background: var(--teal-dim); color: var(--teal); border-color: var(--teal-border); }
+    .how-to-btn span {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 1.5px solid currentColor;
+      font-size: 0.6rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── HOW TO USE DRAWER ── */
+    .howto-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(28,25,23,0.4); backdrop-filter: blur(2px);
+      z-index: 200;
+    }
+    .howto-overlay.open { display: block; }
+
+    .howto-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 420px; max-width: 92vw;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      z-index: 201;
+    }
+    .howto-overlay.open .howto-drawer { transform: translateX(0); }
+
+    .howto-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+    }
+    .howto-header-left { display: flex; align-items: center; gap: 10px; }
+    .howto-header-left .module-id { font-size: 0.6rem; }
+    .howto-title { font-family: 'Lora', serif; font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+    .howto-close {
+      width: 28px; height: 28px; border-radius: 5px;
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--ink-muted); cursor: pointer;
+      transition: all 0.2s; line-height: 1;
+    }
+    .howto-close:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+
+    .howto-body { flex: 1; overflow-y: auto; padding: 20px; }
+    .howto-body::-webkit-scrollbar { width: 4px; }
+    .howto-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .howto-section { margin-bottom: 24px; }
+    .howto-section-title {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 10px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--teal-border);
+    }
+
+    .howto-step { display: flex; gap: 12px; margin-bottom: 12px; }
+    .howto-step-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: var(--teal-dim); border: 1px solid var(--teal-border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; font-weight: 500; color: var(--teal);
+    }
+    .howto-step-body { flex: 1; }
+    .howto-step-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+    .howto-step-body p { font-size: 0.78rem; color: var(--ink-mid); line-height: 1.6; }
+
+    .howto-tip {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .howto-tip-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-tip p { font-size: 0.78rem; color: var(--amber); line-height: 1.55; }
+
+    .howto-note {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .howto-note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-note p { font-size: 0.78rem; color: var(--blue); line-height: 1.55; }
+
+    .howto-output-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .howto-output-item:last-child { border-bottom: none; }
+    .howto-output-icon { font-size: 16px; flex-shrink: 0; }
+    .howto-output-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); }
+    .howto-output-body p { font-size: 0.76rem; color: var(--ink-mid); line-height: 1.55; margin-top: 2px; }
+
+    .howto-footer {
+      padding: 12px 20px; border-top: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem; color: var(--ink-dim);
+      text-align: center; letter-spacing: 0.04em;
+    }
   </style>
 </head>
 <body>
@@ -294,6 +411,10 @@
       <span class="module-title">Progress Tracking</span>
     </div>
     <div class="topbar-right">
+      <button class="how-to-btn" onclick="openHowTo()">
+        <span>?</span> How to Use
+      </button>
+      <div class="topbar-divider"></div>
       <div class="status-dot checking" id="statusDot"></div>
       <span class="status-label" id="statusLabel">CHECKING…</span>
     </div>
@@ -491,6 +612,221 @@
     <div class="bottom-stat"><div class="bottom-stat-dot" style="background:var(--amber)"></div><span id="bottomDateRange">— date range</span></div>
     <div class="bottom-stat" style="margin-left:auto;"><span style="opacity:0.5;">Analytix Suite · MOD-02</span></div>
   </div>
+
+
+  <!-- HOW TO USE DRAWER -->
+  <div class="howto-overlay" id="howtoOverlay" onclick="closeHowToOverlay(event)">
+    <div class="howto-drawer" id="howtoDrawer">
+
+      <div class="howto-header">
+        <div class="howto-header-left">
+          <span class="module-id">MOD-02</span>
+          <span class="howto-title">How to Use</span>
+        </div>
+        <button class="howto-close" onclick="closeHowTo()">✕</button>
+      </div>
+
+      <div class="howto-body">
+
+        <!-- OVERVIEW -->
+        <div class="howto-section">
+          <div class="howto-section-title">📋 What This Module Does</div>
+          <p style="font-size:0.82rem; color:var(--ink-mid); line-height:1.7;">
+            Progress Tracking takes results from two to five assessments and visualises how student performance
+            has changed over time. It produces <strong>individual student progress charts</strong> as well as
+            <strong>class-wide trend charts</strong> across AOs, topics, components, and overall performance.
+            A focused tracking option lets you zero in on specific skills or topics across the test series.
+            Results include an Excel summary of key statistics.
+          </p>
+        </div>
+
+        <!-- FILES NEEDED -->
+        <div class="howto-section">
+          <div class="howto-section-title">📁 Files You Need</div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">1</div>
+            <div class="howto-step-body">
+              <strong>Two to five Data Files</strong>
+              <p>One <code>Analytix_Data_Template_File.xlsx</code> per test, filled in with student scores for that assessment. Download the template from the Analytix Suite home page (Downloads tab).</p>
+            </div>
+          </div>
+
+          <div class="howto-note">
+            <span class="howto-note-icon">ℹ️</span>
+            <p>The Data Template is available in the <strong>Downloads</strong> tab on the Analytix Suite home page. Each test file should follow the same column structure — same AO codes and topic names — so progress can be tracked consistently.</p>
+          </div>
+
+          <div class="howto-note">
+            <span class="howto-note-icon">ℹ️</span>
+            <p><strong>No AOs File needed.</strong> Unlike some other modules, Progress Tracking reads AO and topic information directly from the Data Files — you do not need to upload a separate AOs File.</p>
+          </div>
+        </div>
+
+        <!-- STEP BY STEP -->
+        <div class="howto-section">
+          <div class="howto-section-title">🔢 Step-by-Step</div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">1</div>
+            <div class="howto-step-body">
+              <strong>Upload your test files (Panel 1)</strong>
+              <p>Drag and drop or click to upload between 2 and 5 Data Files. Files are accepted in any order — you will assign a date and a label to each one after uploading.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">2</div>
+            <div class="howto-step-body">
+              <strong>Assign dates and labels</strong>
+              <p>For each uploaded file, enter the test date and a short label (e.g. <em>Test 1</em>, <em>Mock Exam</em>, <em>Final</em>). Labels appear on the time axis of all progress charts. Dates are used to order the tests chronologically.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">3</div>
+            <div class="howto-step-body">
+              <strong>Load tests</strong>
+              <p>Click <em>Load tests</em>. The module reads all files, detects shared students, AOs, and topics, and unlocks Panel 2. A summary pill for each test appears showing student count and question count.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">4</div>
+            <div class="howto-step-body">
+              <strong>Configure your analysis (Panel 2)</strong>
+              <p>Enter the grade or class name. Choose whether to include individual student charts. Optionally enable <em>Focused AO / Topic tracking</em> to select specific AOs or topics for deep-dive charts.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">5</div>
+            <div class="howto-step-body">
+              <strong>Generate Progress Report</strong>
+              <p>Click <em>Generate Progress Report</em>. Panel 3 shows a live log as the server processes your data. Run time is typically 20–60 seconds depending on class size and number of tests.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">6</div>
+            <div class="howto-step-body">
+              <strong>Download your results (Panel 3)</strong>
+              <p>Click <em>Download ZIP</em>. The ZIP contains all charts as PNG files organised into subfolders (class charts, individual student charts, focused tracking charts) plus an Excel summary report.</p>
+            </div>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p>You can adjust <strong>Font size</strong> in the Fine-tuning section if chart labels appear too small or too large for your class size.</p>
+          </div>
+        </div>
+
+        <!-- FOCUSED TRACKING -->
+        <div class="howto-section">
+          <div class="howto-section-title">🔍 Focused AO / Topic Tracking</div>
+          <p style="font-size:0.82rem; color:var(--ink-mid); line-height:1.7; margin-bottom:10px;">
+            When enabled, this option generates additional deep-dive charts for the specific AOs and topics
+            you select. Useful when you want to closely monitor progress in a particular skill area
+            (e.g. <em>AO3 — evaluation</em>) or topic (e.g. <em>kinematics</em>) across the test series.
+          </p>
+          <div class="howto-tip">
+            <span class="howto-tip-icon">⚠️</span>
+            <p>AO and topic selectors are only populated <em>after</em> tests are loaded. Load your files first, then enable focused tracking and make your selections.</p>
+          </div>
+        </div>
+
+        <!-- OUTPUTS -->
+        <div class="howto-section">
+          <div class="howto-section-title">📊 What You Get</div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📈</span>
+            <div class="howto-output-body">
+              <strong>Learning Curves</strong>
+              <p>Line charts showing how overall performance, AO scores, topic scores, and component scores have changed across the test series — for the class and for individual students.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📦</span>
+            <div class="howto-output-body">
+              <strong>Boxplots</strong>
+              <p>Show the distribution of scores at each time point — median, spread, and outliers — across AOs, topics, and overall performance. Useful for seeing whether the class is converging or diverging over time.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🎻</span>
+            <div class="howto-output-body">
+              <strong>Violin Plots</strong>
+              <p>Show the full shape of score distributions across AOs and topics at each time point. Reveals whether performance is clustered, bimodal, or spread widely within a skill area.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🌡️</span>
+            <div class="howto-output-body">
+              <strong>Heatmaps</strong>
+              <p>Display how each student has performed across AOs and topics over the test series. Makes it easy to spot persistent weaknesses or meaningful improvements at a glance.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">👤</span>
+            <div class="howto-output-body">
+              <strong>Individual Student Charts</strong>
+              <p>Progress charts, AO breakdowns, component scores, and a summary card for each student — shareable directly as personalised progress feedback.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔍</span>
+            <div class="howto-output-body">
+              <strong>Focused Tracking Charts</strong>
+              <p>Deep-dive charts for selected AOs and topics — showing evolution of scores over time for both the class and individual students in those specific areas.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📋</span>
+            <div class="howto-output-body">
+              <strong>Excel Summary Report</strong>
+              <p>A formatted spreadsheet containing key statistics across all tests — class means, standard deviations, and per-student progress data by AO and topic.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPS -->
+        <div class="howto-section">
+          <div class="howto-section-title">💡 Tips</div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Consistent student names:</strong> A student's name must be spelled identically across all test files for their progress to be tracked correctly. Check for typos before uploading.</p>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Absent students:</strong> Enter <code>AB</code> in the first data cell below the student's name in that test's file. They will be excluded from that test's data without breaking the overall progress chart.</p>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Unattempted questions:</strong> Enter <code>NA</code> — not <code>0</code>. This preserves the distinction between a question not attempted and one incorrectly answered.</p>
+          </div>
+
+          <div class="howto-note">
+            <span class="howto-note-icon">ℹ️</span>
+            <p>Your data is never stored. Files are processed on the server and deleted immediately after your ZIP is generated.</p>
+          </div>
+        </div>
+
+      </div><!-- /howto-body -->
+
+      <div class="howto-footer">MOD-02 · PROGRESS TRACKING · ANALYTIX SUITE</div>
+
+    </div><!-- /howto-drawer -->
+  </div><!-- /howto-overlay -->
 
 </div><!-- /app -->
 
@@ -948,6 +1284,22 @@
 
   // ── Init ──────────────────────────────────────────────────────────────────
   renderFileList();
+
+  // ── HOW TO USE DRAWER ────────────────────────────────────────────────────────
+  function openHowTo() {
+    document.getElementById('howtoOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeHowTo() {
+    document.getElementById('howtoOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeHowToOverlay(e) {
+    if (e.target === document.getElementById('howtoOverlay')) closeHowTo();
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeHowTo();
+  });
 </script>
 </body>
 </html>
