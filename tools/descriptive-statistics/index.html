@@ -597,6 +597,123 @@
     @keyframes slideDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
     @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    /* ── HOW TO USE BUTTON ── */
+    .how-to-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      background: var(--teal);
+      border: 1px solid var(--teal);
+      border-radius: 5px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem; font-weight: 500;
+      color: var(--white); letter-spacing: 0.05em;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .how-to-btn:hover { background: var(--teal-dim); color: var(--teal); border-color: var(--teal-border); }
+    .how-to-btn span {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 1.5px solid currentColor;
+      font-size: 0.6rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── HOW TO USE DRAWER ── */
+    .howto-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(28,25,23,0.4); backdrop-filter: blur(2px);
+      z-index: 200;
+    }
+    .howto-overlay.open { display: block; }
+
+    .howto-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 420px; max-width: 92vw;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      z-index: 201;
+    }
+    .howto-overlay.open .howto-drawer { transform: translateX(0); }
+
+    .howto-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+    }
+    .howto-header-left { display: flex; align-items: center; gap: 10px; }
+    .howto-header-left .module-id { font-size: 0.6rem; }
+    .howto-title { font-family: 'Lora', serif; font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+    .howto-close {
+      width: 28px; height: 28px; border-radius: 5px;
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--ink-muted); cursor: pointer;
+      transition: all 0.2s; line-height: 1;
+    }
+    .howto-close:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+
+    .howto-body { flex: 1; overflow-y: auto; padding: 20px; }
+    .howto-body::-webkit-scrollbar { width: 4px; }
+    .howto-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .howto-section { margin-bottom: 24px; }
+    .howto-section-title {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 10px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--teal-border);
+    }
+
+    .howto-step { display: flex; gap: 12px; margin-bottom: 12px; }
+    .howto-step-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: var(--teal-dim); border: 1px solid var(--teal-border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; font-weight: 500; color: var(--teal);
+    }
+    .howto-step-body { flex: 1; }
+    .howto-step-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+    .howto-step-body p { font-size: 0.78rem; color: var(--ink-mid); line-height: 1.6; }
+
+    .howto-tip {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .howto-tip-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-tip p { font-size: 0.78rem; color: var(--amber); line-height: 1.55; }
+
+    .howto-note {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .howto-note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-note p { font-size: 0.78rem; color: var(--blue); line-height: 1.55; }
+
+    .howto-output-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .howto-output-item:last-child { border-bottom: none; }
+    .howto-output-icon { font-size: 16px; flex-shrink: 0; }
+    .howto-output-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); }
+    .howto-output-body p { font-size: 0.76rem; color: var(--ink-mid); line-height: 1.55; margin-top: 2px; }
+
+    .howto-footer {
+      padding: 12px 20px; border-top: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem; color: var(--ink-dim);
+      text-align: center; letter-spacing: 0.04em;
+    }
   </style>
 </head>
 <body>
@@ -611,6 +728,10 @@
       <span class="module-title">Descriptive Statistics</span>
     </div>
     <div class="topbar-right">
+      <button class="how-to-btn" onclick="openHowTo()">
+        <span>?</span> How to Use
+      </button>
+      <div class="topbar-divider"></div>
       <div class="status-dot" id="statusDot"></div>
       <span class="status-label" id="statusLabel">CHECKING…</span>
     </div>
@@ -782,6 +903,210 @@
       <span id="sessionLabel">NO SESSION</span>
     </div>
   </div>
+
+  <!-- HOW TO USE DRAWER -->
+  <div class="howto-overlay" id="howtoOverlay" onclick="closeHowToOverlay(event)">
+    <div class="howto-drawer" id="howtoDrawer">
+
+      <div class="howto-header">
+        <div class="howto-header-left">
+          <span class="module-id">MOD-00</span>
+          <span class="howto-title">How to Use</span>
+        </div>
+        <button class="howto-close" onclick="closeHowTo()">✕</button>
+      </div>
+
+      <div class="howto-body">
+
+        <!-- OVERVIEW -->
+        <div class="howto-section">
+          <div class="howto-section-title">📋 What This Module Does</div>
+          <p style="font-size:0.82rem; color:var(--ink-mid); line-height:1.7;">
+            Descriptive Statistics computes a comprehensive set of statistical quantities for your selected
+            variables — helping you understand the shape, spread, and behaviour of your data before running
+            further analysis. Results are written to an Excel file that includes the computed metrics,
+            supporting charts, plain-language interpretations, and recommendations for which
+            comparative, correlation, and effect size tests are appropriate for your data.
+          </p>
+          <div class="howto-note" style="margin-top:10px;">
+            <span class="howto-note-icon">ℹ️</span>
+            <p><strong>No AOs File needed.</strong> This module requires only your Analytix Data File.</p>
+          </div>
+        </div>
+
+        <!-- FILES NEEDED -->
+        <div class="howto-section">
+          <div class="howto-section-title">📁 File You Need</div>
+          <div class="howto-step">
+            <div class="howto-step-num">1</div>
+            <div class="howto-step-body">
+              <strong>One Data File — Analytix_Data_Template_File.xlsx</strong>
+              <p>Your filled-in Analytix Data Template with student scores. Download the template from the <strong>Downloads</strong> tab on the Analytix Suite home page if you haven't already.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP BY STEP -->
+        <div class="howto-section">
+          <div class="howto-section-title">🔢 Step-by-Step</div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">1</div>
+            <div class="howto-step-body">
+              <strong>Upload your Data File (Panel 1)</strong>
+              <p>Drag and drop or click to upload your <code>Analytix_Data_Template_File.xlsx</code>. Click <em>Load the data file</em>. The module reads the file and unlocks Panel 2.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">2</div>
+            <div class="howto-step-body">
+              <strong>Select variables (Panel 2)</strong>
+              <p>Choose which variables to analyse. Variables are grouped into <strong>Overall</strong> score, <strong>Main AOs</strong> (e.g. AO1, AO2, AO3), <strong>Sub-AOs</strong> (e.g. AO2j, AO3d), and <strong>Topics</strong>. Use the quick-select buttons to pick a whole group, or tick variables individually.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">3</div>
+            <div class="howto-step-body">
+              <strong>Set analysis options (Panel 2)</strong>
+              <p>Choose which statistical quantities to compute. Enable <em>Generate interpretations</em> to include plain-language explanations of each metric. Enable <em>Enhanced plots (Seaborn)</em> for higher-quality chart styling.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">4</div>
+            <div class="howto-step-body">
+              <strong>Confirm &amp; Run</strong>
+              <p>Click <em>Confirm &amp; Run</em>. Panel 3 shows a live log as the analysis runs. Typical run time is 10–30 seconds depending on the number of variables selected.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">5</div>
+            <div class="howto-step-body">
+              <strong>Download your results (Panel 3)</strong>
+              <p>Click <em>Download ZIP</em>. The ZIP contains an Excel report with all metrics, charts, interpretations, and test recommendations.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- VARIABLES -->
+        <div class="howto-section">
+          <div class="howto-section-title">📐 About Variables</div>
+          <p style="font-size:0.82rem; color:var(--ink-mid); line-height:1.7; margin-bottom:10px;">
+            Once your file is loaded, Panel 2 displays all available variables derived from your data, grouped into four types:
+          </p>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🎯</span>
+            <div class="howto-output-body">
+              <strong>Overall</strong>
+              <p>Total percentage score across all questions. A good starting point for understanding the general performance distribution of the class.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📂</span>
+            <div class="howto-output-body">
+              <strong>Main AOs</strong>
+              <p>Scores grouped by top-level Assessment Objective category (e.g. AO1, AO2, AO3). Useful for understanding broad skill-level differences across the class.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔬</span>
+            <div class="howto-output-body">
+              <strong>Sub-AOs</strong>
+              <p>Scores for individual AO codes (e.g. AO2j, AO3d). Enables granular analysis of specific skills.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📚</span>
+            <div class="howto-output-body">
+              <strong>Topics</strong>
+              <p>Scores grouped by topic label (e.g. kinematics, forces). Useful for identifying topic-level strengths and weaknesses.</p>
+            </div>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p>You do not need to analyse all variables. Select only those relevant to your current research question to keep the output focused and readable.</p>
+          </div>
+        </div>
+
+        <!-- OUTPUTS -->
+        <div class="howto-section">
+          <div class="howto-section-title">📊 What You Get</div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📈</span>
+            <div class="howto-output-body">
+              <strong>Descriptive Metrics</strong>
+              <p>Mean, median, mode, standard deviation, variance, IQR, skewness, kurtosis, confidence intervals, and outlier flags — computed per selected variable.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔔</span>
+            <div class="howto-output-body">
+              <strong>Normality Assessment</strong>
+              <p>Statistical tests indicating whether each variable's scores are normally distributed — a key factor in choosing the right follow-up tests.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📉</span>
+            <div class="howto-output-body">
+              <strong>Charts</strong>
+              <p>Distribution plots, box plots, and other visualisations for each selected variable, embedded directly in the Excel output.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📝</span>
+            <div class="howto-output-body">
+              <strong>Interpretations</strong>
+              <p>When enabled, plain-language explanations of what each metric value means in context — no statistics background required to read them.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🧭</span>
+            <div class="howto-output-body">
+              <strong>Test Recommendations</strong>
+              <p>Based on the computed metrics, the module recommends which comparative tests (e.g. t-test, Mann-Whitney U), correlation tests, and effect size measures are appropriate for each variable — ready to use in Modules 3 and 4.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPS -->
+        <div class="howto-section">
+          <div class="howto-section-title">💡 Tips</div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Run this module first.</strong> Descriptive Statistics is designed to be run before Comparative Analysis and Correlation Analysis. The test recommendations it generates tell you which tests to select in those modules.</p>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Interpretations are optional but recommended</strong> if you are new to statistics or plan to share the output with colleagues who are.</p>
+          </div>
+
+          <div class="howto-note">
+            <span class="howto-note-icon">ℹ️</span>
+            <p>Your data is never stored. Files are processed on the server and deleted immediately after your ZIP is generated.</p>
+          </div>
+        </div>
+
+      </div><!-- /howto-body -->
+
+      <div class="howto-footer">MOD-00 · DESCRIPTIVE STATISTICS · ANALYTIX SUITE</div>
+
+    </div><!-- /howto-drawer -->
+  </div><!-- /howto-overlay -->
 
 </div>
 
@@ -1091,6 +1416,38 @@
   }
 
   checkApiHealth();
+
+  // ── HOW TO USE DRAWER ────────────────────────────────────────────────────────
+  function openHowTo() {
+    document.getElementById('howtoOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeHowTo() {
+    document.getElementById('howtoOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeHowToOverlay(e) {
+    if (e.target === document.getElementById('howtoOverlay')) closeHowTo();
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeHowTo();
+  });
+
+  // ── HOW TO USE DRAWER ────────────────────────────────────────────────────────
+  function openHowTo() {
+    document.getElementById('howtoOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeHowTo() {
+    document.getElementById('howtoOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeHowToOverlay(e) {
+    if (e.target === document.getElementById('howtoOverlay')) closeHowTo();
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeHowTo();
+  });
 </script>
 </body>
 </html>
