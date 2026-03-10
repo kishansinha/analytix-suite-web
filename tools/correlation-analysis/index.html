@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Correlation Analysis — Analytix Suite</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -236,6 +237,109 @@
     @keyframes spin         { to { transform: rotate(360deg); } }
     @keyframes pulse        { 0%,100%{opacity:1} 50%{opacity:0.5} }
     @keyframes indeterminate { 0%{transform:translateX(-100%)} 100%{transform:translateX(300%)} }
+
+    /* ── HOW TO USE BUTTON ── */
+    .how-to-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; background: var(--teal);
+      border: 1px solid var(--teal); border-radius: 5px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem; font-weight: 500;
+      color: var(--white); letter-spacing: 0.05em;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .how-to-btn:hover { background: var(--teal-dim); color: var(--teal); border-color: var(--teal-border); }
+    .how-to-btn span {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 1.5px solid currentColor;
+      font-size: 0.6rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── HOW TO USE DRAWER ── */
+    .howto-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(28,25,23,0.4); backdrop-filter: blur(2px); z-index: 200;
+    }
+    .howto-overlay.open { display: block; }
+    .howto-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 420px; max-width: 92vw;
+      background: var(--surface); border-left: 1px solid var(--border);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 201;
+    }
+    .howto-overlay.open .howto-drawer { transform: translateX(0); }
+    .howto-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+    }
+    .howto-header-left { display: flex; align-items: center; gap: 10px; }
+    .howto-header-left .module-id { font-size: 0.6rem; }
+    .howto-title { font-family: 'Lora', serif; font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+    .howto-close {
+      width: 28px; height: 28px; border-radius: 5px;
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--ink-muted); cursor: pointer;
+      transition: all 0.2s; line-height: 1;
+    }
+    .howto-close:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+    .howto-body { flex: 1; overflow-y: auto; padding: 20px; }
+    .howto-body::-webkit-scrollbar { width: 4px; }
+    .howto-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .howto-section { margin-bottom: 24px; }
+    .howto-section-title {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 10px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--teal-border);
+    }
+    .howto-step { display: flex; gap: 12px; margin-bottom: 12px; }
+    .howto-step-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: var(--teal-dim); border: 1px solid var(--teal-border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; font-weight: 500; color: var(--teal);
+    }
+    .howto-step-body { flex: 1; }
+    .howto-step-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+    .howto-step-body p { font-size: 0.78rem; color: var(--ink-mid); line-height: 1.6; }
+    .howto-tip {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .howto-tip-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-tip p { font-size: 0.78rem; color: var(--amber); line-height: 1.55; }
+    .howto-note {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .howto-note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-note p { font-size: 0.78rem; color: var(--blue); line-height: 1.55; }
+    .howto-output-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .howto-output-item:last-child { border-bottom: none; }
+    .howto-output-icon { font-size: 16px; flex-shrink: 0; }
+    .howto-output-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); }
+    .howto-output-body p { font-size: 0.76rem; color: var(--ink-mid); line-height: 1.55; margin-top: 2px; }
+    .howto-footer {
+      padding: 12px 20px; border-top: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem; color: var(--ink-dim);
+      text-align: center; letter-spacing: 0.04em;
+    }
   </style>
 </head>
 <body>
@@ -250,6 +354,10 @@
       <span class="module-title">Correlation Analysis</span>
     </div>
     <div class="topbar-right">
+      <button class="how-to-btn" onclick="openHowTo()">
+        <span>?</span> How to Use
+      </button>
+      <div class="topbar-divider"></div>
       <div class="status-dot checking" id="statusDot"></div>
       <span class="status-label" id="statusLabel">CHECKING…</span>
     </div>
@@ -521,6 +629,286 @@
     <div class="bottom-stat"><div class="bottom-stat-dot" style="background:var(--amber)"></div><span id="bottomPairs">0 pairs</span></div>
     <div class="bottom-stat" style="margin-left:auto;"><span style="opacity:0.5;">Analytix Suite · MOD-04</span></div>
   </div>
+
+
+  <!-- HOW TO USE DRAWER -->
+  <div class="howto-overlay" id="howtoOverlay" onclick="closeHowToOverlay(event)">
+    <div class="howto-drawer" id="howtoDrawer">
+
+      <div class="howto-header">
+        <div class="howto-header-left">
+          <span class="module-id">MOD-04</span>
+          <span class="howto-title">How to Use</span>
+        </div>
+        <button class="howto-close" onclick="closeHowTo()">✕</button>
+      </div>
+
+      <div class="howto-body">
+
+        <!-- OVERVIEW -->
+        <div class="howto-section">
+          <div class="howto-section-title">📋 What This Module Does</div>
+          <p style="font-size:0.82rem; color:var(--ink-mid); line-height:1.7;">
+            Correlation Analysis examines the statistical relationships between pairs of variables
+            in your test data. Upload one or more Data Files, select variable pairs, choose an
+            analysis mode and correlation tests, and the module produces a comprehensive set of
+            charts and an Excel summary containing correlation coefficients, effect sizes,
+            confidence intervals, power analysis, and other key statistics.
+          </p>
+          <div class="howto-note" style="margin-top:10px;">
+            <span class="howto-note-icon">ℹ️</span>
+            <p><strong>No AOs File needed.</strong> AOs, topics, and overall scores are detected automatically from your Data File(s).</p>
+          </div>
+          <div class="howto-tip" style="margin-top:6px;">
+            <span class="howto-tip-icon">💡</span>
+            <p>Run the <strong>Descriptive Statistics module (MOD-00)</strong> first. Its test recommendations will tell you which correlation tests and corrections are most appropriate for your data.</p>
+          </div>
+        </div>
+
+        <!-- FILES NEEDED -->
+        <div class="howto-section">
+          <div class="howto-section-title">📁 Files You Need</div>
+          <div class="howto-step">
+            <div class="howto-step-num">1</div>
+            <div class="howto-step-body">
+              <strong>One or more Data Files — Analytix_Data_Template_File.xlsx</strong>
+              <p>Your filled-in Analytix Data Template(s) with student scores. Multiple files can be uploaded when comparing variables across different tests. Download the template from the <strong>Downloads</strong> tab on the Analytix Suite home page.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP BY STEP -->
+        <div class="howto-section">
+          <div class="howto-section-title">🔢 Step-by-Step</div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">1</div>
+            <div class="howto-step-body">
+              <strong>Upload your Data File(s) (Panel 1)</strong>
+              <p>Drag and drop or click to upload one or more <code>Analytix_Data_Template_File.xlsx</code> files. Click <em>Load &amp; Detect Variables</em>. The module reads all files and automatically detects the Overall score, AOs, and topics available for analysis.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">2</div>
+            <div class="howto-step-body">
+              <strong>Choose an analysis mode (Panel 2)</strong>
+              <p>Select one of the four modes that fits your research question (see Analysis Modes section below).</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">3</div>
+            <div class="howto-step-body">
+              <strong>Build your variable pairs (Panel 2)</strong>
+              <p>Select Variable A and Variable B from the dropdowns and click <em>Add This Pair</em>. Repeat for each pair you want to analyse. Use the <strong>Quick Add</strong> shortcuts to add all Overall ↔ AO pairs, all AO ↔ AO pairs, or all Topic ↔ Topic pairs at once.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">4</div>
+            <div class="howto-step-body">
+              <strong>Configure tests and options (Panel 3)</strong>
+              <p>Choose which correlation statistics to compute, set filters, and select which charts to include. Click <em>Run Analysis</em> when ready.</p>
+            </div>
+          </div>
+
+          <div class="howto-step">
+            <div class="howto-step-num">5</div>
+            <div class="howto-step-body">
+              <strong>Download your results (Panel 3)</strong>
+              <p>When complete, click <em>Download ZIP</em>. The ZIP contains all charts as PNG files and a Correlation Analysis Summary Excel file.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYSIS MODES -->
+        <div class="howto-section">
+          <div class="howto-section-title">⚙️ Analysis Modes</div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">1️⃣</span>
+            <div class="howto-output-body">
+              <strong>Single Test — within one test</strong>
+              <p>Examines correlations between variables within a single test. Use this when you have one Data File and want to understand how different skills or topics relate to each other or to overall performance.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔁</span>
+            <div class="howto-output-body">
+              <strong>Multiple Tests — between tests</strong>
+              <p>Correlates variables across two or more tests — for example, does AO2 performance in Test 1 predict AO2 performance in Test 2? Requires at least two Data Files.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📊</span>
+            <div class="howto-output-body">
+              <strong>Pooled — Averaged (n = students)</strong>
+              <p>Averages each student's scores across all tests before computing correlations. Unit of analysis is the student. Reduces noise from individual test variation.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔢</span>
+            <div class="howto-output-body">
+              <strong>Pooled — Independent (n = observations)</strong>
+              <p>Treats each student-test combination as a separate data point. Increases sample size but assumes independence between observations. Best suited for exploratory analysis.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATISTICS & OPTIONS -->
+        <div class="howto-section">
+          <div class="howto-section-title">🧮 Statistics &amp; Options</div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📐</span>
+            <div class="howto-output-body">
+              <strong>Correlation tests</strong>
+              <p><strong>Pearson r</strong> is always computed (parametric, assumes normality). <strong>Spearman ρ</strong> is rank-based and robust to non-normal data. <strong>Kendall τ</strong> is more robust for small samples. <strong>Percentage Bend Correlation</strong> is a robust alternative to Pearson when outliers are present.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📏</span>
+            <div class="howto-output-body">
+              <strong>Confidence intervals</strong>
+              <p>Choose 90%, 95%, or 99% CI. Enable <strong>Bootstrap CI</strong> for more accurate intervals when data is non-normal (slower but more reliable).</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔍</span>
+            <div class="howto-output-body">
+              <strong>Assumption checks</strong>
+              <p>Runs Shapiro-Wilk normality tests and linearity checks for each pair, and generates Q-Q plots. Useful for verifying whether Pearson r is appropriate.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🎛️</span>
+            <div class="howto-output-body">
+              <strong>Filters &amp; corrections</strong>
+              <p>Filter results to show only significant correlations (p &lt; 0.05) or by minimum effect size. Apply <strong>multiple comparison correction</strong> (Bonferroni or FDR Benjamini-Hochberg) when analysing many pairs. Enable <strong>outlier detection</strong> to flag and compare results with and without outliers.</p>
+            </div>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p>Not sure which tests or corrections to use? Check the test recommendations in your Descriptive Statistics output (MOD-00) for guidance tailored to your data.</p>
+          </div>
+        </div>
+
+        <!-- OUTPUTS -->
+        <div class="howto-section">
+          <div class="howto-section-title">📊 What You Get</div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🌡️</span>
+            <div class="howto-output-body">
+              <strong>Correlation Heatmap &amp; Matrix</strong>
+              <p>A colour-coded grid showing the strength and direction of correlations across all selected pairs at a glance.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔵</span>
+            <div class="howto-output-body">
+              <strong>Scatter Plots</strong>
+              <p>Scatter plots for the top N strongest correlations, with regression lines. Useful for visualising the nature of each relationship.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🕸️</span>
+            <div class="howto-output-body">
+              <strong>Network Diagram</strong>
+              <p>A visual graph where variables are nodes and significant correlations are edges, weighted by strength. Reveals clusters of related skills or topics.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📦</span>
+            <div class="howto-output-body">
+              <strong>Effect Size Distribution</strong>
+              <p>Charts showing the distribution of effect sizes across all pairs — useful for assessing the overall practical significance of the correlations found.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📉</span>
+            <div class="howto-output-body">
+              <strong>Q-Q Plots</strong>
+              <p>Quantile-quantile plots for assumption checking — generated when Assumption Checks is enabled. Helps verify normality for each variable pair.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔒</span>
+            <div class="howto-output-body">
+              <strong>Reliability (Cronbach's α)</strong>
+              <p>Measures internal consistency across selected variables — useful for assessing how reliably your test items measure the same underlying construct.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🎯</span>
+            <div class="howto-output-body">
+              <strong>Predictive Validity</strong>
+              <p>Examines how well one variable predicts another — for example, whether AO scores predict overall performance.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📅</span>
+            <div class="howto-output-body">
+              <strong>Time Series Heatmap &amp; Stability</strong>
+              <p>When multiple tests are loaded, shows how correlations between variables change over time and how stable those relationships are across the test series.</p>
+            </div>
+          </div>
+
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📋</span>
+            <div class="howto-output-body">
+              <strong>Correlation Analysis Summary (Excel)</strong>
+              <p>A detailed spreadsheet containing all correlation coefficients, p-values, effect sizes, confidence intervals, power analysis results, and variance explained — ready for reporting or further analysis.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPS -->
+        <div class="howto-section">
+          <div class="howto-section-title">💡 Tips</div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Use Quick Add for broad exploration:</strong> Start with <em>Add all Overall ↔ AO pairs</em> to quickly see which skills correlate most strongly with overall performance.</p>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Apply multiple comparison correction</strong> when analysing many pairs — running many tests increases the chance of false positives. Benjamini-Hochberg (FDR) is generally preferred over Bonferroni when you have a large number of pairs.</p>
+          </div>
+
+          <div class="howto-tip">
+            <span class="howto-tip-icon">💡</span>
+            <p><strong>Time Series and Reliability charts</strong> require more than one test file to be meaningful. Load multiple Data Files before enabling these options.</p>
+          </div>
+
+          <div class="howto-note">
+            <span class="howto-note-icon">ℹ️</span>
+            <p>Your data is never stored. Files are processed on the server and deleted immediately after your ZIP is generated.</p>
+          </div>
+        </div>
+
+      </div><!-- /howto-body -->
+
+      <div class="howto-footer">MOD-04 · CORRELATION ANALYSIS · ANALYTIX SUITE</div>
+
+    </div><!-- /howto-drawer -->
+  </div><!-- /howto-overlay -->
 
 </div><!-- /app -->
 
@@ -884,6 +1272,22 @@
   function setStep(n, state) { const el = document.getElementById(`step${n}item`); el.classList.remove('active','done'); if (state) el.classList.add(state); }
   function clearLog() { document.getElementById('logBox').innerHTML = ''; }
   function log(msg, type='') { const box = document.getElementById('logBox'); const span = document.createElement('span'); span.className = `log-line${type?' log-'+type:''}`; span.textContent = msg; box.appendChild(span); box.scrollTop = box.scrollHeight; }
+
+  // ── HOW TO USE DRAWER ────────────────────────────────────────────────────────
+  function openHowTo() {
+    document.getElementById('howtoOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeHowTo() {
+    document.getElementById('howtoOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeHowToOverlay(e) {
+    if (e.target === document.getElementById('howtoOverlay')) closeHowTo();
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeHowTo();
+  });
 </script>
 </body>
 </html>
