@@ -167,6 +167,7 @@
     .chart-item { display: flex; align-items: center; gap: 6px; padding: 5px 7px; border-radius: 5px; cursor: pointer; transition: background 0.15s; border: 1px solid transparent; }
     .chart-item:hover { background: var(--bg); }
     .chart-item.checked { background: var(--teal-dim); border-color: var(--teal-border); }
+    .chart-item.chart-disabled { opacity: 0.38; pointer-events: none; cursor: not-allowed; }
     .chart-checkbox { width: 13px; height: 13px; border: 1.5px solid var(--border-dark); border-radius: 3px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; background: var(--white); }
     .chart-item.checked .chart-checkbox { background: var(--teal); border-color: var(--teal); }
     .chart-check-icon { color: var(--white); font-size: 8px; display: none; }
@@ -384,11 +385,25 @@
       </div>
       <div class="panel-body">
 
+        <!-- Analysis Mode — must be set before loading files -->
+        <div class="config-section" style="margin-bottom:14px;">
+          <div class="section-title">Analysis Mode</div>
+          <div class="field-group">
+            <select class="field-select" id="modeSelect" onchange="onModeChange()">
+              <option value="single">Single Test — within one test</option>
+              <option value="multiple">Multiple Tests — between tests</option>
+              <option value="pooled_averaged">Pooled — Averaged (n = students)</option>
+              <option value="pooled_independent">Pooled — Independent (n = observations)</option>
+            </select>
+          </div>
+          <div id="modeHint" style="font-size:0.72rem; color:var(--ink-dim); margin-top:5px;">Single Test: load one file only.</div>
+        </div>
+
         <div class="upload-zone" id="uploadZone">
-          <input type="file" id="fileInput" accept=".xlsx" multiple />
+          <input type="file" id="fileInput" accept=".xlsx" />
           <div class="upload-icon">📊</div>
-          <div class="upload-title">Drop test file(s) here</div>
-          <div class="upload-sub">.xlsx · one or more test files</div>
+          <div class="upload-title" id="uploadTitle">Drop one test file here</div>
+          <div class="upload-sub" id="uploadSub">.xlsx · single test file</div>
         </div>
 
         <div class="file-list" id="fileList"></div>
@@ -418,19 +433,6 @@
         <span class="panel-badge badge-waiting" id="badge2">WAITING</span>
       </div>
       <div class="panel-body">
-
-        <!-- Analysis Mode -->
-        <div class="config-section">
-          <div class="section-title">Analysis Mode</div>
-          <div class="field-group">
-            <select class="field-select" id="modeSelect" onchange="onModeChange()">
-              <option value="single">Single Test — within one test</option>
-              <option value="multiple">Multiple Tests — between tests</option>
-              <option value="pooled_averaged">Pooled — Averaged (n = students)</option>
-              <option value="pooled_independent">Pooled — Independent (n = observations)</option>
-            </select>
-          </div>
-        </div>
 
         <!-- Pair Builder -->
         <div class="config-section">
@@ -963,6 +965,7 @@
     }
   }
   checkApi();
+  onModeChange(); // set correct initial state for file input and Time Series
 
   // ── FILE HANDLING ─────────────────────────────────────────────────────────
   const uploadZone = document.getElementById('uploadZone');
@@ -974,10 +977,16 @@
   fileInput.addEventListener('change', () => addFiles(fileInput.files));
 
   function addFiles(fileListObj) {
+    const mode     = document.getElementById('modeSelect').value;
+    const isSingle = mode === 'single';
     const newFiles = Array.from(fileListObj).filter(f => f.name.endsWith('.xlsx'));
     if (!newFiles.length) return;
-    const existing = new Set(loadedFiles.map(f => f.name));
-    newFiles.forEach(f => { if (!existing.has(f.name)) loadedFiles.push(f); });
+    if (isSingle) {
+      loadedFiles = [newFiles[0]];
+    } else {
+      const existing = new Set(loadedFiles.map(f => f.name));
+      newFiles.forEach(f => { if (!existing.has(f.name)) loadedFiles.push(f); });
+    }
     renderFileList();
     resetSession();
     document.getElementById('fileInput').value = '';
@@ -1186,7 +1195,41 @@
     setStep(2,'done'); setStep(3,'active');
   }
 
-  function onModeChange() { /* mode handled at run time */ }
+  function onModeChange() {
+    const mode        = document.getElementById('modeSelect').value;
+    const isSingle    = mode === 'single';
+    const fileInput   = document.getElementById('fileInput');
+    const hint        = document.getElementById('modeHint');
+    const uploadTitle = document.getElementById('uploadTitle');
+    const uploadSub   = document.getElementById('uploadSub');
+    const tsItem      = document.querySelector('.chart-item[data-key="time_series"]');
+
+    if (isSingle) {
+      fileInput.removeAttribute('multiple');
+      hint.textContent        = 'Single Test: load one file only.';
+      uploadTitle.textContent = 'Drop one test file here';
+      uploadSub.textContent   = '.xlsx · single test file';
+      if (loadedFiles.length > 1) {
+        loadedFiles = [loadedFiles[0]];
+        renderFileList();
+        resetSession();
+      }
+    } else {
+      fileInput.setAttribute('multiple', '');
+      hint.textContent        = 'Multiple Tests: load two or more files.';
+      uploadTitle.textContent = 'Drop test file(s) here';
+      uploadSub.textContent   = '.xlsx · two or more test files';
+    }
+
+    if (tsItem) {
+      if (isSingle) {
+        tsItem.classList.remove('checked');
+        tsItem.classList.add('chart-disabled');
+      } else {
+        tsItem.classList.remove('chart-disabled');
+      }
+    }
+  }
 
   // ── RUN ANALYSIS ──────────────────────────────────────────────────────────
   async function runAnalysis() {
