@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comparative Analysis — Analytix Suite</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #F5F4F0;
+      --surface:      #FFFFFF;
+      --surface2:     #F0EEE9;
+      --border:       #DDD9D0;
+      --border-dark:  #C4BFB5;
+      --teal:         #0F766E;
+      --teal-light:   #CCFBF1;
+      --teal-dim:     rgba(15,118,110,0.08);
+      --teal-border:  rgba(15,118,110,0.25);
+      --green:        #15803D;
+      --green-light:  #DCFCE7;
+      --red:          #DC2626;
+      --red-light:    #FEE2E2;
+      --amber:        #B45309;
+      --amber-light:  #FEF3C7;
+      --blue:         #1D4ED8;
+      --blue-light:   #DBEAFE;
+      --purple:       #6D28D9;
+      --purple-light: #EDE9FE;
+      --ink:          #1C1917;
+      --ink-mid:      #44403C;
+      --ink-muted:    #78716C;
+      --ink-dim:      #A8A29E;
+      --white:        #FFFFFF;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', sans-serif; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: radial-gradient(circle at 20% 80%, rgba(15,118,110,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(15,118,110,0.03) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+    .app { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100vh; }
+
+    /* TOPBAR */
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 50px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .back-btn { display: flex; align-items: center; gap: 5px; color: var(--ink-muted); text-decoration: none; font-size: 0.8rem; font-family: 'IBM Plex Mono', monospace; transition: color 0.2s; }
+    .back-btn:hover { color: var(--teal); }
+    .topbar-divider { width: 1px; height: 18px; background: var(--border); }
+    .module-id { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--teal); background: var(--teal-dim); border: 1px solid var(--teal-border); padding: 2px 8px; border-radius: 3px; letter-spacing: 0.08em; font-weight: 500; }
+    .module-title { font-family: 'Lora', serif; font-size: 0.95rem; color: var(--ink); font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 5px rgba(21,128,61,0.5); animation: pulse 2.5s ease infinite; }
+    .status-dot.checking { background: var(--amber); box-shadow: 0 0 5px rgba(180,83,9,0.5); }
+    .status-dot.offline  { background: var(--red);   box-shadow: 0 0 5px rgba(220,38,38,0.5); animation: none; }
+    .status-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--ink-muted); letter-spacing: 0.05em; }
+
+    /* STEPS */
+    .steps-bar { display: flex; align-items: center; justify-content: center; padding: 9px 24px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+    .step-item { display: flex; align-items: center; gap: 7px; }
+    .step-num { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border-dark); display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-dim); transition: all 0.3s; font-weight: 500; }
+    .step-label { font-size: 0.72rem; color: var(--ink-dim); font-weight: 500; transition: color 0.3s; }
+    .step-connector { width: 48px; height: 1px; background: var(--border); margin: 0 10px; }
+    .step-item.active .step-num   { border-color: var(--teal); background: var(--teal-dim); color: var(--teal); }
+    .step-item.active .step-label { color: var(--teal); font-weight: 600; }
+    .step-item.done   .step-num   { border-color: var(--green); background: var(--green-light); color: var(--green); }
+    .step-item.done   .step-label { color: var(--green); }
+
+    /* WORKSPACE */
+    .workspace { flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; overflow: hidden; }
+    .panel { display: flex; flex-direction: column; border-right: 1px solid var(--border); overflow: hidden; position: relative; background: var(--surface); transition: opacity 0.3s; }
+    .panel:last-child { border-right: none; }
+    .panel.locked { opacity: 0.42; pointer-events: none; background: var(--bg); }
+    .panel-header { display: flex; align-items: center; gap: 9px; padding: 12px 18px 11px; border-bottom: 1px solid var(--border); background: var(--surface2); flex-shrink: 0; }
+    .panel-icon  { font-size: 15px; flex-shrink: 0; }
+    .panel-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.08em; text-transform: uppercase; flex: 1; font-weight: 500; }
+    .panel-badge { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; padding: 2px 7px; border-radius: 3px; letter-spacing: 0.06em; font-weight: 500; }
+    .badge-waiting { background: var(--surface2); border: 1px solid var(--border-dark); color: var(--ink-dim); }
+    .badge-active  { background: var(--teal-dim);   border: 1px solid var(--teal-border);          color: var(--teal); }
+    .badge-done    { background: var(--green-light); border: 1px solid rgba(21,128,61,0.3);         color: var(--green); }
+    .panel-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 18px; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* UPLOAD */
+    .upload-zone { border: 1.5px dashed var(--border-dark); border-radius: 8px; padding: 18px 14px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; margin-bottom: 8px; position: relative; background: var(--bg); }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--teal); background: var(--teal-dim); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-icon  { font-size: 22px; margin-bottom: 4px; }
+    .upload-title { font-size: 0.8rem; font-weight: 600; color: var(--ink-mid); margin-bottom: 2px; }
+    .upload-sub   { font-size: 0.68rem; color: var(--ink-muted); font-family: 'IBM Plex Mono', monospace; }
+
+    .file-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+    .file-chip { display: flex; align-items: center; gap: 8px; background: var(--green-light); border: 1px solid rgba(21,128,61,0.25); border-radius: 6px; padding: 7px 10px; }
+    .file-chip-icon   { font-size: 14px; }
+    .file-chip-name   { font-size: 0.72rem; font-weight: 600; color: var(--green); flex: 1; word-break: break-all; }
+    .file-chip-sub    { font-size: 0.62rem; color: var(--ink-dim); font-family: 'IBM Plex Mono', monospace; white-space: nowrap; }
+    .file-chip-remove { background: none; border: none; color: var(--ink-dim); cursor: pointer; font-size: 0.75rem; padding: 2px 5px; border-radius: 3px; transition: color 0.2s; }
+    .file-chip-remove:hover { color: var(--red); }
+
+    .stat-pills { display: flex; gap: 5px; flex-wrap: wrap; margin: 10px 0; }
+    .stat-pill { background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2); border-radius: 4px; padding: 3px 9px; font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: var(--blue); }
+    .stat-pill strong { font-weight: 600; }
+    .stat-pill.green  { background: var(--green-light);  border-color: rgba(21,128,61,0.2);  color: var(--green); }
+    .stat-pill.amber  { background: var(--amber-light);  border-color: rgba(180,83,9,0.2);   color: var(--amber); }
+    .stat-pill.purple { background: var(--purple-light); border-color: rgba(109,40,217,0.2); color: var(--purple); }
+
+    /* SECTION TITLE */
+    .section-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 9px; padding-bottom: 6px; border-bottom: 1px solid var(--border); font-weight: 500; }
+
+    /* DESIGN CARDS */
+    .design-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .design-card { border: 1.5px solid var(--border); border-radius: 7px; padding: 10px 11px; cursor: pointer; transition: all 0.2s; background: var(--bg); }
+    .design-card:hover { border-color: var(--teal); background: var(--teal-dim); }
+    .design-card.selected { border-color: var(--teal); background: var(--teal-dim); }
+    .design-card-icon  { font-size: 18px; margin-bottom: 4px; }
+    .design-card-label { font-size: 0.72rem; font-weight: 600; color: var(--ink-mid); line-height: 1.3; }
+    .design-card-sub   { font-size: 0.63rem; color: var(--ink-dim); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+    .design-card.selected .design-card-label { color: var(--teal); }
+
+    /* VARIABLE LIST */
+    .var-list { display: flex; flex-direction: column; gap: 3px; max-height: 260px; overflow-y: auto; margin-bottom: 10px; }
+    .var-list::-webkit-scrollbar { width: 3px; }
+    .var-list::-webkit-scrollbar-thumb { background: var(--border); }
+    .var-item { display: flex; align-items: center; gap: 8px; padding: 6px 9px; border-radius: 5px; cursor: pointer; transition: background 0.15s; border: 1px solid transparent; user-select: none; }
+    .var-item:hover { background: var(--bg); }
+    .var-item.checked { background: var(--teal-dim); border-color: var(--teal-border); }
+    .var-checkbox { width: 13px; height: 13px; border: 1.5px solid var(--border-dark); border-radius: 3px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; background: var(--white); }
+    .var-item.checked .var-checkbox { background: var(--teal); border-color: var(--teal); }
+    .var-check-icon { color: var(--white); font-size: 8px; display: none; }
+    .var-item.checked .var-check-icon { display: block; }
+    .var-type-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.57rem; padding: 1px 5px; border-radius: 3px; background: var(--surface2); color: var(--ink-dim); border: 1px solid var(--border); flex-shrink: 0; }
+    .var-name { font-size: 0.75rem; color: var(--ink-mid); flex: 1; }
+    .var-item.checked .var-name { color: var(--ink); font-weight: 500; }
+    .var-group-header { font-family: 'IBM Plex Mono', monospace; font-size: 0.57rem; color: var(--ink-dim); letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 9px 3px; }
+
+    /* QUICK SELECT */
+    .quick-btns { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+    .quick-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 4px 9px; font-size: 0.68rem; color: var(--ink-muted); cursor: pointer; transition: border-color 0.2s, color 0.2s; font-family: 'IBM Plex Sans', sans-serif; }
+    .quick-btn:hover { border-color: var(--teal); color: var(--teal); }
+
+    /* LABEL INPUTS */
+    .label-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .label-row { display: flex; align-items: center; gap: 8px; }
+    .label-row-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-dim); width: 16px; flex-shrink: 0; }
+    .label-input { flex: 1; padding: 6px 9px; border: 1.5px solid var(--border); border-radius: 5px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.78rem; color: var(--ink); background: var(--surface); outline: none; transition: border-color 0.2s; }
+    .label-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-dim); }
+
+    /* TOGGLES / FIELDS */
+    .field-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .field-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--ink-muted); letter-spacing: 0.07em; text-transform: uppercase; font-weight: 500; }
+    .field-select { width: 100%; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 5px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.8rem; color: var(--ink); background: var(--surface); outline: none; appearance: none; transition: border-color 0.2s; }
+    .field-select:focus { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-dim); }
+
+    /* TEST ITEMS */
+    .test-group { margin-bottom: 14px; }
+    .test-group-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.57rem; color: var(--teal); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 5px; padding: 3px 0; border-bottom: 1px solid var(--teal-border); }
+    .test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+    .test-item { display: flex; align-items: flex-start; gap: 7px; padding: 6px 8px; border-radius: 5px; cursor: pointer; transition: background 0.15s; border: 1px solid transparent; }
+    .test-item:hover { background: var(--bg); }
+    .test-item.checked { background: var(--teal-dim); border-color: var(--teal-border); }
+    .test-checkbox { width: 13px; height: 13px; border: 1.5px solid var(--border-dark); border-radius: 3px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.15s; background: var(--white); }
+    .test-item.checked .test-checkbox { background: var(--teal); border-color: var(--teal); }
+    .test-check-icon { color: var(--white); font-size: 8px; display: none; }
+    .test-item.checked .test-check-icon { display: block; }
+    .test-item-label { font-size: 0.71rem; color: var(--ink-muted); line-height: 1.35; }
+    .test-item.checked .test-item-label { color: var(--ink-mid); font-weight: 500; }
+
+    /* BUTTONS */
+    .btn-primary { width: 100%; background: var(--teal); color: var(--white); border: none; padding: 10px 20px; border-radius: 6px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s, opacity 0.2s; }
+    .btn-primary:hover:not(:disabled) { background: #0D6B63; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+    /* OUTPUT */
+    .log-box { background: #1C1917; border: 1px solid var(--border-dark); border-radius: 6px; padding: 11px 13px; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #A8A29E; line-height: 1.9; min-height: 70px; max-height: 200px; overflow-y: auto; margin-bottom: 14px; }
+    .log-box::-webkit-scrollbar { width: 3px; }
+    .log-box::-webkit-scrollbar-thumb { background: #44403C; }
+    .log-line  { display: block; }
+    .log-ok    { color: #86EFAC; }
+    .log-err   { color: #FCA5A5; }
+    .log-info  { color: #93C5FD; }
+    .log-warn  { color: #FDE68A; }
+
+    .progress-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; height: 5px; margin-bottom: 14px; overflow: hidden; display: none; }
+    .progress-wrap.show { display: block; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, var(--teal), #14B8A6); border-radius: 4px; }
+    .progress-bar.indeterminate { width: 40%; animation: indeterminate 1.4s ease infinite; }
+
+    .panel-status-bar { display: none; align-items: center; gap: 10px; padding: 6px 10px; background: rgba(20,184,166,0.08); border: 1px solid rgba(20,184,166,0.25); border-radius: 6px; margin-bottom: 6px; }
+    .panel-status-bar.show { display: flex; }
+
+    .download-card { background: var(--green-light); border: 1px solid rgba(21,128,61,0.3); border-radius: 8px; padding: 20px; text-align: center; display: none; }
+    .download-card.show { display: block; }
+    .download-icon  { font-size: 32px; margin-bottom: 10px; }
+    .download-title { font-family: 'Lora', serif; font-size: 1rem; color: var(--green); margin-bottom: 3px; font-weight: 600; }
+    .download-sub   { font-size: 0.74rem; color: var(--ink-muted); margin-bottom: 14px; }
+    .btn-download { display: inline-flex; align-items: center; gap: 7px; background: var(--green); color: var(--white); border: none; padding: 10px 22px; border-radius: 6px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; margin-bottom: 8px; }
+    .btn-download:hover { background: #166534; transform: translateY(-1px); }
+    .btn-run-again { display: block; margin: 6px auto 0; background: none; border: none; color: var(--ink-muted); font-size: 0.77rem; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; transition: color 0.2s; }
+    .btn-run-again:hover { color: var(--teal); }
+
+    .panel-loading { position: absolute; inset: 46px 0 0 0; background: rgba(245,244,240,0.9); display: none; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(2px); flex-direction: column; gap: 10px; }
+    .panel-loading.show { display: flex; }
+    .loading-text { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--teal); letter-spacing: 0.05em; }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+    .notice { display: flex; align-items: flex-start; gap: 8px; background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2); border-radius: 6px; padding: 9px 11px; margin-bottom: 10px; font-size: 0.72rem; color: var(--amber); line-height: 1.45; }
+    .config-section { margin-bottom: 16px; }
+
+    /* BOTTOMBAR */
+    .bottombar { height: 30px; border-top: 1px solid var(--border); background: var(--surface2); display: flex; align-items: center; padding: 0 18px; gap: 18px; flex-shrink: 0; }
+    .bottom-stat { display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--ink-dim); }
+    .bottom-stat-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+    /* HOW TO */
+    .how-to-btn { display: flex; align-items: center; gap: 6px; padding: 5px 12px; background: var(--teal); border: 1px solid var(--teal); border-radius: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; font-weight: 500; color: var(--white); letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s; }
+    .how-to-btn:hover { background: var(--teal-dim); color: var(--teal); border-color: var(--teal-border); }
+    .how-to-btn span { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid currentColor; font-size: 0.6rem; font-weight: 700; flex-shrink: 0; }
+    .howto-overlay { display: none; position: fixed; inset: 0; background: rgba(28,25,23,0.4); backdrop-filter: blur(2px); z-index: 200; }
+    .howto-overlay.open { display: block; }
+    .howto-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 92vw; background: var(--surface); border-left: 1px solid var(--border); box-shadow: -8px 0 32px rgba(0,0,0,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 201; }
+    .howto-overlay.open .howto-drawer { transform: translateX(0); }
+    .howto-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--surface2); flex-shrink: 0; }
+    .howto-header-left { display: flex; align-items: center; gap: 10px; }
+    .howto-header-left .module-id { font-size: 0.6rem; }
+    .howto-title { font-family: 'Lora', serif; font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+    .howto-close { width: 28px; height: 28px; border-radius: 5px; border: 1px solid var(--border); background: transparent; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--ink-muted); cursor: pointer; transition: all 0.2s; line-height: 1; }
+    .howto-close:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
+    .howto-body { flex: 1; overflow-y: auto; padding: 20px; }
+    .howto-body::-webkit-scrollbar { width: 4px; }
+    .howto-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .howto-section { margin-bottom: 24px; }
+    .howto-section-title { display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--teal-border); }
+    .howto-step { display: flex; gap: 12px; margin-bottom: 12px; }
+    .howto-step-num { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; background: var(--teal-dim); border: 1px solid var(--teal-border); display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; font-weight: 500; color: var(--teal); }
+    .howto-step-body { flex: 1; }
+    .howto-step-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+    .howto-step-body p { font-size: 0.78rem; color: var(--ink-mid); line-height: 1.6; }
+    .howto-tip { display: flex; gap: 10px; align-items: flex-start; background: var(--amber-light); border: 1px solid rgba(180,83,9,0.2); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+    .howto-tip-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-tip p { font-size: 0.78rem; color: var(--amber); line-height: 1.55; }
+    .howto-note { display: flex; gap: 10px; align-items: flex-start; background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+    .howto-note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .howto-note p { font-size: 0.78rem; color: var(--blue); line-height: 1.55; }
+    .howto-output-item { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .howto-output-item:last-child { border-bottom: none; }
+    .howto-output-icon { font-size: 16px; flex-shrink: 0; }
+    .howto-output-body strong { display: block; font-size: 0.8rem; font-weight: 600; color: var(--ink); }
+    .howto-output-body p { font-size: 0.76rem; color: var(--ink-mid); line-height: 1.55; margin-top: 2px; }
+    .howto-footer { padding: 12px 20px; border-top: 1px solid var(--border); background: var(--surface2); flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--ink-dim); text-align: center; letter-spacing: 0.05em; }
+
+    @keyframes spin          { to { transform: rotate(360deg); } }
+    @keyframes pulse         { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    @keyframes indeterminate { 0%{transform:translateX(-100%)} 100%{transform:translateX(300%)} }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="back-btn" href="../../index.html">← Suite Home</a>
+      <div class="topbar-divider"></div>
+      <span class="module-id">MOD-03</span>
+      <span class="module-title">Comparative Analysis</span>
+    </div>
+    <div class="topbar-right">
+      <button class="how-to-btn" onclick="openHowTo()"><span>?</span> How to Use</button>
+      <div class="topbar-divider"></div>
+      <div class="status-dot checking" id="statusDot"></div>
+      <span class="status-label" id="statusLabel">CHECKING…</span>
+    </div>
+  </header>
+
+  <!-- STEPS -->
+  <div class="steps-bar">
+    <div class="step-item active" id="step1item"><div class="step-num">1</div><div class="step-label">Design &amp; Upload</div></div>
+    <div class="step-connector"></div>
+    <div class="step-item" id="step2item"><div class="step-num">2</div><div class="step-label">Variables &amp; Labels</div></div>
+    <div class="step-connector"></div>
+    <div class="step-item" id="step3item"><div class="step-num">3</div><div class="step-label">Tests &amp; Run</div></div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div class="workspace">
+
+    <!-- ═══ PANEL 1: STUDY DESIGN + FILE UPLOAD ═══ -->
+    <div class="panel" id="panel1">
+      <div class="panel-header">
+        <span class="panel-icon">📂</span>
+        <span class="panel-label">Study Design &amp; Files</span>
+        <span class="panel-badge badge-active" id="badge1">READY</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="config-section">
+          <div class="section-title">Study Design</div>
+          <div class="design-grid">
+            <div class="design-card selected" id="design-control_exp" onclick="selectDesign('control_exp')">
+              <div class="design-card-icon">⚖️</div>
+              <div class="design-card-label">Control vs Experimental</div>
+              <div class="design-card-sub">2 independent groups</div>
+            </div>
+            <div class="design-card" id="design-prepost" onclick="selectDesign('prepost')">
+              <div class="design-card-icon">🔄</div>
+              <div class="design-card-label">Pre–Post Comparison</div>
+              <div class="design-card-sub">same subjects, 2 time points</div>
+            </div>
+            <div class="design-card" id="design-multiple_groups" onclick="selectDesign('multiple_groups')">
+              <div class="design-card-icon">📊</div>
+              <div class="design-card-label">Multiple Groups</div>
+              <div class="design-card-sub">3+ independent groups</div>
+            </div>
+            <div class="design-card" id="design-longitudinal" onclick="selectDesign('longitudinal')">
+              <div class="design-card-icon">📈</div>
+              <div class="design-card-label">Longitudinal Study</div>
+              <div class="design-card-sub">same subjects, 3+ time points</div>
+            </div>
+          </div>
+          <div class="notice">
+            <span>ℹ️</span>
+            <span id="designNoticeText">Upload exactly 2 files — one per group.</span>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <div class="section-title">Data Files</div>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="fileInput" accept=".xlsx" multiple />
+            <div class="upload-icon">📋</div>
+            <div class="upload-title">Drop test files here</div>
+            <div class="upload-sub" id="uploadSub">.xlsx · 2 files required</div>
+          </div>
+          <div class="file-list" id="fileList"></div>
+          <div class="stat-pills" id="statPills" style="display:none;"></div>
+        </div>
+
+        <button class="btn-primary" id="loadBtn" onclick="loadFiles()" disabled>
+          Load &amp; Detect Variables →
+        </button>
+
+      </div>
+      <div class="panel-loading" id="panel1Loading">
+        <div class="spinner"></div>
+        <div class="loading-text">READING FILES…</div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL 2: VARIABLE SELECTION + LABELS ═══ -->
+    <div class="panel locked" id="panel2">
+      <div class="panel-header">
+        <span class="panel-icon">🎯</span>
+        <span class="panel-label">Variables &amp; Group Labels</span>
+        <span class="panel-badge badge-waiting" id="badge2">WAITING</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="config-section">
+          <div class="section-title">Group / File Labels</div>
+          <div class="label-list" id="labelList"></div>
+        </div>
+
+        <div class="config-section">
+          <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Variables to Compare</span>
+            <span id="varCount" style="font-size:0.62rem; color:var(--teal);">0 selected</span>
+          </div>
+          <div class="quick-btns">
+            <button class="quick-btn" onclick="selectAllVars()">⚡ All</button>
+            <button class="quick-btn" onclick="selectVarsByType('Overall')">Overall</button>
+            <button class="quick-btn" onclick="selectVarsByType('Main AO')">Main AOs</button>
+            <button class="quick-btn" onclick="selectVarsByType('Component')">Components</button>
+            <button class="quick-btn" onclick="selectVarsByType('Topic')">Topics</button>
+            <button class="quick-btn" onclick="clearVars()">✕ Clear</button>
+          </div>
+          <div class="var-list" id="varList">
+            <div style="padding:20px; text-align:center; color:var(--ink-dim); font-size:0.75rem;">
+              Load files first to see available variables.
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="proceedBtn" onclick="proceedToRun()" disabled>
+          Configure Tests →
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ═══ PANEL 3: TESTS + OPTIONS + RUN ═══ -->
+    <div class="panel locked" id="panel3">
+      <div class="panel-header">
+        <span class="panel-icon">⚗️</span>
+        <span class="panel-label">Tests &amp; Output</span>
+        <span class="panel-badge badge-waiting" id="badge3">WAITING</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="config-section">
+          <div class="section-title">Statistical Tests</div>
+
+          <div class="test-group">
+            <div class="test-group-label">Parametric</div>
+            <div class="test-grid" id="parametricTests"></div>
+          </div>
+
+          <div class="test-group">
+            <div class="test-group-label">Non-Parametric</div>
+            <div class="test-grid" id="nonParamTests"></div>
+          </div>
+
+          <div class="test-group" id="testGroupEffect">
+            <div class="test-group-label">Effect Sizes</div>
+            <div class="test-grid" id="effectTests"></div>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <div class="section-title">Options</div>
+          <div class="field-group">
+            <div class="field-label">Significance Level (α)</div>
+            <select class="field-select" id="alphaSelect">
+              <option value="0.05" selected>0.05 — standard</option>
+              <option value="0.01">0.01 — strict</option>
+              <option value="0.001">0.001 — very strict</option>
+              <option value="0.10">0.10 — exploratory</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <div class="panel-status-bar" id="panel3StatusBar">
+            <div class="spinner"></div>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--teal);">Running analysis…</span>
+          </div>
+          <div class="progress-wrap" id="progressWrap">
+            <div class="progress-bar indeterminate"></div>
+          </div>
+          <div class="log-box" id="logBox">
+            <span class="log-line log-info">— Configure tests and click Run Analysis —</span>
+          </div>
+          <div class="download-card" id="downloadCard">
+            <div class="download-icon">📦</div>
+            <div class="download-title">Analysis Complete</div>
+            <div class="download-sub">Excel report + charts ready</div>
+            <button class="btn-download" id="downloadBtn">⬇ Download ZIP</button>
+            <button class="btn-run-again" onclick="runAgain()">Run again with different settings</button>
+          </div>
+          <button class="btn-primary" id="runBtn" onclick="runAnalysis()" disabled>
+            Run Analysis →
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /workspace -->
+
+  <!-- BOTTOMBAR -->
+  <div class="bottombar">
+    <div class="bottom-stat">
+      <div class="bottom-stat-dot" style="background:var(--teal);"></div>
+      <span id="bottomDesign">Design: Control vs Experimental</span>
+    </div>
+    <div class="bottom-stat">
+      <div class="bottom-stat-dot" style="background:var(--blue);"></div>
+      <span id="bottomFiles">0 files loaded</span>
+    </div>
+    <div class="bottom-stat">
+      <div class="bottom-stat-dot" style="background:var(--purple);"></div>
+      <span id="bottomVars">0 variables selected</span>
+    </div>
+  </div>
+
+  <!-- HOW TO USE DRAWER -->
+  <div class="howto-overlay" id="howtoOverlay" onclick="closeHowToOverlay(event)">
+    <div class="howto-drawer">
+      <div class="howto-header">
+        <div class="howto-header-left">
+          <span class="module-id">MOD-03</span>
+          <span class="howto-title">How to Use</span>
+        </div>
+        <button class="howto-close" onclick="closeHowTo()">✕</button>
+      </div>
+      <div class="howto-body">
+
+        <div class="howto-section">
+          <div class="howto-section-title">📌 What This Module Does</div>
+          <p style="font-size:0.78rem; color:var(--ink-mid); line-height:1.6; margin-bottom:8px;">Module 3 compares student performance across groups or time points. Upload 2 or more test files, choose your study design, select the variables to compare, and the module runs the appropriate statistical tests automatically — returning an Excel report and charts as a ZIP.</p>
+        </div>
+
+        <div class="howto-section">
+          <div class="howto-section-title">📋 Study Designs</div>
+          <div class="howto-output-item">
+            <span class="howto-output-icon">⚖️</span>
+            <div class="howto-output-body"><strong>Control vs Experimental</strong><p>Two independent groups (different students). Uses independent t-test and Mann-Whitney U. Upload exactly 2 files.</p></div>
+          </div>
+          <div class="howto-output-item">
+            <span class="howto-output-icon">🔄</span>
+            <div class="howto-output-body"><strong>Pre–Post Comparison</strong><p>Same students at two time points. Uses paired t-test and Wilcoxon signed-rank. Students are matched by name across files.</p></div>
+          </div>
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📊</span>
+            <div class="howto-output-body"><strong>Multiple Groups</strong><p>Three or more independent groups. Uses one-way ANOVA and Kruskal-Wallis H with automatic Tukey HSD post-hoc. Upload 3+ files.</p></div>
+          </div>
+          <div class="howto-output-item">
+            <span class="howto-output-icon">📈</span>
+            <div class="howto-output-body"><strong>Longitudinal Study</strong><p>Same students at 3+ time points. Uses Repeated Measures ANOVA (with sphericity correction) and Friedman test. Upload 3+ files.</p></div>
+          </div>
+        </div>
+
+        <div class="howto-section">
+          <div class="howto-section-title">🚀 Step-by-Step</div>
+          <div class="howto-step"><div class="howto-step-num">1</div><div class="howto-step-body"><strong>Choose your study design</strong><p>Select one of the four cards. This determines which tests are shown and how many files are required.</p></div></div>
+          <div class="howto-step"><div class="howto-step-num">2</div><div class="howto-step-body"><strong>Upload your files</strong><p>Drop 2+ Excel files (one per group or time point). Files must follow the standard Analytix format.</p></div></div>
+          <div class="howto-step"><div class="howto-step-num">3</div><div class="howto-step-body"><strong>Load &amp; detect variables</strong><p>Click "Load &amp; Detect Variables". The module finds variables common across all files.</p></div></div>
+          <div class="howto-step"><div class="howto-step-num">4</div><div class="howto-step-body"><strong>Name your groups and select variables</strong><p>Edit the group labels and tick the variables to compare. Use the quick-select buttons to filter by type.</p></div></div>
+          <div class="howto-step"><div class="howto-step-num">5</div><div class="howto-step-body"><strong>Choose tests and run</strong><p>Sensible defaults are pre-checked for your design. Set α and click Run. Download the ZIP when ready.</p></div></div>
+        </div>
+
+        <div class="howto-section">
+          <div class="howto-section-title">📦 Excel Output</div>
+          <div class="howto-output-item"><span class="howto-output-icon">📋</span><div class="howto-output-body"><strong>Overview</strong><p>Study design, group sizes, and which variables produced significant results.</p></div></div>
+          <div class="howto-output-item"><span class="howto-output-icon">📊</span><div class="howto-output-body"><strong>Results</strong><p>One row per variable. Test statistics, p-values (colour-coded by significance), effect sizes, and CIs.</p></div></div>
+          <div class="howto-output-item"><span class="howto-output-icon">✅</span><div class="howto-output-body"><strong>Assumption Checks</strong><p>Shapiro-Wilk normality and Levene's variance test per variable. Colour-coded pass/fail.</p></div></div>
+          <div class="howto-output-item"><span class="howto-output-icon">🔬</span><div class="howto-output-body"><strong>Post-Hoc</strong><p>Pairwise comparisons for 3+ group designs. Exploratory post-hoc is run even when the main test is not significant — clearly flagged.</p></div></div>
+          <div class="howto-output-item"><span class="howto-output-icon">📐</span><div class="howto-output-body"><strong>Raw Descriptives</strong><p>n, mean, SD, and median per group for every variable.</p></div></div>
+        </div>
+
+        <div class="howto-section">
+          <div class="howto-section-title">💡 Tips &amp; Cautions</div>
+          <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Match student names exactly for paired designs.</strong> Pre–Post and Longitudinal designs match students by name. A student missing from any file is excluded from paired tests.</p></div>
+          <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Check assumption results before interpreting tests.</strong> If Shapiro-Wilk flags non-normality, prefer the non-parametric result for that variable.</p></div>
+          <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Post-hoc tests always run for 3+ groups</strong> — even when ANOVA/Kruskal-Wallis is not significant. These are flagged as "exploratory" in the Post-Hoc sheet.</p></div>
+          <div class="howto-note"><span class="howto-note-icon">ℹ️</span><p><strong>Effect sizes (Cohen's d, Hedges' g)</strong> are only available for 2-group designs. For 3+ groups, η² and ε² are reported instead.</p></div>
+          <div class="howto-note"><span class="howto-note-icon">ℹ️</span><p>Your data is never stored. Files are processed on the server and deleted immediately after your ZIP is generated.</p></div>
+        </div>
+
+      </div>
+      <div class="howto-footer">MOD-03 · COMPARATIVE ANALYSIS · ANALYTIX SUITE</div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+  const API_BASE = 'https://analytix-api-9r8q.onrender.com';
+
+  // ── STATE ──────────────────────────────────────────────────────────────────
+  let loadedFiles   = [];
+  let sessionData   = null;
+  let availableVars = [];
+  let selectedVars  = new Set();
+  let downloadBlob  = null;
+  let currentDesign = 'control_exp';
+
+  // ── DESIGN CONFIG ──────────────────────────────────────────────────────────
+  const DESIGNS = {
+    control_exp: {
+      notice:   'Upload exactly 2 files — one per group.',
+      min: 2, max: 2,
+      parametric: [{ key: 'independent_t', label: 'Independent t-test', on: true }],
+      nonparam:   [{ key: 'mann_whitney',   label: 'Mann-Whitney U',     on: true }],
+      effect:     [
+        { key: 'cohen_d',     label: "Cohen's d",  on: true  },
+        { key: 'hedges_g',    label: "Hedges' g",  on: true  },
+        { key: 'glass_delta', label: "Glass's Δ",  on: false },
+        { key: 'r_squared',   label: 'r²',          on: false },
+      ],
+    },
+    prepost: {
+      notice:   'Upload exactly 2 files — one per time point. Students matched by name.',
+      min: 2, max: 2,
+      parametric: [{ key: 'paired_t', label: 'Paired t-test',        on: true }],
+      nonparam:   [{ key: 'wilcoxon', label: 'Wilcoxon Signed-Rank', on: true }],
+      effect:     [
+        { key: 'cohen_d',  label: "Cohen's d",  on: true  },
+        { key: 'hedges_g', label: "Hedges' g",  on: true  },
+        { key: 'r_squared',label: 'r²',          on: false },
+      ],
+    },
+    multiple_groups: {
+      notice:   'Upload 3 or more files — one per group.',
+      min: 3, max: null,
+      parametric: [{ key: 'one_way_anova', label: 'One-Way ANOVA',    on: true }],
+      nonparam:   [{ key: 'kruskal',       label: 'Kruskal-Wallis H', on: true }],
+      effect: [],
+    },
+    longitudinal: {
+      notice:   'Upload 3 or more files — one per time point. Students matched by name.',
+      min: 3, max: null,
+      parametric: [{ key: 'repeated_anova', label: 'RM-ANOVA',      on: true }],
+      nonparam:   [{ key: 'friedman',        label: 'Friedman Test', on: true }],
+      effect: [],
+    },
+  };
+
+  // ── API HEALTH ─────────────────────────────────────────────────────────────
+  (async function checkApi() {
+    const dot = document.getElementById('statusDot');
+    const lbl = document.getElementById('statusLabel');
+    try {
+      const r = await fetch(`${API_BASE}/`, { signal: AbortSignal.timeout(8000) });
+      if (r.ok) { dot.className = 'status-dot'; lbl.textContent = 'API ONLINE'; }
+      else throw new Error();
+    } catch { dot.className = 'status-dot offline'; lbl.textContent = 'API OFFLINE'; }
+  })();
+
+  // ── STUDY DESIGN ───────────────────────────────────────────────────────────
+  function selectDesign(d) {
+    currentDesign = d;
+    document.querySelectorAll('.design-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(`design-${d}`).classList.add('selected');
+    document.getElementById('designNoticeText').textContent = DESIGNS[d].notice;
+    document.getElementById('uploadSub').textContent = DESIGNS[d].max === 2 ? '.xlsx · exactly 2 files' : '.xlsx · 3 or more files';
+    document.getElementById('bottomDesign').textContent = 'Design: ' + d.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+    if (loadedFiles.length) { loadedFiles = []; resetSession(); }
+    renderFileList();
+  }
+
+  // ── FILE HANDLING ──────────────────────────────────────────────────────────
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput  = document.getElementById('fileInput');
+
+  uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files); });
+  fileInput.addEventListener('change', () => { addFiles(fileInput.files); fileInput.value = ''; });
+
+  function addFiles(list) {
+    const fresh = Array.from(list).filter(f => f.name.endsWith('.xlsx'));
+    if (!fresh.length) return;
+    const existing = new Set(loadedFiles.map(f => f.name));
+    fresh.forEach(f => { if (!existing.has(f.name)) loadedFiles.push(f); });
+    renderFileList(); resetSession();
+  }
+
+  function removeFile(name) { loadedFiles = loadedFiles.filter(f => f.name !== name); renderFileList(); resetSession(); }
+
+  function renderFileList() {
+    const list = document.getElementById('fileList');
+    list.innerHTML = '';
+    loadedFiles.forEach((f, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'file-chip';
+      chip.innerHTML = `<span class="file-chip-icon">✅</span><span class="file-chip-name">${f.name}</span><span class="file-chip-sub">File ${i+1}</span><button class="file-chip-remove" onclick="removeFile('${f.name}')">✕</button>`;
+      list.appendChild(chip);
+    });
+    const cfg   = DESIGNS[currentDesign];
+    const ok    = loadedFiles.length >= cfg.min && (cfg.max === null || loadedFiles.length <= cfg.max);
+    document.getElementById('loadBtn').disabled = !ok;
+    document.getElementById('bottomFiles').textContent = `${loadedFiles.length} file${loadedFiles.length !== 1 ? 's' : ''} loaded`;
+    const pills = document.getElementById('statPills');
+    if (loadedFiles.length) {
+      pills.style.display = 'flex';
+      pills.innerHTML = `<div class="stat-pill ${ok ? 'green' : 'amber'}"><strong>${loadedFiles.length}</strong> file${loadedFiles.length !== 1 ? 's' : ''} ${ok ? '✓' : '— check count'}</div>`;
+    } else { pills.style.display = 'none'; }
+  }
+
+  function resetSession() {
+    sessionData = null; availableVars = []; selectedVars = new Set(); downloadBlob = null;
+    ['panel2','panel3'].forEach(id => document.getElementById(id).classList.add('locked'));
+    document.getElementById('badge1').textContent = 'READY';   document.getElementById('badge1').className = 'panel-badge badge-active';
+    document.getElementById('badge2').textContent = 'WAITING'; document.getElementById('badge2').className = 'panel-badge badge-waiting';
+    document.getElementById('badge3').textContent = 'WAITING'; document.getElementById('badge3').className = 'panel-badge badge-waiting';
+    document.getElementById('proceedBtn').disabled = true;
+    document.getElementById('runBtn').disabled = true;
+    document.getElementById('varCount').textContent = '0 selected';
+    document.getElementById('bottomVars').textContent = '0 variables selected';
+    setStep(1,'active'); setStep(2,''); setStep(3,'');
+  }
+
+  // ── LOAD FILES ─────────────────────────────────────────────────────────────
+  async function loadFiles() {
+    if (!loadedFiles.length) return;
+    document.getElementById('panel1Loading').classList.add('show');
+    document.getElementById('loadBtn').disabled = true;
+    const fd = new FormData();
+    loadedFiles.forEach(f => fd.append('files', f));
+    try {
+      const r    = await fetch(`${API_BASE}/api/module3/load`, { method: 'POST', body: fd });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Load failed');
+      sessionData   = data;
+      availableVars = data.variables || [];
+      renderVarList();
+      renderLabelList(data.files || []);
+      const pills = document.getElementById('statPills');
+      pills.style.display = 'flex';
+      pills.innerHTML = `
+        <div class="stat-pill green"><strong>${data.files.length}</strong> files</div>
+        <div class="stat-pill"><strong>${availableVars.length}</strong> variables</div>
+        ${data.n_matched ? `<div class="stat-pill amber"><strong>${data.n_matched}</strong> matched students</div>` : ''}
+      `;
+      document.getElementById('panel2').classList.remove('locked');
+      document.getElementById('badge1').textContent = 'DONE';   document.getElementById('badge1').className = 'panel-badge badge-done';
+      document.getElementById('badge2').textContent = 'ACTIVE'; document.getElementById('badge2').className = 'panel-badge badge-active';
+      setStep(1,'done'); setStep(2,'active');
+    } catch (e) {
+      alert(`Failed to load: ${e.message}`);
+    } finally {
+      document.getElementById('panel1Loading').classList.remove('show');
+      document.getElementById('loadBtn').disabled = false;
+    }
+  }
+
+  // ── VARIABLE LIST ──────────────────────────────────────────────────────────
+  function renderVarList() {
+    const list = document.getElementById('varList');
+    list.innerHTML = '';
+    if (!availableVars.length) {
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--ink-dim);font-size:0.75rem;">No common variables found.</div>';
+      return;
+    }
+    const groups = {};
+    availableVars.forEach(v => { if (!groups[v.type]) groups[v.type]=[]; groups[v.type].push(v); });
+    ['Overall','Component','Main AO','Sub-AO','Topic'].forEach(type => {
+      if (!groups[type]) return;
+      const hdr = document.createElement('div'); hdr.className = 'var-group-header'; hdr.textContent = type; list.appendChild(hdr);
+      groups[type].forEach(v => {
+        const key  = `${v.type}||${v.name}`;
+        const item = document.createElement('div');
+        item.className   = 'var-item' + (selectedVars.has(key) ? ' checked' : '');
+        item.dataset.key  = key;
+        item.dataset.type = v.type;
+        item.innerHTML = `<div class="var-checkbox"><span class="var-check-icon">✓</span></div><span class="var-type-tag">${v.type}</span><span class="var-name">${v.name}</span>`;
+        item.addEventListener('click', () => toggleVar(key, item));
+        list.appendChild(item);
+      });
+    });
+    updateVarCount();
+  }
+
+  function toggleVar(key, el) {
+    if (selectedVars.has(key)) { selectedVars.delete(key); el.classList.remove('checked'); }
+    else { selectedVars.add(key); el.classList.add('checked'); }
+    updateVarCount();
+  }
+  function updateVarCount() {
+    const n = selectedVars.size;
+    document.getElementById('varCount').textContent = `${n} selected`;
+    document.getElementById('bottomVars').textContent = `${n} variable${n!==1?'s':''} selected`;
+    document.getElementById('proceedBtn').disabled = n === 0;
+  }
+  function selectAllVars()        { document.querySelectorAll('.var-item').forEach(el => { selectedVars.add(el.dataset.key); el.classList.add('checked'); }); updateVarCount(); }
+  function clearVars()            { selectedVars.clear(); document.querySelectorAll('.var-item').forEach(el => el.classList.remove('checked')); updateVarCount(); }
+  function selectVarsByType(type) { document.querySelectorAll('.var-item').forEach(el => { if (el.dataset.type===type) { selectedVars.add(el.dataset.key); el.classList.add('checked'); }}); updateVarCount(); }
+
+  // ── LABEL LIST ─────────────────────────────────────────────────────────────
+  function renderLabelList(files) {
+    const list = document.getElementById('labelList'); list.innerHTML = '';
+    files.forEach((f, i) => {
+      const row = document.createElement('div'); row.className = 'label-row';
+      row.innerHTML = `<span class="label-row-num">${i+1}</span><input class="label-input" id="label${i}" type="text" value="${f.name.replace(/\.xlsx?$/i,'')}" placeholder="Group ${i+1} label" />`;
+      list.appendChild(row);
+    });
+  }
+  function getFileLabels() { const l=[]; let i=0; while(document.getElementById(`label${i}`)){l.push(document.getElementById(`label${i}`).value.trim()||`Group ${i+1}`);i++;} return l; }
+
+  // ── PROCEED + TEST PANEL ───────────────────────────────────────────────────
+  function proceedToRun() {
+    if (!selectedVars.size) return;
+    renderTestPanel();
+    document.getElementById('panel3').classList.remove('locked');
+    document.getElementById('badge2').textContent = 'DONE';      document.getElementById('badge2').className = 'panel-badge badge-done';
+    document.getElementById('badge3').textContent = 'CONFIGURE'; document.getElementById('badge3').className = 'panel-badge badge-active';
+    document.getElementById('runBtn').disabled = false;
+    setStep(2,'done'); setStep(3,'active');
+    clearLog(); log('— Configure tests and click Run Analysis —','info');
+  }
+
+  function renderTestPanel() {
+    const cfg = DESIGNS[currentDesign];
+    buildTestGroup('parametricTests', cfg.parametric);
+    buildTestGroup('nonParamTests',   cfg.nonparam);
+    buildTestGroup('effectTests',     cfg.effect);
+    document.getElementById('testGroupEffect').style.display = cfg.effect.length ? '' : 'none';
+  }
+
+  function buildTestGroup(id, items) {
+    const c = document.getElementById(id); c.innerHTML = '';
+    items.forEach(item => {
+      const el = document.createElement('div');
+      el.className  = 'test-item' + (item.on ? ' checked' : '');
+      el.dataset.key = item.key;
+      el.innerHTML  = `<div class="test-checkbox"><span class="test-check-icon">✓</span></div><span class="test-item-label">${item.label}</span>`;
+      el.addEventListener('click', () => el.classList.toggle('checked'));
+      c.appendChild(el);
+    });
+  }
+
+  function getSelectedTests() {
+    const t = {};
+    document.querySelectorAll('.test-item[data-key]').forEach(el => { t[el.dataset.key] = el.classList.contains('checked'); });
+    return t;
+  }
+
+  // ── RUN ANALYSIS ───────────────────────────────────────────────────────────
+  async function runAnalysis() {
+    if (!sessionData || !selectedVars.size) return;
+    const vars   = Array.from(selectedVars).map(k => { const [type,name]=k.split('||'); return {type,name}; });
+    const opts   = { study_design: currentDesign, variables: vars, alpha: parseFloat(document.getElementById('alphaSelect').value), tests: getSelectedTests(), file_labels: getFileLabels() };
+    document.getElementById('runBtn').disabled = true;
+    document.getElementById('downloadCard').classList.remove('show');
+    document.getElementById('panel3StatusBar').classList.add('show');
+    document.getElementById('progressWrap').classList.add('show');
+    document.getElementById('badge3').textContent = 'RUNNING'; document.getElementById('badge3').className = 'panel-badge badge-active';
+    clearLog();
+    log(`Design: ${currentDesign.replace(/_/g,' ')}`, 'info');
+    log(`${loadedFiles.length} files · ${vars.length} variables · α=${opts.alpha}`, 'info');
+    log('Sending to server…', 'info');
+    const fd = new FormData();
+    loadedFiles.forEach(f => fd.append('files', f));
+    fd.append('opts', JSON.stringify(opts));
+    try {
+      const res = await fetch(`${API_BASE}/api/module3/run`, { method:'POST', body:fd });
+      if (!res.ok) { let m='Analysis failed'; try{const e=await res.json();m=e.error||m;}catch{} throw new Error(m); }
+      downloadBlob = await res.blob();
+      log('✓ Statistical tests complete.', 'ok');
+      log('✓ Charts generated.', 'ok');
+      log('✓ Excel report written.', 'ok');
+      log('ZIP ready for download.', 'ok');
+      document.getElementById('panel3StatusBar').classList.remove('show');
+      document.getElementById('downloadCard').classList.add('show');
+      document.getElementById('badge3').textContent = 'DONE'; document.getElementById('badge3').className = 'panel-badge badge-done';
+      setStep(3,'done');
+      document.getElementById('downloadBtn').onclick = triggerDownload;
+    } catch (e) {
+      log(`Error: ${e.message}`, 'err');
+      document.getElementById('panel3StatusBar').classList.remove('show');
+      document.getElementById('badge3').textContent = 'ERROR'; document.getElementById('badge3').className = 'panel-badge badge-waiting';
+    } finally {
+      document.getElementById('runBtn').disabled = false;
+    }
+  }
+
+  function triggerDownload() {
+    if (!downloadBlob) return;
+    const url = URL.createObjectURL(downloadBlob);
+    const a = document.createElement('a'); a.href=url; a.download='Analytix_Module3_ComparativeAnalysis.zip'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function runAgain() {
+    downloadBlob = null;
+    document.getElementById('downloadCard').classList.remove('show');
+    document.getElementById('progressWrap').classList.remove('show');
+    clearLog(); log('— Configure tests and click Run Analysis —','info');
+    setStep(3,'active');
+    document.getElementById('badge3').textContent = 'CONFIGURE'; document.getElementById('badge3').className = 'panel-badge badge-active';
+  }
+
+  // ── HELPERS ────────────────────────────────────────────────────────────────
+  function setStep(n, state) { const el=document.getElementById(`step${n}item`); el.classList.remove('active','done'); if(state) el.classList.add(state); }
+  function clearLog() { document.getElementById('logBox').innerHTML=''; }
+  function log(msg, type='') { const box=document.getElementById('logBox'); const s=document.createElement('span'); s.className=`log-line${type?' log-'+type:''}`; s.textContent=msg; box.appendChild(s); box.scrollTop=box.scrollHeight; }
+  function openHowTo()  { document.getElementById('howtoOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeHowTo() { document.getElementById('howtoOverlay').classList.remove('open'); document.body.style.overflow=''; }
+  function closeHowToOverlay(e) { if(e.target===document.getElementById('howtoOverlay')) closeHowTo(); }
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeHowTo(); });
+</script>
+</body>
+</html>
