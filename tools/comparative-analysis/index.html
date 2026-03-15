@@ -94,6 +94,10 @@
     .file-chip-sub    { font-size: 0.62rem; color: var(--ink-dim); font-family: 'IBM Plex Mono', monospace; white-space: nowrap; }
     .file-chip-remove { background: none; border: none; color: var(--ink-dim); cursor: pointer; font-size: 0.75rem; padding: 2px 5px; border-radius: 3px; transition: color 0.2s; }
     .file-chip-remove:hover { color: var(--red); }
+    .file-chip-role { font-size: 0.65rem; padding: 2px 6px; border: 1.5px solid var(--border); border-radius: 4px; font-family: 'IBM Plex Mono', monospace; color: var(--ink-mid); background: var(--surface); outline: none; cursor: pointer; transition: border-color 0.2s; flex-shrink: 0; }
+    .file-chip-role:focus { border-color: var(--teal); }
+    .file-chip-role.role-control { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+    .file-chip-role.role-experimental { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
 
     .stat-pills { display: flex; gap: 5px; flex-wrap: wrap; margin: 10px 0; }
     .stat-pill { background: var(--blue-light); border: 1px solid rgba(29,78,216,0.2); border-radius: 4px; padding: 3px 9px; font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: var(--blue); }
@@ -528,9 +532,11 @@
         <div class="howto-section">
           <div class="howto-section-title">💡 Tips &amp; Cautions</div>
           <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Match student names exactly for paired designs.</strong> Pre–Post and Longitudinal designs match students by name. A student missing from any file is excluded from paired tests.</p></div>
+          <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Absent students are automatically excluded.</strong> Any student with an AB marker in any file is removed from the analysis entirely. For paired designs (Pre–Post, Longitudinal), a student absent in any one time point is excluded from all time points to keep the paired structure intact. Excluded students are listed by name in the Overview sheet of the Excel report.</p></div>
+          <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Set the Control/Pre role for 2-group designs.</strong> After uploading two files, use the role dropdown next to each file chip to designate which file is Control (or Pre) and which is Experimental (or Post). This determines the direction of the mean difference — a positive value means Experimental scored higher than Control.</p></div>
           <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Check assumption results before interpreting tests.</strong> If Shapiro-Wilk flags non-normality, prefer the non-parametric result for that variable.</p></div>
           <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Post-hoc tests always run for 3+ groups</strong> — even when ANOVA/Kruskal-Wallis is not significant. These are flagged as "exploratory" in the Post-Hoc sheet.</p></div>
-          <div class="howto-note"><span class="howto-note-icon">ℹ️</span><p><strong>Effect sizes (Cohen's d, Hedges' g)</strong> are only available for 2-group designs. For 3+ groups, η² and ε² are reported instead.</p></div>
+          <div class="howto-note"><span class="howto-note-icon">ℹ️</span><p><strong>Effect sizes (Cohen's d, Hedges' g)</strong> are only available for 2-group designs. Glass's Δ is only available for Control vs Experimental (not Pre–Post, where there is no separate control group SD). For 3+ groups, η² and ε² are reported instead.</p></div>
           <div class="howto-note"><span class="howto-note-icon">ℹ️</span><p>Your data is never stored. Files are processed on the server and deleted immediately after your ZIP is generated.</p></div>
         </div>
 
@@ -636,16 +642,40 @@
   function removeFile(name) { loadedFiles = loadedFiles.filter(f => f.name !== name); renderFileList(); resetSession(); }
 
   function renderFileList() {
-    const list = document.getElementById('fileList');
+    const list   = document.getElementById('fileList');
+    const is2grp = (currentDesign === 'control_exp' || currentDesign === 'prepost');
+    const roles  = currentDesign === 'control_exp'
+      ? ['Control', 'Experimental']
+      : ['Pre', 'Post'];
+
     list.innerHTML = '';
     loadedFiles.forEach((f, i) => {
       const chip = document.createElement('div');
       chip.className = 'file-chip';
-      chip.innerHTML = `<span class="file-chip-icon">✅</span><span class="file-chip-name">${f.name}</span><span class="file-chip-sub">File ${i+1}</span><button class="file-chip-remove" onclick="removeFile('${f.name}')">✕</button>`;
+
+      // Role dropdown (only for 2-group designs with exactly 2 files)
+      let roleHtml = '';
+      if (is2grp && loadedFiles.length === 2) {
+        const defaultRole = roles[i];
+        const otherRole   = roles[1 - i];
+        roleHtml = `
+          <select class="file-chip-role ${i === 0 ? 'role-control' : 'role-experimental'}"
+                  id="role${i}" onchange="onRoleChange(${i})">
+            <option value="${i}">${defaultRole}</option>
+            <option value="${1-i}">${otherRole}</option>
+          </select>`;
+      }
+
+      chip.innerHTML = `
+        <span class="file-chip-icon">✅</span>
+        <span class="file-chip-name">${f.name}</span>
+        ${roleHtml}
+        <button class="file-chip-remove" onclick="removeFile('${f.name}')">✕</button>`;
       list.appendChild(chip);
     });
-    const cfg   = DESIGNS[currentDesign];
-    const ok    = loadedFiles.length >= cfg.min && (cfg.max === null || loadedFiles.length <= cfg.max);
+
+    const cfg  = DESIGNS[currentDesign];
+    const ok   = loadedFiles.length >= cfg.min && (cfg.max === null || loadedFiles.length <= cfg.max);
     document.getElementById('loadBtn').disabled = !ok;
     document.getElementById('bottomFiles').textContent = `${loadedFiles.length} file${loadedFiles.length !== 1 ? 's' : ''} loaded`;
     const pills = document.getElementById('statPills');
@@ -653,6 +683,32 @@
       pills.style.display = 'flex';
       pills.innerHTML = `<div class="stat-pill ${ok ? 'green' : 'amber'}"><strong>${loadedFiles.length}</strong> file${loadedFiles.length !== 1 ? 's' : ''} ${ok ? '✓' : '— check count'}</div>`;
     } else { pills.style.display = 'none'; }
+  }
+
+  function onRoleChange(changedIdx) {
+    // If user flips a role, swap it so no duplicates exist
+    const sel0 = document.getElementById('role0');
+    const sel1 = document.getElementById('role1');
+    if (!sel0 || !sel1) return;
+    const other = changedIdx === 0 ? sel1 : sel0;
+    const changed = changedIdx === 0 ? sel0 : sel1;
+    // If both selects now show same value, flip the other
+    if (changed.value === other.value) {
+      other.value = other.value === '0' ? '1' : '0';
+    }
+    // Update role styling
+    [sel0, sel1].forEach(sel => {
+      sel.className = 'file-chip-role ' +
+        (sel.value === '0' ? 'role-control' : 'role-experimental');
+    });
+  }
+
+  function getFileOrder() {
+    // Returns [int, int] order for 2-group designs, or [] for others
+    const sel0 = document.getElementById('role0');
+    const sel1 = document.getElementById('role1');
+    if (!sel0 || !sel1) return [];
+    return [parseInt(sel0.value), parseInt(sel1.value)];
   }
 
   function resetSession() {
@@ -797,7 +853,7 @@
   async function runAnalysis() {
     if (!sessionData || !selectedVars.size) return;
     const vars   = Array.from(selectedVars).map(k => { const [type,name]=k.split('||'); return {type,name}; });
-    const opts   = { study_design: currentDesign, variables: vars, alpha: parseFloat(document.getElementById('alphaSelect').value), tests: getSelectedTests(), file_labels: getFileLabels() };
+    const opts   = { study_design: currentDesign, variables: vars, alpha: parseFloat(document.getElementById('alphaSelect').value), tests: getSelectedTests(), file_labels: getFileLabels(), file_order: getFileOrder() };
     document.getElementById('runBtn').disabled = true;
     document.getElementById('downloadCard').classList.remove('show');
     document.getElementById('panel3StatusBar').classList.add('show');
