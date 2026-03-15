@@ -562,7 +562,7 @@
           <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Set the Control/Pre role for 2-group designs.</strong> After uploading two files, use the role dropdown next to each file chip to designate which file is Control (or Pre) and which is Experimental (or Post). This determines the direction of the mean difference — a positive value means Experimental scored higher than Control.</p></div>
           <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Check assumption results before interpreting tests.</strong> If Shapiro-Wilk flags non-normality, prefer the non-parametric result for that variable.</p></div>
           <div class="howto-tip"><span class="howto-tip-icon">💡</span><p><strong>Post-hoc tests always run for 3+ groups</strong> — even when ANOVA/Kruskal-Wallis is not significant. These are flagged as "exploratory" in the Post-Hoc sheet.</p></div>
-          <div class="howto-note"><span class="howto-note-icon">ℹ️</span><p><strong>Effect sizes (Cohen's d, Hedges' g)</strong> are available for both 2-group designs. Glass's Δ is available for both too — for Control vs Experimental it uses the control group SD; for Pre–Post it uses the pre-test SD as the baseline. For 3+ groups, η² and ε² are reported instead.</p></div>
+          <div class="howto-note"><span class="howto-note-icon">ℹ️</span><p><strong>Effect sizes</strong> are available for 2-group designs. Cohen's d, Hedges' g, and Glass's Δ are all signed (positive = Post/Experimental scored higher). <strong>r (signed)</strong> is the point-biserial correlation r = t/√(t²+df) — directional, same sign as Cohen's d, range −1 to +1. <strong>r²</strong> is the proportion of variance explained by group membership — always positive 0–1, unsigned by definition. For 3+ groups, η² and ε² are reported instead.</p></div>
           <div class="howto-note"><span class="howto-note-icon">ℹ️</span><p>Your data is never stored. Files are processed on the server and deleted immediately after your ZIP is generated.</p></div>
         </div>
 
@@ -592,10 +592,10 @@
       parametric: [{ key: 'independent_t', label: 'Independent t-test', on: true }],
       nonparam:   [{ key: 'mann_whitney',   label: 'Mann-Whitney U',     on: true }],
       effect:     [
-        { key: 'cohen_d',     label: "Cohen's d",  on: true  },
-        { key: 'hedges_g',    label: "Hedges' g",  on: true  },
-        { key: 'glass_delta', label: "Glass's Δ",  on: false },
-        { key: 'r_squared',   label: 'r²',          on: false },
+        { key: 'cohen_d',     label: "Cohen's d",      on: true  },
+        { key: 'hedges_g',    label: "Hedges' g",      on: true  },
+        { key: 'glass_delta', label: "Glass's Δ",      on: false },
+        { key: 'r_squared',   label: 'r (signed) + r²', on: false },
       ],
     },
     prepost: {
@@ -604,10 +604,10 @@
       parametric: [{ key: 'paired_t', label: 'Paired t-test',        on: true }],
       nonparam:   [{ key: 'wilcoxon', label: 'Wilcoxon Signed-Rank', on: true }],
       effect:     [
-        { key: 'cohen_d',     label: "Cohen's d",  on: true  },
-        { key: 'hedges_g',    label: "Hedges' g",  on: true  },
-        { key: 'glass_delta', label: "Glass's Δ",  on: false },
-        { key: 'r_squared',   label: 'r²',          on: false },
+        { key: 'cohen_d',     label: "Cohen's d",      on: true  },
+        { key: 'hedges_g',    label: "Hedges' g",      on: true  },
+        { key: 'glass_delta', label: "Glass's Δ",      on: false },
+        { key: 'r_squared',   label: 'r (signed) + r²', on: false },
       ],
     },
     multiple_groups: {
