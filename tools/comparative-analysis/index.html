@@ -428,6 +428,32 @@
               <option value="0.10">0.10 — exploratory</option>
             </select>
           </div>
+          <div style="margin-top:10px;">
+            <div class="field-label" style="margin-bottom:6px;">Assumption Tests (always run)</div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; align-items:flex-start; gap:8px; padding:5px 7px; background:var(--teal-dim); border:1px solid var(--teal-border); border-radius:5px;">
+                <span style="font-size:11px; margin-top:1px;">🔬</span>
+                <div>
+                  <div style="font-size:0.72rem; font-weight:600; color:var(--teal);">Shapiro-Wilk</div>
+                  <div style="font-size:0.65rem; color:var(--ink-muted);">Normality — per group. Reliable for n ≤ 50.</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:8px; padding:5px 7px; background:var(--teal-dim); border:1px solid var(--teal-border); border-radius:5px;">
+                <span style="font-size:11px; margin-top:1px;">🔬</span>
+                <div>
+                  <div style="font-size:0.72rem; font-weight:600; color:var(--teal);">Levene's Test</div>
+                  <div style="font-size:0.65rem; color:var(--ink-muted);">Homogeneity of variance. Robust to non-normality.</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:8px; padding:5px 7px; background:var(--teal-dim); border:1px solid var(--teal-border); border-radius:5px;">
+                <span style="font-size:11px; margin-top:1px;">🔬</span>
+                <div>
+                  <div style="font-size:0.72rem; font-weight:600; color:var(--teal);">Bartlett's Test</div>
+                  <div style="font-size:0.65rem; color:var(--ink-muted);">Homogeneity of variance. More powerful when data is normal.</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="config-section">
