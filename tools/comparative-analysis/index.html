@@ -462,7 +462,7 @@
             <span style="font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--teal);">Running analysis…</span>
           </div>
           <div class="progress-wrap" id="progressWrap">
-            <div class="progress-bar indeterminate"></div>
+            <div class="progress-bar indeterminate" id="progressBar"></div>
           </div>
           <div class="log-box" id="logBox">
             <span class="log-line log-info">— Configure tests and click Run Analysis —</span>
@@ -730,12 +730,28 @@
     });
   }
 
-  function getFileOrder() {
-    // Returns [int, int] order for 2-group designs, or [] for others
+  function getOrderedFiles() {
+    // For 2-group designs, return files in Pre/Control-first order based on role dropdowns
     const sel0 = document.getElementById('role0');
     const sel1 = document.getElementById('role1');
-    if (!sel0 || !sel1) return [];
-    return [parseInt(sel0.value), parseInt(sel1.value)];
+    if (!sel0 || !sel1 || loadedFiles.length !== 2) return loadedFiles;
+    // sel0.value is the role of chip-0's file: '0' = Pre/Control, '1' = Post/Experimental
+    // If chip-0's file is Post/Experimental (value='1'), swap the order
+    if (parseInt(sel0.value) === 1) {
+      return [loadedFiles[1], loadedFiles[0]];
+    }
+    return loadedFiles;
+  }
+
+  function getOrderedLabels() {
+    // Return labels in the same order as getOrderedFiles()
+    const sel0 = document.getElementById('role0');
+    const labels = getFileLabels();
+    if (!sel0 || loadedFiles.length !== 2) return labels;
+    if (parseInt(sel0.value) === 1) {
+      return [labels[1], labels[0]];
+    }
+    return labels;
   }
 
   function resetSession() {
@@ -880,18 +896,19 @@
   async function runAnalysis() {
     if (!sessionData || !selectedVars.size) return;
     const vars   = Array.from(selectedVars).map(k => { const [type,name]=k.split('||'); return {type,name}; });
-    const opts   = { study_design: currentDesign, variables: vars, alpha: parseFloat(document.getElementById('alphaSelect').value), tests: getSelectedTests(), file_labels: getFileLabels(), file_order: getFileOrder() };
+    const opts   = { study_design: currentDesign, variables: vars, alpha: parseFloat(document.getElementById('alphaSelect').value), tests: getSelectedTests(), file_labels: getOrderedLabels() };
     document.getElementById('runBtn').disabled = true;
     document.getElementById('downloadCard').classList.remove('show');
     document.getElementById('panel3StatusBar').classList.add('show');
     document.getElementById('progressWrap').classList.add('show');
+    document.getElementById('progressBar').classList.add('indeterminate');
     document.getElementById('badge3').textContent = 'RUNNING'; document.getElementById('badge3').className = 'panel-badge badge-active';
     clearLog();
     log(`Design: ${currentDesign.replace(/_/g,' ')}`, 'info');
     log(`${loadedFiles.length} files · ${vars.length} variables · α=${opts.alpha}`, 'info');
     log('Sending to server…', 'info');
     const fd = new FormData();
-    loadedFiles.forEach(f => fd.append('files', f));
+    getOrderedFiles().forEach(f => fd.append('files', f));
     fd.append('opts', JSON.stringify(opts));
     try {
       const res = await fetch(`${API_BASE}/api/module3/run`, { method:'POST', body:fd });
@@ -902,6 +919,8 @@
       log('✓ Excel report written.', 'ok');
       log('ZIP ready for download.', 'ok');
       document.getElementById('panel3StatusBar').classList.remove('show');
+      document.getElementById('progressWrap').classList.remove('show');
+      document.getElementById('progressBar').classList.remove('indeterminate');
       document.getElementById('downloadCard').classList.add('show');
       document.getElementById('badge3').textContent = 'DONE'; document.getElementById('badge3').className = 'panel-badge badge-done';
       setStep(3,'done');
@@ -909,6 +928,8 @@
     } catch (e) {
       log(`Error: ${e.message}`, 'err');
       document.getElementById('panel3StatusBar').classList.remove('show');
+      document.getElementById('progressWrap').classList.remove('show');
+      document.getElementById('progressBar').classList.remove('indeterminate');
       document.getElementById('badge3').textContent = 'ERROR'; document.getElementById('badge3').className = 'panel-badge badge-waiting';
     } finally {
       document.getElementById('runBtn').disabled = false;
@@ -926,6 +947,7 @@
     downloadBlob = null;
     document.getElementById('downloadCard').classList.remove('show');
     document.getElementById('progressWrap').classList.remove('show');
+    document.getElementById('progressBar').classList.remove('indeterminate');
     clearLog(); log('— Configure tests and click Run Analysis —','info');
     setStep(3,'active');
     document.getElementById('badge3').textContent = 'CONFIGURE'; document.getElementById('badge3').className = 'panel-badge badge-active';
